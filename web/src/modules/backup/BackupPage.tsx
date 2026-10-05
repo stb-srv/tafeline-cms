@@ -42,7 +42,7 @@ export function BackupPage() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `meraki-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `tafeline-backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
             toast.success('Backup heruntergeladen!');

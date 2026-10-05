@@ -33,9 +33,9 @@ echo "[3/3] Server neu starten..."
 if command -v pm2 &>/dev/null && pm2 list 2>/dev/null | grep -q 'opa-cms'; then
     pm2 restart opa-cms
     echo "[OK] PM2: opa-cms neu gestartet."
-elif systemctl is-active --quiet meraki-cms 2>/dev/null; then
-    sudo systemctl restart meraki-cms
-    echo "[OK] systemd: meraki-cms neu gestartet."
+elif systemctl is-active --quiet tafeline-cms 2>/dev/null; then
+    sudo systemctl restart tafeline-cms
+    echo "[OK] systemd: tafeline-cms neu gestartet."
 elif command -v pm2 &>/dev/null; then
     echo "[INFO] PM2 verfügbar, aber kein 'opa-cms' Prozess gefunden."
     echo "       Starte mit: pm2 start server.js --name opa-cms"

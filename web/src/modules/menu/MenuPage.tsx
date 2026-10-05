@@ -30,7 +30,7 @@ function MenuPage({ tab }: { tab: MenuTab }) {
     async function handleExport() {
         try {
             const res = await fetch('/api/menu/export', {
-                headers: { 'x-admin-token': sessionStorage.getItem('meraki_admin_token') || '' },
+                headers: { 'x-admin-token': sessionStorage.getItem('tafeline_admin_token') || '' },
             });
             if (!res.ok) { toast.error('Export fehlgeschlagen.'); return; }
             const blob = await res.blob();

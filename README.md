@@ -50,8 +50,8 @@ Dies ist der empfohlene Weg für den Produktivbetrieb mit **PM2** als Prozessman
 
 ```bash
 # 1. Repository klonen
-git clone https://github.com/stb-srv/tafeline-cms.git /opt/meraki-cms
-cd /opt/meraki-cms
+git clone https://github.com/stb-srv/tafeline-cms.git /opt/tafeline-cms
+cd /opt/tafeline-cms
 
 # 2. Installer starten
 chmod +x install-ubuntu.sh

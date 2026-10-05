@@ -22,7 +22,7 @@ module.exports = function (CONFIG, io) {
     app.set('trust proxy', 1);
 
     const ADMIN_SECRET = CONFIG.ADMIN_SECRET;
-    const LICENSE_SERVER = (CONFIG.LICENSE_SERVER_URL || 'https://licens-prod.stb-srv.de').replace(
+    const LICENSE_SERVER = (CONFIG.LICENSE_SERVER_URL || 'https://licens.stb-srv.de').replace(
         /\/+$/,
         ''
     );
@@ -85,7 +85,7 @@ module.exports = function (CONFIG, io) {
                             'https://api.unsplash.com',
                             'https://api.pexels.com',
                             'https://generativelanguage.googleapis.com',
-                            'https://licens-prod.stb-srv.de',
+                            'https://licens.stb-srv.de',
                             'https://api.puter.com',
                             'https://*.puter.com',
                         ],
@@ -291,7 +291,7 @@ module.exports = function (CONFIG, io) {
                     reason: 'Admin-Passwort ist erforderlich und muss mindestens 12 Zeichen lang sein.',
                 });
             }
-            const licenseServerUrl = (licenseServer || 'https://licens-prod.stb-srv.de').replace(
+            const licenseServerUrl = (licenseServer || 'https://licens.stb-srv.de').replace(
                 /\/+$/,
                 ''
             );

@@ -89,7 +89,7 @@ Wichtige KV-Keys: `settings`, `branding`, `homepage`, `plugins`
 ### Auth & Rollen
 
 - JWT via `x-admin-token` Header oder `?token` Query-Param
-- Token wird clientseitig in `sessionStorage` als `meraki_admin_token` gespeichert
+- Token wird clientseitig in `sessionStorage` als `tafeline_admin_token` gespeichert
 - Auto-Refresh wenn Token < 30 Minuten bis Ablauf (`/api/admin/refresh`)
 - Rollen: `admin`, `waiter`, `kitchen`
 - `requireAuth` prüft Token-Gültigkeit, `requireRole('admin')` / `requireRole('admin', 'waiter')` prüft zusätzlich die Rolle
@@ -221,16 +221,16 @@ PORT=5000
 HOST=meinrestaurant.de          # Hostname für License domain check (optional)
 ADMIN_SECRET=langer-zufälliger-string
 CORS_ORIGINS=https://meinrestaurant.de  # Komma-getrennt; Default: localhost
-LICENSE_SERVER_URL=https://licens-prod.stb-srv.de
+LICENSE_SERVER_URL=https://licens.stb-srv.de
 LICENSE_PUBLIC_KEY=             # RSA Public Key Override (optional)
 
 # Datenbank (Standard: SQLite)
 DB_TYPE=sqlite
 DB_HOST=localhost
 DB_PORT=3306
-DB_USER=meraki_user
+DB_USER=tafeline_user
 DB_PASS=passwort
-DB_NAME=meraki_cms
+DB_NAME=tafeline_cms
 DB_SSL=false
 
 # Backup

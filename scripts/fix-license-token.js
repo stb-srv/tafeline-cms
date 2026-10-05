@@ -2,7 +2,7 @@
 /**
  * Tafeline CMS – Einmaliges Fix-Script: Lizenz-Token erneuern
  *
- * Aufruf: node scripts/fix-license-token.js prodbeta.stb-srv.de
+ * Aufruf: node scripts/fix-license-token.js tafelinecms.stb-srv.de
  */
 
 require('dotenv').config();
@@ -13,7 +13,7 @@ async function main() {
     const CONFIG = require(path.join(__dirname, '..', 'config.js'));
     const DB = require(path.join(__dirname, '..', 'server', 'database.js'));
 
-    const LICENSE_SERVER = (CONFIG.LICENSE_SERVER_URL || 'https://licens-prod.stb-srv.de').replace(
+    const LICENSE_SERVER = (CONFIG.LICENSE_SERVER_URL || 'https://licens.stb-srv.de').replace(
         /\/+$/,
         ''
     );
@@ -94,7 +94,7 @@ async function main() {
         console.log(`   Domain:      ${payload?.domain}`);
         console.log(`   Gültig bis:  ${exp}`);
         console.log(`   Max Speisen: ${payload?.limits?.max_dishes ?? '?'}`);
-        console.log('\n🚀 CMS neu starten: pm2 restart meraki-cms\n');
+        console.log('\n🚀 CMS neu starten: pm2 restart tafeline-cms\n');
     } catch (e) {
         console.error('\u274c Fehler:', e.message);
         process.exit(1);

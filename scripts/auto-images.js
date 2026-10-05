@@ -259,7 +259,7 @@ async function main() {
     console.log('');
     if (!DRY_RUN && ok > 0)
         console.log(
-            '\ud83d\ude80 pm2 restart meraki-cms  (optional, Bilder sind sofort sichtbar)\n'
+            '\ud83d\ude80 pm2 restart tafeline-cms  (optional, Bilder sind sofort sichtbar)\n'
         );
 
     process.exit(0);

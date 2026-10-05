@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 
 const API_URL = '/api';
 
-export const TOKEN_KEY = 'meraki_admin_token';
-export const USER_KEY = 'meraki_admin_user';
+export const TOKEN_KEY = 'tafeline_admin_token';
+export const USER_KEY = 'tafeline_admin_user';
 
 export const getAuthToken = (): string | null => sessionStorage.getItem(TOKEN_KEY);
 

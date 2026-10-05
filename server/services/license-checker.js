@@ -16,7 +16,7 @@ const MAX_FAILURES = 3;
 class LicenseChecker {
     constructor(DB, licenseServerUrl, host) {
         this.DB = DB;
-        this.licenseServerUrl = (licenseServerUrl || 'https://licens-prod.stb-srv.de').replace(
+        this.licenseServerUrl = (licenseServerUrl || 'https://licens.stb-srv.de').replace(
             /\/+$/,
             ''
         );

@@ -15,10 +15,10 @@ log_ok()    { echo -e "${GREEN}[ OK ]${NC}  $1"; }
 log_warn()  { echo -e "${YELLOW}[WARN]${NC}  $1"; }
 log_step()  { echo -e "\n${BOLD}${GREEN}▶ $1${NC}"; }
 
-APP_DIR="/opt/meraki-cms"
+APP_DIR="/opt/tafeline-cms"
 APP_USER="opa-cms"
 REPO="https://github.com/stb-srv/OPA-Santorini.git"
-SERVICE_NAME="meraki-cms"
+SERVICE_NAME="tafeline-cms"
 PORT=5000
 
 clear

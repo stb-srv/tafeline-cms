@@ -38,7 +38,7 @@ const DEFAULT_CONFIG = {
             enabled: true,
             cookies: [
                 {
-                    name: 'meraki_consent',
+                    name: 'tafeline_consent',
                     purpose: 'Speichert Ihre Cookie-Einstellungen',
                     duration: '12 Monate',
                     provider: 'Tafeline CMS',
@@ -54,7 +54,7 @@ const DEFAULT_CONFIG = {
             enabled: true,
             cookies: [
                 {
-                    name: 'meraki_lang',
+                    name: 'tafeline_lang',
                     purpose: 'Gespeicherte Spracheinstellung',
                     duration: '12 Monate',
                     provider: 'Tafeline CMS',
