@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "=============================================================="
-echo " Meraki CMS - Automatisches Update-Skript (Mac / Linux)"
+echo " Tafeline CMS - Automatisches Update-Skript (Mac / Linux)"
 echo "=============================================================="
 echo ""
 
@@ -47,5 +47,5 @@ fi
 
 echo ""
 echo "=============================================================="
-echo " Update abgeschlossen! Meraki CMS läuft auf dem neuesten Stand."
+echo " Update abgeschlossen! Tafeline CMS läuft auf dem neuesten Stand."
 echo "=============================================================="

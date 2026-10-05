@@ -33,7 +33,7 @@ export function LoginPage() {
     return (
         <Card>
             <CardHeader className="text-center">
-                <CardTitle className="font-display text-2xl">Meraki CMS</CardTitle>
+                <CardTitle className="font-display text-2xl">Tafeline CMS</CardTitle>
                 <CardDescription>Bitte melden Sie sich an</CardDescription>
             </CardHeader>
             <CardContent>

@@ -1,5 +1,5 @@
 /**
- * Meraki CMS – Cart Routes
+ * Tafeline CMS – Cart Routes
  *
  * GET  /api/cart/config   → öffentlich, keine Auth nötig
  * POST /api/cart/order    → öffentlich für Gäste, Lizenzgate online_orders

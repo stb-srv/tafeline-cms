@@ -91,7 +91,7 @@ module.exports = (requireAuth) => {
                 _meta: {
                     version: BACKUP_VERSION,
                     createdAt: new Date().toISOString(),
-                    generator: 'Meraki CMS',
+                    generator: 'Tafeline CMS',
                     recordCount: {
                         kv: Object.keys(kv).length,
                         menu: menu.length,

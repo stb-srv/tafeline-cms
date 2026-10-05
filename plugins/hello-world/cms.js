@@ -1,5 +1,5 @@
 /**
- * Meraki Extra Plugin - CMS Side
+ * Tafeline Extra Plugin - CMS Side
  */
 (function () {
     console.log("🌟 Plugin 'Opa! Extra' geladen!");
@@ -36,7 +36,7 @@
                             <i class="fas fa-palette" style="color:var(--primary);"></i> Design System
                         </h4>
                         <p style="font-size:0.88rem; line-height:1.6; opacity:0.7; margin-bottom:18px;">
-                            Nutze die globalen CSS-Klassen für den echten Meraki-Look:
+                            Nutze die globalen CSS-Klassen für den echten Tafeline-Look:
                         </p>
                         <div style="display:flex; flex-direction:column; gap:10px;">
                             <div style="font-size:0.8rem; background:#fff; padding:10px; border-radius:10px; border:1px solid rgba(0,0,0,0.03);">

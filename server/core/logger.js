@@ -11,7 +11,7 @@ const isDev = process.env.DEV_MODE === 'true' || process.env.NODE_ENV === 'devel
 
 const logger = pino({
     level: process.env.LOG_LEVEL || (isDev ? 'debug' : 'info'),
-    base: { pid: process.pid, app: 'Meraki CMS' },
+    base: { pid: process.pid, app: 'Tafeline CMS' },
     timestamp: pino.stdTimeFunctions.isoTime,
     // Sensible Felder aus Logs herausfiltern
     redact: {

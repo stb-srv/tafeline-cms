@@ -1,5 +1,5 @@
 /**
- * Meraki Extra Plugin - Website Side
+ * Tafeline Extra Plugin - Website Side
  */
 (function () {
     console.log("🌊 Guest Plugin 'Opa! Extra' geladen!");

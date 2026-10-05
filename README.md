@@ -1,4 +1,4 @@
-# 🏛️ Meraki CMS – Restaurant Management System
+# 🏛️ Tafeline CMS – Restaurant Management System
 
 ![Node.js Version](https://img.shields.io/badge/node-%E2%89%A518-green)
 ![License MIT](https://img.shields.io/badge/license-MIT-blue)
@@ -62,7 +62,7 @@ sudo ./install-ubuntu.sh
 
 ## 🗄️ MySQL/MariaDB Setup
 
-Standardmäßig nutzt Meraki CMS **SQLite** (kein Setup nötig). Für größere Installationen oder Shared-Hosting (Netcup, Hetzner etc.) wird **MySQL/MariaDB** empfohlen.
+Standardmäßig nutzt Tafeline CMS **SQLite** (kein Setup nötig). Für größere Installationen oder Shared-Hosting (Netcup, Hetzner etc.) wird **MySQL/MariaDB** empfohlen.
 
 1. Erstelle eine neue Datenbank und einen Benutzer.
 2. Trage in der `.env` Datei folgende Werte ein:
@@ -83,7 +83,7 @@ DB_SSL=false
 
 ## 🛒 Warenkorb & Online-Bestellung
 
-Meraki CMS verfügt über ein integriertes Warenkorb-System für Gäste.
+Tafeline CMS verfügt über ein integriertes Warenkorb-System für Gäste.
 
 - **Dine-In**: Gäste scannen einen QR-Code am Tisch und bestellen direkt an ihre Tischnummer.
 - **Abholung (Pickup)**: Bestellen von zu Hause mit Angabe der gewünschten Abholzeit.
@@ -99,7 +99,7 @@ Beim ersten Start erscheint in der Konsole ein **Setup-Token** – den brauchst 
 
 ```
 ════════════════════════════════════════════════════════════
-  MERAKI CMS – ERSTEINRICHTUNG ERFORDERLICH
+  TAFELINE CMS – ERSTEINRICHTUNG ERFORDERLICH
 ════════════════════════════════════════════════════════════
   Öffne:  http://localhost:5000/setup
   Token:  a3f7b9c2d1e4f6a8b0c2d3e5f7a9b1c3

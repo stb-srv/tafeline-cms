@@ -300,7 +300,7 @@ module.exports = function (CONFIG, io) {
             const customerName = r.name || restaurantName || 'Trial';
             const trialLicense = {
                 key:
-                    'MERAKI-TRIAL-' +
+                    'TAFELINE-TRIAL-' +
                     crypto.randomBytes(4).toString('hex').toUpperCase() +
                     '-' +
                     new Date().getFullYear(),
@@ -358,7 +358,7 @@ module.exports = function (CONFIG, io) {
                 hashedCodes = [];
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             for (let i = 0; i < 3; i++) {
-                let code = 'MERAKI-';
+                let code = 'TAFELINE-';
                 for (let j = 0; j < 4; j++) code += chars[Math.floor(Math.random() * chars.length)];
                 code += '-';
                 for (let j = 0; j < 4; j++) code += chars[Math.floor(Math.random() * chars.length)];

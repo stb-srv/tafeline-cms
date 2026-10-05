@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Projektübersicht
 
-Meraki CMS ist ein modulares Restaurant-CMS. Backend: Node.js/Express (CommonJS), dient als **reine JSON-API**. Frontend: **React + Vite + TypeScript** mit **Tailwind CSS v4** und **shadcn/ui** (im Ordner `web/`). Datenbank: SQLite (Standard) oder MySQL/MariaDB (via `DB_TYPE=mysql`).
+Tafeline CMS ist ein modulares Restaurant-CMS. Backend: Node.js/Express (CommonJS), dient als **reine JSON-API**. Frontend: **React + Vite + TypeScript** mit **Tailwind CSS v4** und **shadcn/ui** (im Ordner `web/`). Datenbank: SQLite (Standard) oder MySQL/MariaDB (via `DB_TYPE=mysql`).
 
 > **Migration abgeschlossen** (siehe `.claude/plans/`): Das alte Vanilla-JS-Frontend (`cms/`, `menu-app/`) wurde durch die React-SPA in `web/` ersetzt (Big-Bang-Rewrite) und gelöscht. Sämtliche Frontend-Arbeit findet ausschließlich in `web/` statt.
 

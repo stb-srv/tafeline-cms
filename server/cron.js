@@ -1,5 +1,5 @@
 /**
- * Meraki CMS – Background Cron Jobs
+ * Tafeline CMS – Background Cron Jobs
  * Trial Expiry & Reservation Reminders
  */
 const DB = require('./db');

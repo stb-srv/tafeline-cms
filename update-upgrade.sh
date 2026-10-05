@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==============================================================================
-#  Meraki CMS - Update & Upgrade Skript
+#  Tafeline CMS - Update & Upgrade Skript
 #  Holt die neueste Version von GitHub und startet den Server neu.
 #
 #  Nutzung:
@@ -27,7 +27,7 @@ cd "${INSTALL_DIR}"
 clear
 echo -e "${BOLD}"
 echo "  ╔══════════════════════════════════════════════════════╗"
-echo "  ║       Meraki CMS - Update & Upgrade Skript            ║"
+echo "  ║       Tafeline CMS - Update & Upgrade Skript            ║"
 echo "  ╚══════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 log_info "Verzeichnis: ${INSTALL_DIR}"
@@ -136,7 +136,7 @@ echo "  ║             ✓ UPDATE ABGESCHLOSSEN                  ║"
 echo "  ╚══════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 if [ "${RESTARTED}" = true ]; then
-    echo -e "  ${GREEN}✅ Meraki CMS läuft auf dem neuesten Stand.${NC}"
+    echo -e "  ${GREEN}✅ Tafeline CMS läuft auf dem neuesten Stand.${NC}"
 else
     echo -e "  ${YELLOW}⚠️  Code aktualisiert, Server muss noch manuell gestartet werden.${NC}"
 fi

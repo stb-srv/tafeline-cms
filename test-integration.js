@@ -43,7 +43,7 @@ function test(name, fn) {
 }
 
 async function run() {
-    console.log('\nMeraki CMS ↔ License Server — Integration Contract Test\n');
+    console.log('\nTafeline CMS ↔ License Server — Integration Contract Test\n');
 
     // ── 1. Shared plans package ─────────────────────────────────────────────
     console.log('1. @meraki/plans package');

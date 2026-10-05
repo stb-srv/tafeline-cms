@@ -1,5 +1,5 @@
 /**
- * Meraki CMS GLOBAL CONFIGURATION
+ * Tafeline CMS GLOBAL CONFIGURATION
  * Priorität: config.json (Setup-Wizard) > .env > Defaults
  *
  * SECURITY:

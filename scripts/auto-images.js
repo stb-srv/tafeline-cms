@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Meraki CMS – Auto-Image Script
+ * Tafeline CMS – Auto-Image Script
  * Sucht für alle Gerichte ohne Bild automatisch ein passendes Foto.
  *
  * Quellen (Reihenfolge im Auto-Modus):
@@ -51,7 +51,7 @@ function httpGet(url, headers = {}) {
         proto
             .get(
                 url,
-                { headers: { 'User-Agent': 'Meraki-CMS-AutoImage/1.0', ...headers } },
+                { headers: { 'User-Agent': 'Tafeline-CMS-AutoImage/1.0', ...headers } },
                 (res) => {
                     if (
                         [301, 302, 303, 307, 308].includes(res.statusCode) &&
@@ -75,7 +75,7 @@ function download(url, dest, headers = {}) {
         proto
             .get(
                 url,
-                { headers: { 'User-Agent': 'Meraki-CMS-AutoImage/1.0', ...headers } },
+                { headers: { 'User-Agent': 'Tafeline-CMS-AutoImage/1.0', ...headers } },
                 (res) => {
                     if (
                         [301, 302, 303, 307, 308].includes(res.statusCode) &&
@@ -154,7 +154,7 @@ async function findImage(query) {
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
-    console.log('\n\ud83c\udf04 Meraki CMS Auto-Image Script');
+    console.log('\n\ud83c\udf04 Tafeline CMS Auto-Image Script');
     console.log('='.repeat(50));
 
     const hasPexels = !!PEXELS_KEY;

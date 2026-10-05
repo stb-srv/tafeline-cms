@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Meraki CMS – SQLite → MySQL/MariaDB Migrationsskript
+# Tafeline CMS – SQLite → MySQL/MariaDB Migrationsskript
 # =============================================================================
 # Verwendung:
 #   chmod +x migrate-to-mysql.sh
@@ -27,7 +27,7 @@ step()    { echo -e "\n${BOLD}${CYAN}=== $* ===${NC}"; }
 
 echo -e "${BOLD}"
 echo "  ┌─────────────────────────────────────────────┐"
-echo "  │   Meraki CMS – SQLite → MySQL Migration        │"
+echo "  │   Tafeline CMS – SQLite → MySQL Migration        │"
 echo "  └─────────────────────────────────────────────┘"
 echo -e "${NC}"
 
@@ -349,7 +349,7 @@ echo ""
 echo -e "${GREEN}${BOLD}Alle Daten wurden erfolgreich nach MySQL migriert!${NC}"
 echo ""
 echo -e "${BOLD}Nächste Schritte:${NC}"
-echo -e "  1. Starte den Meraki CMS Server neu: pm2 restart meraki-cms (oder: npm start${NC} (oder: ${CYAN}npm start${NC})"
+echo -e "  1. Starte den Tafeline CMS Server neu: pm2 restart meraki-cms (oder: npm start${NC} (oder: ${CYAN}npm start${NC})"
 echo -e "  2. Prüfe ob alles funktioniert (Admin-Panel, Menü, Reservierungen)"
 echo -e "  3. Wenn alles OK: SQLite-Backup kannst du später löschen: ${YELLOW}${BACKUP_PATH}${NC}"
 echo ""

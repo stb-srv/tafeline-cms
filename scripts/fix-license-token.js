@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Meraki CMS – Einmaliges Fix-Script: Lizenz-Token erneuern
+ * Tafeline CMS – Einmaliges Fix-Script: Lizenz-Token erneuern
  *
  * Aufruf: node scripts/fix-license-token.js prodbeta.stb-srv.de
  */
@@ -21,7 +21,7 @@ async function main() {
         ? process.argv[2].replace(/^https?:\/\//, '').split('/')[0]
         : null;
 
-    console.log('\n🔒 Meraki CMS License Token Fix-Script');
+    console.log('\n🔒 Tafeline CMS License Token Fix-Script');
     console.log('='.repeat(45));
 
     if (typeof DB.init === 'function') await DB.init();
