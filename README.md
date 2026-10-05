@@ -40,7 +40,7 @@
     - Ubuntu/Debian: `sudo apt install -y build-essential python3`
     - macOS: `xcode-select --install`
 
-> Das Paket `@meraki/plans` wird aus dem zentralen Repository `github:stb-srv/meraki-plans` installiert (siehe `package.json`). CMS und Lizenzserver teilen sich damit **eine einzige Quelle** der Plan-Definitionen.
+> Das Paket `@tafeline/plans` wird aus dem zentralen Repository `github:stb-srv/tafeline-plans` installiert (siehe `package.json`). CMS und Lizenzserver teilen sich damit **eine einzige Quelle** der Plan-Definitionen.
 
 ---
 
@@ -50,7 +50,7 @@ Dies ist der empfohlene Weg für den Produktivbetrieb mit **PM2** als Prozessman
 
 ```bash
 # 1. Repository klonen
-git clone https://github.com/stb-srv/Meraki-CMS.git /opt/meraki-cms
+git clone https://github.com/stb-srv/tafeline-cms.git /opt/meraki-cms
 cd /opt/meraki-cms
 
 # 2. Installer starten

@@ -8,7 +8,7 @@
 
 const jwt = require('jsonwebtoken');
 const logger = require('../core/logger.js');
-const { PLAN_DEFINITIONS: SHARED_PLANS } = require('@meraki/plans');
+const { PLAN_DEFINITIONS: SHARED_PLANS } = require('@tafeline/plans');
 
 const MERAKI_PUBLIC_KEY_FALLBACK = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAutES8Xqif1PpLJU9ClMJ
@@ -64,7 +64,7 @@ const initPublicKey = async (licenseServerUrl) => {
 };
 
 /**
- * PLAN_DEFINITIONS — startet mit @meraki/plans als Fallback,
+ * PLAN_DEFINITIONS — startet mit @tafeline/plans als Fallback,
  * wird durch initPlans() mit Live-Daten vom Lizenzserver überschrieben.
  */
 const PLAN_DEFINITIONS = { ...SHARED_PLANS };
@@ -72,7 +72,7 @@ const PLAN_DEFINITIONS = { ...SHARED_PLANS };
 /**
  * Ruft Plan-Definitionen vom Lizenzserver ab und aktualisiert PLAN_DEFINITIONS in-place.
  * Wird beim Start durch LicenseChecker aufgerufen (nach initPublicKey).
- * Faellt bei Fehler auf @meraki/plans-Fallback zurueck.
+ * Faellt bei Fehler auf @tafeline/plans-Fallback zurueck.
  */
 const initPlans = async (licenseServerUrl) => {
     const base = (licenseServerUrl || 'https://licens-prod.stb-srv.de').replace(/\/+$/, '');
@@ -101,7 +101,7 @@ const initPlans = async (licenseServerUrl) => {
         logger.info({ url, updated }, 'Plan-Definitionen erfolgreich vom Lizenzserver geladen.');
         return true;
     } catch (e) {
-        logger.warn({ err: e }, 'Plan-Abruf fehlgeschlagen – @meraki/plans Fallback aktiv.');
+        logger.warn({ err: e }, 'Plan-Abruf fehlgeschlagen – @tafeline/plans Fallback aktiv.');
         return false;
     }
 };

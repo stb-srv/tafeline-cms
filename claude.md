@@ -98,8 +98,8 @@ Wichtige KV-Keys: `settings`, `branding`, `homepage`, `plugins`
 
 Pläne: `TRIAL` → `FREE` → `STARTER` → `PRO` → `PRO_PLUS` → `ENTERPRISE`
 
-**Einzige Quelle der Wahrheit**: `@meraki/plans` — zentrales Repository `github:stb-srv/meraki-plans` (in `package.json` als Dependency referenziert, installiert nach `node_modules/@meraki/plans`). CMS und Lizenzserver nutzen dieselbe Quelle.
-**Nie** PLAN_DEFINITIONS direkt im CMS oder Lizenzserver definieren — immer im Upstream-Repo `stb-srv/meraki-plans` (`index.js`) bearbeiten, dann hier per `npm install` aktualisieren.
+**Einzige Quelle der Wahrheit**: `@tafeline/plans` — zentrales Repository `github:stb-srv/tafeline-plans` (in `package.json` als Dependency referenziert, installiert nach `node_modules/@tafeline/plans`). CMS und Lizenzserver nutzen dieselbe Quelle.
+**Nie** PLAN_DEFINITIONS direkt im CMS oder Lizenzserver definieren — immer im Upstream-Repo `stb-srv/tafeline-plans` (`index.js`) bearbeiten, dann hier per `npm install` aktualisieren.
 
 - Trial: In KV `settings.license.isTrial = true`, Ablauf via Cron geprüft
 - Vollizenz: RSA-signiertes JWT (`licenseToken`), Public Key beim Start vom Lizenzserver geladen
@@ -160,7 +160,7 @@ Plugins liegen in `plugins/<id>/` mit:
 | `server/cron.js`                              | Background-Jobs (Trial, Reminders, Backup-Cleanup)                                  |
 | `server/socket.js`                            | Socket.IO-Setup                                                                     |
 | `server/validation/schemas.js`                | Zod-Schemas für alle Routen                                                         |
-| `@meraki/plans` (github:stb-srv/meraki-plans) | **Shared** PLAN_DEFINITIONS (CMS + Lizenzserver) – Upstream-Repo, nicht im CMS-Repo |
+| `@tafeline/plans` (github:stb-srv/tafeline-plans) | **Shared** PLAN_DEFINITIONS (CMS + Lizenzserver) – Upstream-Repo, nicht im CMS-Repo |
 | `test-integration.js`                         | Datenvertrag-Test CMS↔Lizenzserver                                                  |
 | `web/src/lib/api.ts`                          | Admin-Frontend API-Client (`apiGet`, `apiPost`, `apiPut`, `apiDelete`, `apiUpload`) |
 | `web/src/routes/admin-routes.tsx`             | Admin-SPA Routing (HashRouter, PAGES-Registry aus NAV_CONFIG)                        |
@@ -206,7 +206,7 @@ Plugins liegen in `plugins/<id>/` mit:
 - **Frontend = React + Vite + TypeScript** (in `web/`). Tailwind v4 (CSS-first via `web/src/styles/globals.css`) + shadcn/ui (`web/src/components/ui/`). **Keine Inline-Styles** – nur Tailwind-Utility-Klassen / shadcn-Komponenten. (Die alte Regel „Vanilla JS only" ist mit dem Redesign aufgehoben.)
 - **Zentralisierte Layouts**: Header/Sidebar/Footer/Nav existieren genau einmal unter `web/src/components/layout/` + `components/shared/`. Feature-Seiten werden via react-router `<Outlet/>` injiziert. Navigation ausschließlich aus `web/src/config/navigation.ts` (Single Source).
 - **Design-Tokens & White-Labeling**: EINE Token-Quelle in `globals.css` (`:root`/`.dark`, HSL-Tripel). Marken-Farben zur Laufzeit über `web/src/lib/branding.ts` (`applyBranding`) per CSS-Variable steuerbar – ohne Tailwind-Rebuild. Dark-Mode via Tailwind `class`-Strategie (`ThemeProvider`), nie über Attribut-Selektoren auf Inline-Styles.
-- **Shared Plans**: Plan-Definitionen IMMER im Upstream-Repo `github:stb-srv/meraki-plans` bearbeiten, dann per `npm install` ziehen. Nie in CMS oder Lizenzserver duplizieren.
+- **Shared Plans**: Plan-Definitionen IMMER im Upstream-Repo `github:stb-srv/tafeline-plans` bearbeiten, dann per `npm install` ziehen. Nie in CMS oder Lizenzserver duplizieren.
 - **Datenbank-Adapter-Interface**: Neue DB-Funktionen immer in BEIDEN Adaptern implementieren.
 - **Migrationen**: Neue Spalten in beiden Adaptern als Migration eintragen (siehe oben).
 - **Auth**: Alle Admin-API-Routen brauchen `requireAuth`. Gäste-Routen (Gäste-Website, cart, cookie-consent) sind öffentlich.
@@ -251,6 +251,6 @@ UNSPLASH_ACCESS_KEY=
 - **`CORS_ORIGINS` nicht gesetzt** → API-Calls vom Frontend werden in Produktion blockiert
 - **`ADMIN_SECRET` = Default-Wert** → Server verweigert Start nach abgeschlossenem Setup
 - **Modul-Name falsch in `requireLicense()`** → Feature immer gesperrt; gültige Namen oben nachschlagen
-- **PLAN_DEFINITIONS direkt im CMS/Lizenzserver geändert** → Änderung wirkt nicht, da `@meraki/plans` die Quelle ist
+- **PLAN_DEFINITIONS direkt im CMS/Lizenzserver geändert** → Änderung wirkt nicht, da `@tafeline/plans` die Quelle ist
 - **`JSON_VALID()` in MySQL** → Zum Prüfen invalider JSON-Felder: `SELECT id FROM menu WHERE JSON_VALID(translations) = 0`
 - **License domain mismatch** → `HOST` env var setzen; auf localhost wird der Check übersprungen

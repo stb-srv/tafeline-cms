@@ -1,6 +1,6 @@
 # Admin-Bereich – Zielarchitektur & Migrationsplan (Phase 2)
 
-**Grundlage:** `docs/plans/admin-audit.md` (36 Einstellungen, 19 Dateien, 9 Cluster). **Das Lizenzsystem selbst (`server/services/license.js`, `server/services/license-checker.js`, `@meraki/plans`) wird nicht verändert** — nur seine Anbindung an die neue Struktur.
+**Grundlage:** `docs/plans/admin-audit.md` (36 Einstellungen, 19 Dateien, 9 Cluster). **Das Lizenzsystem selbst (`server/services/license.js`, `server/services/license-checker.js`, `@tafeline/plans`) wird nicht verändert** — nur seine Anbindung an die neue Struktur.
 
 ---
 
@@ -88,7 +88,7 @@ export interface SettingRegistryEntry {
 
   // Art 1 – Lizenzbezug (read-only Anzeige, KEINE Schreiblogik hier!)
   requiresLicense?: boolean;
-  licenseModule?: string;          // Schlüssel aus PLAN_MODULES (@meraki/plans)
+  licenseModule?: string;          // Schlüssel aus PLAN_MODULES (@tafeline/plans)
   alwaysAvailable?: boolean;       // bypass licenseModule-Check
 
   // Art 2 – Abhängigkeiten zwischen Feature-Schaltern
@@ -205,10 +205,10 @@ Die Registry ruft **niemals** Funktionen aus `server/services/license.js` zur Ve
 - `GET /api/license/info` (Frontend, via `useLicense()`-Hook, unverändert)
 - `getCurrentLicense(DB, domain)` serverseitig (unverändert, nur **Lesezugriff**)
 
-Der einzige Codeeingriff im Lizenzbereich ist der **Bug-Fix des CMS-seitigen Feature→Lizenz-Mappings** (nicht des Lizenzsystems selbst): `FEATURE_MAP` aus `@meraki/plans` existiert nicht und wird ersetzt durch eine lokale Ableitung aus der Registry:
+Der einzige Codeeingriff im Lizenzbereich ist der **Bug-Fix des CMS-seitigen Feature→Lizenz-Mappings** (nicht des Lizenzsystems selbst): `FEATURE_MAP` aus `@tafeline/plans` existiert nicht und wird ersetzt durch eine lokale Ableitung aus der Registry:
 
 ```js
-// server/routes/settings.js – Ersatz für `const { FEATURE_MAP } = require('@meraki/plans');`
+// server/routes/settings.js – Ersatz für `const { FEATURE_MAP } = require('@tafeline/plans');`
 const { getLicenseKeyForFeature } = require('../registry/settings-registry.js');
 // getLicenseKeyForFeature('orders_kitchen') => 'online_orders'
 ```
@@ -217,7 +217,7 @@ const { getLicenseKeyForFeature } = require('../registry/settings-registry.js');
 
 | Befund | Entscheidung | Begründung |
 |---|---|---|
-| `FEATURE_MAP` undefined (500 bei jedem Modul-Enable) | **Fix** – lokale Registry-Ableitung statt `@meraki/plans`-Import | Blockierender Live-Bug, ohne Fix ist Modul-Center faktisch unbenutzbar |
+| `FEATURE_MAP` undefined (500 bei jedem Modul-Enable) | **Fix** – lokale Registry-Ableitung statt `@tafeline/plans`-Import | Blockierender Live-Bug, ohne Fix ist Modul-Center faktisch unbenutzbar |
 | `POST /license/modules` (dead endpoint) | **Entfernen** | Null Frontend-Aufrufer, schreibt in dasselbe Feld wie die echte Lizenzaktivierung → Konfliktpotenzial, kein Nutzen |
 | `orders_kitchen`/`online_orders`/`activeModules.orders` Dreifachbenennung | **Kanonisieren auf `online_orders`** in allen neuen Code-Stellen (Registry, Doku), Storage-Keys unverändert lassen; `activeModules`-Feld (unbenutzt) wird entfernt | Keine DB-Migration nötig; wir fügen keine dritte Quelle der Wahrheit hinzu, sondern vereinheitlichen nur die Lesart und entfernen totes Legacy-Feld |
 | `daily_specials` totes Toggle | **Entfernen** aus Modul-Center (nicht nachträglich scharf schalten) | Feature ist seit Einführung nie durchgesetzt worden; Reaktivierung wäre eine Verhaltensänderung, Entfernung ist reine Aufräumung ohne Risiko |
