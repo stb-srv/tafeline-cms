@@ -2,7 +2,7 @@
 
 **Methode:** Vollständige Lesekontrolle von `web/src/modules/**` (jede Datei mit `Switch`/`SwitchRow`/`Checkbox`/Toggle-Button-Pattern), Abgleich mit `server/routes/**`, `server/app.js`, `server/db/{sqlite,mysql}.js` (kv_store-Keys, DB-Spalten) sowie `web/src/config/navigation.ts` und `web/src/routes/admin-routes.tsx` (Routing/PAGES-Registry). Es wurden **keine Dateien verändert**.
 
-**Ausdrücklich außerhalb des Scopes:** Das Lizenzsystem selbst (`server/services/license.js`, `server/services/license-checker.js`, `@meraki/plans`) wird nicht bewertet oder verändert — nur seine *Anbindung* an CMS-interne Toggles wird dokumentiert.
+**Ausdrücklich außerhalb des Scopes:** Das Lizenzsystem selbst (`server/services/license.js`, `server/services/license-checker.js`, `@tafeline/plans`) wird nicht bewertet oder verändert — nur seine *Anbindung* an CMS-interne Toggles wird dokumentiert.
 
 **Nicht mit erfasst:** `web/src/modules/guest/CookieBanner.tsx` (Gäste-Frontend-Consent-UI, kein Admin-Toggle) — wird nur als Konsument von `cookie_config` erwähnt.
 
@@ -55,7 +55,7 @@
 
 Diese wurden **nach** der initialen Tabelle entdeckt, während eines Plan-Agenten-Reviews, und von mir per direktem Code-/Node-Check verifiziert (nicht nur behauptet):
 
-1. **LIVE-BUG:** `server/routes/settings.js:13` importiert `FEATURE_MAP` aus `@meraki/plans` — dieser Export existiert nicht im installierten Paket (`node -e "console.log(Object.keys(require('@meraki/plans')))"` → nur `['PLAN_DEFINITIONS','PLAN_MODULES']`). Jeder Versuch, im Modul-Center (#1-#14) ein Modul auf **aktiv** zu setzen, wirft eine `TypeError` bei `FEATURE_MAP[featureId]`, die vom generischen Error-Handler zu HTTP 500 wird. **Das Modul-Center kann aktuell keine Module aktivieren.**
+1. **LIVE-BUG:** `server/routes/settings.js:13` importiert `FEATURE_MAP` aus `@tafeline/plans` — dieser Export existiert nicht im installierten Paket (`node -e "console.log(Object.keys(require('@tafeline/plans')))"` → nur `['PLAN_DEFINITIONS','PLAN_MODULES']`). Jeder Versuch, im Modul-Center (#1-#14) ein Modul auf **aktiv** zu setzen, wirft eine `TypeError` bei `FEATURE_MAP[featureId]`, die vom generischen Error-Handler zu HTTP 500 wird. **Das Modul-Center kann aktuell keine Module aktivieren.**
 2. `settings.dailySpecialsEnabled` (`settings.js:400`) und `settings.activeModules.{orders,reservations}` (`settings.js:392-395`) sind **tote Felder** — repo-weiter Grep zeigt ausschließlich die Schreibstelle, keine einzige Lesestelle. (Eine erste Vermutung, das Gäste-Frontend läse `activeModules`, wurde geprüft und widerlegt — nur eine TS-Typdeklaration in `guest-api.ts:26`, keine tatsächliche Property-Zugriffsstelle.)
 
 ---

@@ -2,8 +2,8 @@
  * Server-seitiges Pendant der Frontend-Registry (web/src/config/settings-registry.ts).
  * Bildet featureId (enabledModules-Feldname) -> Lizenz-Modul-Key ab.
  *
- * Ersetzt den vormaligen `const { FEATURE_MAP } = require('@meraki/plans')`-Import:
- * @meraki/plans exportiert kein FEATURE_MAP (nur PLAN_DEFINITIONS, PLAN_MODULES),
+ * Ersetzt den vormaligen `const { FEATURE_MAP } = require('@tafeline/plans')`-Import:
+ * @tafeline/plans exportiert kein FEATURE_MAP (nur PLAN_DEFINITIONS, PLAN_MODULES),
  * wodurch jeder Versuch ein Modul zu aktivieren mit TypeError/500 fehlschlug.
  *
  * null = alwaysAvailable (kein Lizenz-Gate, analog zu MODULE_LABELS.alwaysAvailable

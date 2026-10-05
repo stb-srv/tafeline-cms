@@ -21,7 +21,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@meraki/plans": "github:stb-srv/meraki-plans",
+    "@tafeline/plans": "github:stb-srv/tafeline-plans",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.10.0",
     "concurrently": "^8.2.2",

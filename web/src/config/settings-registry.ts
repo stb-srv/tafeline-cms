@@ -33,7 +33,7 @@ export interface SettingRegistryEntry {
 
     /** Art 1 – Lizenzbezug (read-only Anzeige, KEINE Schreiblogik hier!) */
     requiresLicense?: boolean;
-    /** Schlüssel aus PLAN_MODULES (@meraki/plans) */
+    /** Schlüssel aus PLAN_MODULES (@tafeline/plans) */
     licenseModule?: string;
     /** Bypass des licenseModule-Checks */
     alwaysAvailable?: boolean;

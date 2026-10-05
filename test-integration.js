@@ -2,7 +2,7 @@
  * Integration test: Verifies the data contract between meraki-cms and meraki-licens.
  *
  * Checks:
- *   1. @meraki/plans package is importable from both projects
+ *   1. @tafeline/plans package is importable from both projects
  *   2. Module keys in PLAN_DEFINITIONS match what requireLicense() accepts
  *   3. License server /api/v1/public-key is reachable (if LICENSE_SERVER_URL is set)
  *   4. Token issued by license server is verifiable with the returned public key
@@ -46,11 +46,11 @@ async function run() {
     console.log('\nTafeline CMS ↔ License Server — Integration Contract Test\n');
 
     // ── 1. Shared plans package ─────────────────────────────────────────────
-    console.log('1. @meraki/plans package');
+    console.log('1. @tafeline/plans package');
 
     let PLAN_DEFINITIONS, PLAN_MODULES;
     await test('importable as CommonJS', () => {
-        ({ PLAN_DEFINITIONS, PLAN_MODULES } = require('@meraki/plans'));
+        ({ PLAN_DEFINITIONS, PLAN_MODULES } = require('@tafeline/plans'));
         assert(PLAN_DEFINITIONS, 'PLAN_DEFINITIONS must be exported');
         assert(PLAN_MODULES, 'PLAN_MODULES must be exported');
     });
