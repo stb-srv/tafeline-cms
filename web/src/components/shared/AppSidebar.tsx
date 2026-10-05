@@ -114,8 +114,11 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
             )}
         >
             <div className="flex h-14 shrink-0 items-center gap-2 border-b border-sidebar-border px-3">
-                <img src="/logo.svg" alt="Tafeline" className="h-7" />
-                {!collapsed && <span className="font-display font-bold">Tafeline</span>}
+                <img
+                    src="/logo.png"
+                    alt="Tafeline"
+                    className={cn('h-10 object-cover object-left', collapsed ? 'w-8' : 'w-auto')}
+                />
             </div>
 
             <div className="flex-1 overflow-y-auto py-2">
