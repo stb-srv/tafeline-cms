@@ -221,7 +221,7 @@ PORT=5000
 HOST=meinrestaurant.de          # Hostname für License domain check (optional)
 ADMIN_SECRET=langer-zufälliger-string
 CORS_ORIGINS=https://meinrestaurant.de  # Komma-getrennt; Default: localhost
-LICENSE_SERVER_URL=https://licens-prod.stb-srv.de
+LICENSE_SERVER_URL=https://licens.stb-srv.de
 LICENSE_PUBLIC_KEY=             # RSA Public Key Override (optional)
 
 # Datenbank (Standard: SQLite)

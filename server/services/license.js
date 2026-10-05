@@ -44,7 +44,7 @@ const initPublicKey = async (licenseServerUrl) => {
         return true;
     }
 
-    const url = `${(licenseServerUrl || 'https://licens-prod.stb-srv.de').replace(/\/+$/, '')}/api/v1/public-key`;
+    const url = `${(licenseServerUrl || 'https://licens.stb-srv.de').replace(/\/+$/, '')}/api/v1/public-key`;
     try {
         const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -75,7 +75,7 @@ const PLAN_DEFINITIONS = { ...SHARED_PLANS };
  * Faellt bei Fehler auf @tafeline/plans-Fallback zurueck.
  */
 const initPlans = async (licenseServerUrl) => {
-    const base = (licenseServerUrl || 'https://licens-prod.stb-srv.de').replace(/\/+$/, '');
+    const base = (licenseServerUrl || 'https://licens.stb-srv.de').replace(/\/+$/, '');
     const url = `${base}/api/v1/plans`;
     try {
         const res = await fetch(url, { signal: AbortSignal.timeout(10000) });

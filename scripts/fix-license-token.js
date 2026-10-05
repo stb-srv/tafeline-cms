@@ -2,7 +2,7 @@
 /**
  * Tafeline CMS – Einmaliges Fix-Script: Lizenz-Token erneuern
  *
- * Aufruf: node scripts/fix-license-token.js prodbeta.stb-srv.de
+ * Aufruf: node scripts/fix-license-token.js tafelinecms.stb-srv.de
  */
 
 require('dotenv').config();
@@ -13,7 +13,7 @@ async function main() {
     const CONFIG = require(path.join(__dirname, '..', 'config.js'));
     const DB = require(path.join(__dirname, '..', 'server', 'database.js'));
 
-    const LICENSE_SERVER = (CONFIG.LICENSE_SERVER_URL || 'https://licens-prod.stb-srv.de').replace(
+    const LICENSE_SERVER = (CONFIG.LICENSE_SERVER_URL || 'https://licens.stb-srv.de').replace(
         /\/+$/,
         ''
     );

@@ -22,7 +22,7 @@ if (!fs.existsSync(CONFIG_PATH) && fs.existsSync(path.join(__dirname, 'config.js
 const INSECURE_SECRET_DEFAULT = 'change-me-before-production';
 
 const DEFAULT_CONFIG = {
-    LICENSE_SERVER_URL: process.env.LICENSE_SERVER_URL || 'https://licens-prod.stb-srv.de',
+    LICENSE_SERVER_URL: process.env.LICENSE_SERVER_URL || 'https://licens.stb-srv.de',
     PORT: parseInt(process.env.PORT) || 5000,
     ADMIN_SECRET: process.env.ADMIN_SECRET || INSECURE_SECRET_DEFAULT,
     DEV_MODE: process.env.DEV_MODE === 'true',
@@ -67,7 +67,7 @@ if (fs.existsSync(CONFIG_PATH)) {
 
         if (!loadedConfig.LICENSE_SERVER_URL) {
             CONFIG.LICENSE_SERVER_URL =
-                process.env.LICENSE_SERVER_URL || 'https://licens-prod.stb-srv.de';
+                process.env.LICENSE_SERVER_URL || 'https://licens.stb-srv.de';
         }
         // PORT & ADMIN_SECRET aus .env haben Vorrang (Security: nie in config.json überschreiben)
         if (process.env.PORT) CONFIG.PORT = parseInt(process.env.PORT);
