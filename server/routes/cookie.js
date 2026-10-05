@@ -1,5 +1,5 @@
 /**
- * Meraki CMS – Cookie Consent API
+ * Tafeline CMS – Cookie Consent API
  * DSGVO Art. 7, ePrivacy-Richtlinie, EuGH Planet49
  *
  * Öffentliche Endpoints (keine Auth):
@@ -41,7 +41,7 @@ const DEFAULT_CONFIG = {
                     name: 'meraki_consent',
                     purpose: 'Speichert Ihre Cookie-Einstellungen',
                     duration: '12 Monate',
-                    provider: 'Meraki CMS',
+                    provider: 'Tafeline CMS',
                 },
             ],
         },
@@ -57,7 +57,7 @@ const DEFAULT_CONFIG = {
                     name: 'meraki_lang',
                     purpose: 'Gespeicherte Spracheinstellung',
                     duration: '12 Monate',
-                    provider: 'Meraki CMS',
+                    provider: 'Tafeline CMS',
                 },
             ],
         },

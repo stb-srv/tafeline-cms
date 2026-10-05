@@ -463,7 +463,7 @@ module.exports = (requireAuth, requireLicense) => {
                 _meta: {
                     version: BACKUP_VERSION,
                     createdAt: new Date().toISOString(),
-                    generator: 'Meraki CMS',
+                    generator: 'Tafeline CMS',
                     recordCount: {
                         menu: Array.isArray(menu) ? menu.length : 0,
                         categories: Array.isArray(categories) ? categories.length : 0,

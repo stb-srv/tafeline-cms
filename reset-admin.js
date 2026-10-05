@@ -1,5 +1,5 @@
 /**
- * Meraki CMS Admin Recovery Script
+ * Tafeline CMS Admin Recovery Script
  * Nutzung: node reset-admin.js
  *
  * Setzt das Passwort des ersten Admin-Accounts auf ein zufälliges Passwort zurück.
@@ -13,7 +13,7 @@ const crypto = require('crypto');
 
 async function resetPassword() {
     console.log('\n╔══════════════════════════════════════════════╗');
-    console.log('║       Meraki CMS - Admin Wiederherstellung      ║');
+    console.log('║       Tafeline CMS - Admin Wiederherstellung      ║');
     console.log('╚══════════════════════════════════════════════╝\n');
 
     try {

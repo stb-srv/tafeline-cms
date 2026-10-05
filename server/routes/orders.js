@@ -83,7 +83,7 @@ module.exports = (requireAuth, io) => {
             res.setHeader('Content-Disposition', 'attachment; filename="bestellungen.pdf"');
             doc.pipe(res);
 
-            doc.fontSize(20).text('Meraki', { align: 'center' });
+            doc.fontSize(20).text('Tafeline', { align: 'center' });
             doc.fontSize(14).text('Bestellbericht', { align: 'center' });
             doc.moveDown(2);
 

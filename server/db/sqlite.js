@@ -1,5 +1,5 @@
 /**
- * Meraki CMS – Datenbank-Adapter Loader
+ * Tafeline CMS – Datenbank-Adapter Loader
  *
  * Wählt automatisch den richtigen Adapter:
  *   DB_TYPE=mysql  → server/database-mysql.js  (MySQL / MariaDB)

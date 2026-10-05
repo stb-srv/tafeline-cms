@@ -2,7 +2,7 @@
 set -e
 
 # ============================================================
-#  Meraki CMS - Deploy Script
+#  Tafeline CMS - Deploy Script
 #  Ubuntu 22.04+ / Debian 12+ | Ausführen als root oder sudo
 #  Verwendung: bash deploy.sh
 # ============================================================
@@ -24,7 +24,7 @@ PORT=5000
 clear
 echo -e "${BOLD}"
 echo "  ╔══════════════════════════════════════════════════════╗"
-echo "  ║         Meraki CMS - Server Deploy Script v3.0         ║"
+echo "  ║         Tafeline CMS - Server Deploy Script v3.0         ║"
 echo "  ╚══════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
@@ -101,7 +101,7 @@ log_ok "Berechtigungen gesetzt"
 log_step "[7/8] Systemd Service einrichten"
 cat > /etc/systemd/system/${SERVICE_NAME}.service <<EOF
 [Unit]
-Description=Meraki Restaurant CMS
+Description=Tafeline Restaurant CMS
 After=network.target
 
 [Service]

@@ -1,5 +1,5 @@
 /**
- * Meraki CMS – License Plan Definitions, Token Verification & Helpers
+ * Tafeline CMS – License Plan Definitions, Token Verification & Helpers
  *
  * Der RSA Public Key wird beim Start automatisch vom Lizenzserver geladen
  * (GET /api/v1/public-key). Nur wenn das fehlschlägt, wird der eingebettete

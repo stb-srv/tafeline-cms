@@ -23,7 +23,7 @@ export function GuestAppLayout() {
                         <img src={branding.logo} alt={branding.name} className="h-9" />
                     ) : (
                         <span className="font-guest-display text-2xl font-bold text-primary">
-                            {branding?.name || 'Meraki'}
+                            {branding?.name || 'Tafeline'}
                         </span>
                     )}
                 </Link>
@@ -62,7 +62,7 @@ export function GuestAppLayout() {
                     </p>
                 )}
                 <p>
-                    © {new Date().getFullYear()} {branding?.name || 'Meraki'}
+                    © {new Date().getFullYear()} {branding?.name || 'Tafeline'}
                 </p>
                 <p className="mt-2 flex items-center justify-center gap-1.5 text-xs">
                     Ein Projekt von

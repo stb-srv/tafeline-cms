@@ -88,13 +88,13 @@ async function start() {
                 licenseServer: CONFIG.LICENSE_SERVER_URL,
                 cors: allowedOrigins,
             },
-            'Meraki CMS gestartet'
+            'Tafeline CMS gestartet'
         );
 
         if (!CONFIG.SETUP_COMPLETE && global._setupToken) {
             const border = '═'.repeat(60);
             console.log(`\n${border}`);
-            console.log('  MERAKI CMS – ERSTEINRICHTUNG ERFORDERLICH');
+            console.log('  TAFELINE CMS – ERSTEINRICHTUNG ERFORDERLICH');
             console.log(border);
             console.log(`  Öffne:  http://localhost:${PORT}/setup`);
             console.log(`  Token:  ${global._setupToken}`);

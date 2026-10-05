@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "=============================================================="
-echo " Meraki CMS - Restaurant Management System"
+echo " Tafeline CMS - Restaurant Management System"
 echo " Lokaler Start (Mac / Linux)"
 echo "=============================================================="
 echo ""

@@ -1,5 +1,5 @@
 /**
- * API-Client für Meraki CMS (Port von cms/modules/api.js → TypeScript).
+ * API-Client für Tafeline CMS (Port von cms/modules/api.js → TypeScript).
  * - Auth via Header `x-admin-token`
  * - Prefix `/api` (im Dev von Vite an :5000 geproxyt)
  * - 401 → Auto-Logout, 403 → Toast, Token-Refresh wenn < 30 Min Restlaufzeit

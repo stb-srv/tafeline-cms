@@ -102,7 +102,7 @@ export function LicenseTab({
                     </div>
                     <div className="flex-1">
                         <div className="mb-1 flex items-center gap-2.5">
-                            <h3 className="font-semibold">Meraki CMS</h3>
+                            <h3 className="font-semibold">Tafeline CMS</h3>
                             <Badge variant={badge.variant}>{badge.text}</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
@@ -133,7 +133,7 @@ export function LicenseTab({
                             value={key}
                             onChange={(e) => setKey(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && activate()}
-                            placeholder="z.B. MERAKI-XXXX-XXXX-XXXX-XXXX"
+                            placeholder="z.B. TAFELINE-XXXX-XXXX-XXXX-XXXX"
                             className="min-w-64 flex-1 font-mono tracking-wide"
                         />
                         <Button onClick={activate} disabled={busy}>

@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==============================================================================
-#  Meraki CMS - Linux Installations-Skript
+#  Tafeline CMS - Linux Installations-Skript
 #  Getestet auf: Ubuntu 22.04 / 24.04, Debian 12, Rocky Linux 9
 # ==============================================================================
 #  Nutzung:
@@ -36,7 +36,7 @@ if [[ -n "${SUDO_USER:-}" && "${SUDO_USER}" != "root" ]]; then
 else
     SCRIPT_USER="opa"
     if ! id -u opa &>/dev/null; then
-        useradd --system --create-home --shell /bin/bash --comment "Meraki CMS Service" opa
+        useradd --system --create-home --shell /bin/bash --comment "Tafeline CMS Service" opa
         log_ok "System-User 'opa' angelegt"
     else
         log_warn "System-User 'opa' bereits vorhanden"
@@ -46,7 +46,7 @@ fi
 clear
 echo -e "${BOLD}"
 echo "  ╔══════════════════════════════════════════════════════╗"
-echo "  ║         Meraki CMS - Linux Installer v3.2              ║"
+echo "  ║         Tafeline CMS - Linux Installer v3.2              ║"
 echo "  ╚══════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 log_info "Installationsverzeichnis: ${INSTALL_DIR}"
