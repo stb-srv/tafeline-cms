@@ -22,7 +22,7 @@ if (dbType === 'mysql' || dbType === 'mariadb') {
     const path = require('path');
     const fs = require('fs');
 
-    const DB_PATH = path.join(__dirname, '..', 'database.sqlite');
+    const DB_PATH = process.env.SQLITE_PATH || path.join(__dirname, '..', 'database.sqlite');
     const db = new Database(DB_PATH);
     db.pragma('journal_mode = WAL');
     db.pragma('foreign_keys = ON');
