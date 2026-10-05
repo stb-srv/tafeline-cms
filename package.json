@@ -12,6 +12,7 @@
     "install:web": "npm --prefix web install",
     "reset-admin": "node reset-admin.js",
     "update": "git pull && npm install --silent && npm --prefix web install --silent && npm run build:web",
+    "test": "node --test tests/*.test.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

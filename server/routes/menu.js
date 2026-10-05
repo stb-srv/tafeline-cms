@@ -766,3 +766,6 @@ module.exports = (requireAuth, requireLicense) => {
 
     return router;
 };
+
+// Für Tests
+module.exports._internals = { normalizeCatId, dishMatchesCategory };
