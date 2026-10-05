@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { useCookieConfig, submitConsent, type CookieCategory } from './guest-api';
 
-const STORAGE_KEY = 'meraki_consent';
+const STORAGE_KEY = 'tafeline_consent';
 
 interface StoredConsent {
     version: string;

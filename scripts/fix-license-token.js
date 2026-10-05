@@ -94,7 +94,7 @@ async function main() {
         console.log(`   Domain:      ${payload?.domain}`);
         console.log(`   Gültig bis:  ${exp}`);
         console.log(`   Max Speisen: ${payload?.limits?.max_dishes ?? '?'}`);
-        console.log('\n🚀 CMS neu starten: pm2 restart meraki-cms\n');
+        console.log('\n🚀 CMS neu starten: pm2 restart tafeline-cms\n');
     } catch (e) {
         console.error('\u274c Fehler:', e.message);
         process.exit(1);

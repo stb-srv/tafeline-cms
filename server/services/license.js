@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 const logger = require('../core/logger.js');
 const { PLAN_DEFINITIONS: SHARED_PLANS } = require('@tafeline/plans');
 
-const MERAKI_PUBLIC_KEY_FALLBACK = `-----BEGIN PUBLIC KEY-----
+const TAFELINE_PUBLIC_KEY_FALLBACK = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAutES8Xqif1PpLJU9ClMJ
 rGfeCoUVOOni5/WiwGFdTd5ygYyie22fBheBA2fRek6xXDfGtC/QdIg7zbqI/0eQ
 V7DCcytIGJSfPRNW4t6cb7oRUVTbo74jia5GUDyJNLJPQDsPVWDvi6rpB+/hv+Uh
@@ -21,15 +21,15 @@ HQIDAQAB
 -----END PUBLIC KEY-----`;
 
 // Aktiver Public Key – wird durch initPublicKey() überschrieben
-let MERAKI_PUBLIC_KEY = (process.env.LICENSE_PUBLIC_KEY || '').trim() || null;
+let TAFELINE_PUBLIC_KEY = (process.env.LICENSE_PUBLIC_KEY || '').trim() || null;
 
-if (MERAKI_PUBLIC_KEY) {
+if (TAFELINE_PUBLIC_KEY) {
     logger.info('RSA Public Key aus LICENSE_PUBLIC_KEY Env-Variable geladen.');
 } else {
     logger.info(
         'LICENSE_PUBLIC_KEY nicht gesetzt – Public Key wird beim Start vom Lizenzserver abgerufen.'
     );
-    MERAKI_PUBLIC_KEY = MERAKI_PUBLIC_KEY_FALLBACK;
+    TAFELINE_PUBLIC_KEY = TAFELINE_PUBLIC_KEY_FALLBACK;
 }
 
 /**
@@ -53,12 +53,12 @@ const initPublicKey = async (licenseServerUrl) => {
         if (!key || !key.includes('BEGIN PUBLIC KEY')) {
             throw new Error('Antwort enthält keinen gültigen PEM-Key.');
         }
-        MERAKI_PUBLIC_KEY = key;
+        TAFELINE_PUBLIC_KEY = key;
         logger.info({ url }, 'RSA Public Key erfolgreich vom Lizenzserver geladen.');
         return true;
     } catch (e) {
         logger.warn({ err: e }, 'Public Key-Abruf fehlgeschlagen – Fallback-Key aktiv.');
-        MERAKI_PUBLIC_KEY = MERAKI_PUBLIC_KEY_FALLBACK;
+        TAFELINE_PUBLIC_KEY = TAFELINE_PUBLIC_KEY_FALLBACK;
         return false;
     }
 };
@@ -151,7 +151,7 @@ const FREE_RESULT = (extra = {}) => ({
 const verifyLicenseToken = (token, host = null) => {
     if (!token || typeof token !== 'string') return null;
     try {
-        const payload = jwt.verify(token, MERAKI_PUBLIC_KEY, { algorithms: ['RS256'] });
+        const payload = jwt.verify(token, TAFELINE_PUBLIC_KEY, { algorithms: ['RS256'] });
         if (payload.domain && host) {
             const normalizeHost = (h) => (h || '').replace(/:\d+$/, '').toLowerCase().trim();
             const tokenDomain = normalizeHost(payload.domain);
@@ -303,5 +303,5 @@ module.exports = {
     verifyLicenseToken,
     initPublicKey,
     initPlans,
-    MERAKI_PUBLIC_KEY,
+    TAFELINE_PUBLIC_KEY,
 };

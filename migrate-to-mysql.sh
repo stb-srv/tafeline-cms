@@ -94,10 +94,10 @@ DB_HOST="${DB_HOST:-localhost}"
 read -p "$(echo -e "${BOLD}MySQL Port${NC} [3306]: ")" DB_PORT
 DB_PORT="${DB_PORT:-3306}"
 
-read -p "$(echo -e "${BOLD}Datenbankname${NC} [meraki_cms]: ")" DB_NAME
-DB_NAME="${DB_NAME:-meraki_cms}"
+read -p "$(echo -e "${BOLD}Datenbankname${NC} [tafeline_cms]: ")" DB_NAME
+DB_NAME="${DB_NAME:-tafeline_cms}"
 
-read -p "$(echo -e "${BOLD}Benutzername${NC} [meraki_cms_user]: ")" DB_USER
+read -p "$(echo -e "${BOLD}Benutzername${NC} [tafeline_cms_user]: ")" DB_USER
 DB_USER="${DB_USER:-opa_cms_user}"
 
 read -s -p "$(echo -e "${BOLD}Passwort${NC}: ")" DB_PASS
@@ -349,7 +349,7 @@ echo ""
 echo -e "${GREEN}${BOLD}Alle Daten wurden erfolgreich nach MySQL migriert!${NC}"
 echo ""
 echo -e "${BOLD}Nächste Schritte:${NC}"
-echo -e "  1. Starte den Tafeline CMS Server neu: pm2 restart meraki-cms (oder: npm start${NC} (oder: ${CYAN}npm start${NC})"
+echo -e "  1. Starte den Tafeline CMS Server neu: pm2 restart tafeline-cms (oder: npm start${NC} (oder: ${CYAN}npm start${NC})"
 echo -e "  2. Prüfe ob alles funktioniert (Admin-Panel, Menü, Reservierungen)"
 echo -e "  3. Wenn alles OK: SQLite-Backup kannst du später löschen: ${YELLOW}${BACKUP_PATH}${NC}"
 echo ""

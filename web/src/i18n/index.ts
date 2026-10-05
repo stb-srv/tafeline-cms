@@ -13,7 +13,7 @@ export const SUPPORTED_LANGS = [
 
 export type Lang = (typeof SUPPORTED_LANGS)[number];
 
-const STORAGE_KEY = 'meraki_lang';
+const STORAGE_KEY = 'tafeline_lang';
 
 i18n.use(initReactI18next).init({
     lng: (localStorage.getItem(STORAGE_KEY) as Lang) || 'de',

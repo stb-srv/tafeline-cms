@@ -1,4 +1,4 @@
-# Security- & Code-Audit — meraki-cms
+# Security- & Code-Audit — tafeline-cms
 
 **Auditiert:** Branch `fix/security-audit-remediation` (aktueller Arbeitsstand, inkl. bereits umgesetzter Härtungsmaßnahmen)
 **Scope:** `server/`, `web/src/`, `plugins/`, `config.js`, `server.js`, `deploy.sh`, `install-ubuntu.sh`, `package.json`

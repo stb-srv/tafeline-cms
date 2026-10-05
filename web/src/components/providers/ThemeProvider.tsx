@@ -11,7 +11,7 @@ interface ThemeContextValue {
 
 const ThemeContext = React.createContext<ThemeContextValue | null>(null);
 
-const STORAGE_KEY = 'meraki_theme';
+const STORAGE_KEY = 'tafeline_theme';
 
 function getInitialTheme(): Theme {
     const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
@@ -21,7 +21,7 @@ function getInitialTheme(): Theme {
 
 /**
  * Class-basierter Dark-Mode (Tailwind v4 `.dark`).
- * Ersetzt cms/app.js:185-207 inkl. localStorage('meraki_theme').
+ * Ersetzt cms/app.js:185-207 inkl. localStorage('tafeline_theme').
  */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [theme, setThemeState] = React.useState<Theme>(getInitialTheme);

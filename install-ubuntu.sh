@@ -88,7 +88,7 @@ else
     if [[ "${SERVER_DOMAIN}" != "localhost" && "${SERVER_DOMAIN}" != "127.0.0.1" ]]; then
         echo
         log_warn "Du hast eine Domain angegeben aber kein SSL gewählt."
-        log_warn "Falls du später manuell SSL einrichtest, musst du in /opt/meraki-cms/.env"
+        log_warn "Falls du später manuell SSL einrichtest, musst du in /opt/tafeline-cms/.env"
         log_warn "die Zeile \"CORS_ORIGINS=http://\" auf \"CORS_ORIGINS=https://\" ändern"
         log_warn "und danach \"pm2 restart opa-cms\" ausführen."
         echo
@@ -201,7 +201,7 @@ if [[ "${INSTALL_NGINX,,}" == "j" || "${INSTALL_NGINX,,}" == "y" ]]; then
     log_step "Nginx konfigurieren"
     apt-get install -yq nginx
 
-    NGINX_CONF="/etc/nginx/sites-available/meraki-cms"
+    NGINX_CONF="/etc/nginx/sites-available/tafeline-cms"
     cat > "${NGINX_CONF}" <<EOF
 server {
     listen 80;
@@ -222,7 +222,7 @@ server {
 }
 EOF
 
-    ln -sf "${NGINX_CONF}" /etc/nginx/sites-enabled/meraki-cms
+    ln -sf "${NGINX_CONF}" /etc/nginx/sites-enabled/tafeline-cms
     rm -f /etc/nginx/sites-enabled/default
     nginx -t && systemctl reload nginx
     log_ok "Nginx konfiguriert für: ${SERVER_DOMAIN}"

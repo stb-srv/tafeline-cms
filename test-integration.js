@@ -1,5 +1,5 @@
 /**
- * Integration test: Verifies the data contract between meraki-cms and meraki-licens.
+ * Integration test: Verifies the data contract between tafeline-cms and tafeline-licens.
  *
  * Checks:
  *   1. @tafeline/plans package is importable from both projects
