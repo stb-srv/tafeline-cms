@@ -17,6 +17,7 @@
 const router = require('express').Router();
 const crypto = require('crypto');
 const DB = require('../db');
+const logger = require('../core/logger.js');
 
 // Standard-Config – wird beim ersten Aufruf in DB gespeichert
 const DEFAULT_CONFIG = {
@@ -139,7 +140,7 @@ router.get('/cookie-config', async (req, res) => {
             categories: publicCategories,
         });
     } catch (e) {
-        console.error('cookie-config error:', e.message);
+        logger.error({ err: e }, 'cookie-config error:');
         res.status(500).json({ success: false, reason: e.message });
     }
 });
@@ -179,7 +180,7 @@ router.post('/cookie-consent', async (req, res) => {
         await DB.setKV('consent_log', log);
         res.json({ success: true, id: entry.id });
     } catch (e) {
-        console.error('cookie-consent log error:', e.message);
+        logger.error({ err: e }, 'cookie-consent log error:');
         res.status(500).json({ success: false, reason: e.message });
     }
 });

@@ -238,7 +238,7 @@ module.exports = function (CONFIG, io) {
 
     app.post('/api/plugins/toggle', requireAuth, requireRole('admin'), async (req, res) => {
         try {
-            let dbPlugins = await DB.getKV('plugins', []);
+            const dbPlugins = await DB.getKV('plugins', []);
             const { id, enabled } = req.body;
             const idx = dbPlugins.findIndex((p) => p.id === id);
             if (idx > -1) dbPlugins[idx].enabled = enabled;
@@ -467,7 +467,7 @@ module.exports = function (CONFIG, io) {
         });
     }
 
-    app.use((err, req, res, next) => {
+    app.use((err, req, res, _next) => {
         logger.error({ err, url: req.originalUrl, method: req.method }, 'Unhandled Server Error');
         res.status(err.status || 500).json({
             success: false,

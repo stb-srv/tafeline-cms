@@ -3,7 +3,7 @@
  */
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
-const { getCurrentLicense, verifyLicenseToken } = require('../services/license.js');
+const { getCurrentLicense } = require('../services/license.js');
 const DB = require('../db');
 const logger = require('./logger.js');
 const { extractDomain } = require('../helpers.js');

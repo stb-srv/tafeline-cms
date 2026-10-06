@@ -125,15 +125,15 @@ const findAvailableTables = async (
         }
     });
     const availableTables = activeTables.filter((t) => !unavailableTableIds.has(t.id));
-    let fit = availableTables
+    const fit = availableTables
         .filter((t) => t.capacity >= guestCount)
         .sort((a, b) => a.capacity - b.capacity)[0];
     if (fit) return { success: true, tables: [fit.id], endTime };
     const combinable = availableTables
         .filter((t) => t.combinable)
         .sort((a, b) => b.capacity - a.capacity);
-    let combinedCapacity = 0,
-        selectedIds = [];
+    let combinedCapacity = 0;
+    const selectedIds = [];
     for (const t of combinable) {
         combinedCapacity += t.capacity;
         selectedIds.push(t.id);
