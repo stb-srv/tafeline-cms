@@ -70,7 +70,7 @@ const checkReminders = async () => {
             try {
                 await Mailer.sendReminder(r, DB);
                 await DB.updateReservation(r.id, { reminderSent: true });
-                console.log(`✉️ Reminder sent to ${r.email} for reservation ${r.id}`);
+                logger.info(`✉️ Reminder sent to ${r.email} for reservation ${r.id}`);
             } catch (mailErr) {
                 logger.error({ err: mailErr, name: r.name }, 'Fehler beim Senden der Erinnerung');
             }

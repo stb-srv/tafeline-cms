@@ -278,7 +278,7 @@ module.exports = (router, { requireAuth }) => {
         validate(anyObjectSchema),
         async (req, res) => {
             try {
-                let importData = req.body;
+                const importData = req.body;
                 let categories = [];
                 let dishes = [];
 

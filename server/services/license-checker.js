@@ -5,8 +5,8 @@
  * (via initPublicKey), danach erst die Token-Prüfung gestartet.
  */
 
-const jwt = require('jsonwebtoken');
 const { verifyLicenseToken, initPublicKey, initPlans } = require('./license.js');
+const logger = require('../core/logger.js');
 
 const CHECK_INTERVAL_MS = 72 * 60 * 60 * 1000; // 72h
 const STARTUP_DELAY_MS = 5 * 1000; // 5s nach Boot
@@ -39,7 +39,7 @@ class LicenseChecker {
             // 3. Periodischer Check
             this.timer = setInterval(() => this._check(), CHECK_INTERVAL_MS);
         }, STARTUP_DELAY_MS);
-        console.log(
+        logger.info(
             `🔒 LicenseChecker gestartet – Public Key-Abruf + Startup-Check in 5s, dann alle 72h.`
         );
     }
@@ -60,7 +60,7 @@ class LicenseChecker {
             const payload = token ? verifyLicenseToken(token, this.host) : null;
 
             if (!payload) {
-                console.log(`🔄 [Startup] Kein gültiges Token gefunden – sofortiger Refresh...`);
+                logger.info(`🔄 [Startup] Kein gültiges Token gefunden – sofortiger Refresh...`);
                 await this._check();
                 return;
             }
@@ -69,17 +69,17 @@ class LicenseChecker {
             const hoursLeft = ((payload.exp || 0) - nowSec) / 3600;
 
             if (hoursLeft < TOKEN_REFRESH_THRESHOLD_H) {
-                console.log(
+                logger.info(
                     `🔄 [Startup] Token läuft in ${hoursLeft.toFixed(1)}h ab – sofortiger Refresh...`
                 );
                 await this._check();
             } else {
-                console.log(
+                logger.info(
                     `✅ [Startup] Token noch ${hoursLeft.toFixed(1)}h gültig – kein sofortiger Refresh nötig.`
                 );
             }
         } catch (e) {
-            console.warn(
+            logger.warn(
                 `⚠️  [Startup] Token-Prüfung fehlgeschlagen: ${e.message} – starte normalen Check...`
             );
             await this._check();
@@ -92,7 +92,7 @@ class LicenseChecker {
 
         if (!lic.key || lic.isTrial) return;
 
-        console.log(`🔄 [${new Date().toISOString()}] Lizenz-Online-Check läuft...`);
+        logger.info(`🔄 [${new Date().toISOString()}] Lizenz-Online-Check läuft...`);
 
         try {
             const response = await fetch(`${this.licenseServerUrl}/api/v1/refresh`, {
@@ -126,11 +126,11 @@ class LicenseChecker {
 
                 this.failCount = 0;
                 this.degraded = false;
-                console.log(
+                logger.info(
                     `✅ [${new Date().toISOString()}] Lizenz-Token erfolgreich erneuert (Plan: ${payload.type}, Domain: ${payload.domain}).`
                 );
             } else if (data.status === 'revoked' || data.status === 'cancelled') {
-                console.warn(
+                logger.warn(
                     `⚠️  Lizenz wurde vom Server widerrufen (${data.status}). Degradiere auf FREE.`
                 );
                 await this._degrade(settings, 'revoked');
@@ -139,11 +139,11 @@ class LicenseChecker {
             }
         } catch (e) {
             this.failCount++;
-            console.warn(
+            logger.warn(
                 `⚠️  [${new Date().toISOString()}] Lizenz-Check Fehler (${this.failCount}/${MAX_FAILURES}): ${e.message}`
             );
             if (this.failCount >= MAX_FAILURES) {
-                console.warn(
+                logger.warn(
                     `⚠️  Lizenz-Check ${MAX_FAILURES}x fehlgeschlagen – Offline-Fallback aktiv.`
                 );
                 await this._setOfflineFallback(settings);

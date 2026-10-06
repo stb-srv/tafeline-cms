@@ -6,6 +6,7 @@
 
 const nodemailer = require('nodemailer');
 const CONFIG = require('../../config.js');
+const logger = require('../core/logger.js');
 
 /**
  * Erstellt einen frischen SMTP-Transporter (async).
@@ -26,7 +27,7 @@ const createTransporter = async (DB = null) => {
     }
 
     if (!smtp.host) {
-        console.warn('[Mailer] Kein SMTP-Host konfiguriert. E-Mail wird nicht gesendet.');
+        logger.warn('[Mailer] Kein SMTP-Host konfiguriert. E-Mail wird nicht gesendet.');
         return null;
     }
 
@@ -126,11 +127,11 @@ async function sendWithRetry(transporter, mailOptions, maxAttempts = 3) {
     while (attempts < maxAttempts) {
         try {
             await transporter.sendMail(mailOptions);
-            console.log(`✉️ Email sent to ${mailOptions.to}`);
+            logger.info(`✉️ Email sent to ${mailOptions.to}`);
             return;
         } catch (e) {
             attempts++;
-            console.error(`❌ Mail attempt ${attempts} failed:`, e.message);
+            logger.error({ err: e }, `❌ Mail attempt ${attempts} failed:`);
             if (attempts >= maxAttempts) throw e;
             await new Promise((resolve) => setTimeout(resolve, 1000 * attempts));
         }

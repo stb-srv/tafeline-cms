@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const DB = require('../db');
 const bcrypt = require('bcryptjs');
-const { sanitizeText } = require('../helpers.js');
 const multer = require('multer');
 const logger = require('../core/logger.js');
 const fs = require('fs');

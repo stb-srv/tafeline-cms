@@ -11,7 +11,7 @@ const {
     mergeModules,
 } = require('../services/license.js');
 const { getLicenseKeyForFeature } = require('../registry/settings-registry.js');
-const { sanitizeText, extractDomain } = require('../helpers.js');
+const { extractDomain } = require('../helpers.js');
 const logger = require('../core/logger.js');
 const validate = require('../validation/validate.js');
 const { anyObjectSchema } = require('../validation/schemas.js');
@@ -48,7 +48,7 @@ function deepMerge(target, source) {
     return result;
 }
 
-module.exports = (requireAuth, requireLicense, LICENSE_SERVER) => {
+module.exports = (requireAuth, _requireLicense, _LICENSE_SERVER) => {
     router.get('/homepage', async (req, res) => {
         try {
             const settings = await DB.getKV('settings', {});

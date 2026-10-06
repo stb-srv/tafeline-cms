@@ -4,11 +4,12 @@
  * SQLite via better-sqlite3 (synchron).
  */
 
+// eslint-disable-next-line no-console
 console.log('\uD83D\uDDC3\uFE0F  Datenbank: SQLite');
 
 const Database = require('better-sqlite3');
 const path = require('path');
-const fs = require('fs');
+const logger = require('../core/logger.js');
 
 const DB_PATH = process.env.SQLITE_PATH || path.join(__dirname, '..', 'database.sqlite');
 const db = new Database(DB_PATH);
@@ -647,7 +648,7 @@ const DB = {
     deleteReservation: (id) => stmts.deleteReservation.run(id),
     saveReservations: (list) => {
         if (!Array.isArray(list) || list.length === 0) {
-            console.warn(
+            logger.warn(
                 '[DB] saveReservations called with empty list – skipping to prevent data loss.'
             );
             return;

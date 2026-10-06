@@ -24,22 +24,6 @@ const {
     changePasswordSchema,
 } = require('../validation/schemas.js');
 
-/** Timing-sicherer String-Vergleich (verhindert Timing-Angriffe auf Tokens) */
-function timingSafeStringEqual(a, b) {
-    try {
-        const strA = String(a);
-        const strB = String(b);
-        const maxLen = Math.max(strA.length, strB.length);
-        const bufA = Buffer.alloc(maxLen);
-        const bufB = Buffer.alloc(maxLen);
-        bufA.write(strA);
-        bufB.write(strB);
-        return crypto.timingSafeEqual(bufA, bufB);
-    } catch {
-        return false;
-    }
-}
-
 module.exports = (ADMIN_SECRET) => {
     const requireAuth = makeRequireAuth(ADMIN_SECRET);
 
