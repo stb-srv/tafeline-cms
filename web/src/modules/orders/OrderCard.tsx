@@ -50,7 +50,11 @@ export function OrderCard({
                 <div className="flex flex-wrap items-center gap-2">
                     <span
                         className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-extrabold"
-                        style={{ background: ti.color + '22', color: ti.color, borderColor: ti.color + '44' }}
+                        style={{
+                            background: ti.color + '22',
+                            color: ti.color,
+                            borderColor: ti.color + '44',
+                        }}
                     >
                         <i className={cn('fas', ti.icon)} /> {ti.label}
                     </span>
@@ -74,7 +78,11 @@ export function OrderCard({
                         Kunde
                     </div>
                     <div className="flex flex-col gap-0.5">
-                        {order.customerName && <div>👤 <strong>{order.customerName}</strong></div>}
+                        {order.customerName && (
+                            <div>
+                                👤 <strong>{order.customerName}</strong>
+                            </div>
+                        )}
                         {order.customerPhone && (
                             <div>
                                 📞{' '}
@@ -90,7 +98,9 @@ export function OrderCard({
                             <div>📍 {order.deliveryAddress}</div>
                         )}
                         {order.type === 'pickup' && order.pickupTime && (
-                            <div>⏰ Abholen um: <strong>{order.pickupTime}</strong></div>
+                            <div>
+                                ⏰ Abholen um: <strong>{order.pickupTime}</strong>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -118,7 +128,9 @@ export function OrderCard({
                             </div>
                         )}
                         {i.variant && (
-                            <span className="ml-4 text-xs text-muted-foreground">({i.variant})</span>
+                            <span className="ml-4 text-xs text-muted-foreground">
+                                ({i.variant})
+                            </span>
                         )}
                         {i.extras && i.extras.length > 0 && (
                             <div className="ml-4 text-xs text-muted-foreground">

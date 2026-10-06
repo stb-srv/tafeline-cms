@@ -50,7 +50,7 @@ export function CookieBanner() {
         const stored = readStored();
         const init: Record<string, boolean> = {};
         for (const cat of Object.values(config.categories)) {
-            init[cat.id] = cat.required ? true : stored?.choices?.[cat.id] ?? false;
+            init[cat.id] = cat.required ? true : (stored?.choices?.[cat.id] ?? false);
         }
         setChoices(init);
         // Banner zeigen, wenn keine Einwilligung oder neue Version
@@ -164,8 +164,8 @@ export function CookieBanner() {
                                     <ul className="mt-2 space-y-1 border-t pt-2 text-xs text-muted-foreground">
                                         {cat.cookies.map((c, i) => (
                                             <li key={i}>
-                                                <span className="font-mono">{c.name}</span> – {c.purpose}{' '}
-                                                ({c.duration}, {c.provider})
+                                                <span className="font-mono">{c.name}</span> –{' '}
+                                                {c.purpose} ({c.duration}, {c.provider})
                                             </li>
                                         ))}
                                     </ul>

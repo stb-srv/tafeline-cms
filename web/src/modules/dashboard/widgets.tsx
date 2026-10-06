@@ -1,11 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import {
-    StatWidget,
-    WidgetValue,
-    WidgetCaption,
-    Sparkline,
-    TrendBadge,
-} from './components';
+import { StatWidget, WidgetValue, WidgetCaption, Sparkline, TrendBadge } from './components';
 import { getVacationStatus, type DashboardData } from './dashboard-data';
 import { cn } from '@/lib/utils';
 
@@ -16,8 +10,16 @@ const numPrices = (d: DashboardData) =>
     d.menu.map((m) => parseFloat(String(m.price))).filter((p) => !isNaN(p));
 
 const CHART_COLORS = [
-    '#1b3a5c', '#c8a96e', '#2e86ab', '#e07b39', '#27ae60',
-    '#8e44ad', '#e74c3c', '#16a085', '#d35400', '#2980b9',
+    '#1b3a5c',
+    '#c8a96e',
+    '#2e86ab',
+    '#e07b39',
+    '#27ae60',
+    '#8e44ad',
+    '#e74c3c',
+    '#16a085',
+    '#d35400',
+    '#2980b9',
 ];
 
 const ListRow = ({ left, right }: { left: React.ReactNode; right: React.ReactNode }) => (
@@ -77,13 +79,15 @@ const today_overview: W = ({ d }) => {
                         <span>{d.pendingOrders.length}</span>
                     </div>
                     {d.pendingOrders.length ? (
-                        d.pendingOrders.slice(0, 6).map((o, i) => (
-                            <ListRow
-                                key={i}
-                                left={o.table_name || o.tableNumber || o.table || 'Bestellung'}
-                                right={`${eur(parseFloat(String(o.total || 0)))}€`}
-                            />
-                        ))
+                        d.pendingOrders
+                            .slice(0, 6)
+                            .map((o, i) => (
+                                <ListRow
+                                    key={i}
+                                    left={o.table_name || o.tableNumber || o.table || 'Bestellung'}
+                                    right={`${eur(parseFloat(String(o.total || 0)))}€`}
+                                />
+                            ))
                     ) : (
                         <div className="py-3 text-center text-sm text-muted-foreground">
                             Keine offenen Bestellungen
@@ -171,7 +175,10 @@ const dishes: W = ({ d }) => {
             <WidgetValue>{count}</WidgetValue>
             <div className="my-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
                 <div
-                    className={cn('h-full rounded-full transition-all', warn ? 'bg-[hsl(var(--warning))]' : 'bg-primary')}
+                    className={cn(
+                        'h-full rounded-full transition-all',
+                        warn ? 'bg-[hsl(var(--warning))]' : 'bg-primary'
+                    )}
                     style={{ width: `${pct}%` }}
                 />
             </div>
@@ -204,7 +211,7 @@ const vacation: W = ({ d }) => {
     const st = getVacationStatus(d.home.vacation);
     return (
         <StatWidget title="Urlaub" icon={st.icon} to="/designer/vacation">
-            <WidgetValue className="text-xl" >
+            <WidgetValue className="text-xl">
                 <span style={{ color: st.color }}>{st.label}</span>
             </WidgetValue>
             <WidgetCaption>{st.subText}</WidgetCaption>
@@ -412,9 +419,7 @@ const table_overview: W = ({ d }) => {
                 </div>
             </StatWidget>
         );
-    const pendingNums = new Set(
-        d.pendingOrders.map((o) => String(o.tableNumber || o.table || ''))
-    );
+    const pendingNums = new Set(d.pendingOrders.map((o) => String(o.tableNumber || o.table || '')));
     const free = tables.filter((t) => !pendingNums.has(String(t.number || t.id || ''))).length;
     return (
         <StatWidget title="Tischübersicht" icon="fa-chair">

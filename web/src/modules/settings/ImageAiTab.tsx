@@ -7,11 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-    SETTINGS_KEY,
-    type ImageApiKeys,
-    type SettingsData,
-} from './settings-api';
+import { SETTINGS_KEY, type ImageApiKeys, type SettingsData } from './settings-api';
 
 // Hinweis: Verbindungstests, Puter-Login und der Stapel-Generator (ImageBatch)
 // sind bewusst noch nicht portiert (Folge-TODO) – hier nur die Key-Verwaltung.
@@ -48,10 +44,11 @@ export function ImageAiTab({ settings }: { settings: SettingsData }) {
 
     async function testConnection() {
         setTesting(true);
-        const res = await apiPost<{ success?: boolean; results?: Record<string, string>; reason?: string }>(
-            'image-ai/test',
-            {}
-        );
+        const res = await apiPost<{
+            success?: boolean;
+            results?: Record<string, string>;
+            reason?: string;
+        }>('image-ai/test', {});
         setTesting(false);
         if (res.success !== false && res.results) {
             const r = res.results;

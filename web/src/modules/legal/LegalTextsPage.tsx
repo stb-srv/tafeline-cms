@@ -54,9 +54,7 @@ export function LegalTextsPage() {
                         <Textarea
                             className="h-48"
                             value={legal.impressum || ''}
-                            onChange={(e) =>
-                                setLegal((l) => ({ ...l, impressum: e.target.value }))
-                            }
+                            onChange={(e) => setLegal((l) => ({ ...l, impressum: e.target.value }))}
                         />
                     </div>
                     <div className="space-y-1">

@@ -203,10 +203,7 @@ module.exports = (requireAuth, requireLicense, LICENSE_SERVER) => {
 
     router.get('/license/plans', requireAuth, requireRole('admin'), async (req, res) => {
         const CONFIG = require('../../config.js');
-        const base = (CONFIG.LICENSE_SERVER_URL || 'https://licens.stb-srv.de').replace(
-            /\/+$/,
-            ''
-        );
+        const base = (CONFIG.LICENSE_SERVER_URL || 'https://licens.stb-srv.de').replace(/\/+$/, '');
         try {
             const r = await fetch(`${base}/api/v1/plans`, { signal: AbortSignal.timeout(8000) });
             if (!r.ok) throw new Error(`HTTP ${r.status}`);

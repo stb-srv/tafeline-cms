@@ -104,7 +104,13 @@ export function ReservationCalendar({
     );
 }
 
-function MonthGrid({ cursor, reservations, totalCapacity, today, onPickDay }: {
+function MonthGrid({
+    cursor,
+    reservations,
+    totalCapacity,
+    today,
+    onPickDay,
+}: {
     cursor: Date;
     reservations: Reservation[];
     totalCapacity: number;
@@ -152,7 +158,14 @@ function MonthGrid({ cursor, reservations, totalCapacity, today, onPickDay }: {
     );
 }
 
-function WeekGrid({ cursor, reservations, totalCapacity, today, onPickDay, onEdit }: {
+function WeekGrid({
+    cursor,
+    reservations,
+    totalCapacity,
+    today,
+    onPickDay,
+    onEdit,
+}: {
     cursor: Date;
     reservations: Reservation[];
     totalCapacity: number;
@@ -180,8 +193,12 @@ function WeekGrid({ cursor, reservations, totalCapacity, today, onPickDay, onEdi
                                 isToday && 'ring-1 ring-primary'
                             )}
                         >
-                            <strong>{RES_WD[i]} {dt.getDate()}.</strong>
-                            <span>{cap.guests}/{totalCapacity || '∞'} P.</span>
+                            <strong>
+                                {RES_WD[i]} {dt.getDate()}.
+                            </strong>
+                            <span>
+                                {cap.guests}/{totalCapacity || '∞'} P.
+                            </span>
                         </button>
                         <div className="space-y-1 p-1.5">
                             {items.length ? (
@@ -205,7 +222,12 @@ function WeekGrid({ cursor, reservations, totalCapacity, today, onPickDay, onEdi
     );
 }
 
-function DayView({ cursor, reservations, totalCapacity, onEdit }: {
+function DayView({
+    cursor,
+    reservations,
+    totalCapacity,
+    onEdit,
+}: {
     cursor: Date;
     reservations: Reservation[];
     totalCapacity: number;
@@ -215,13 +237,22 @@ function DayView({ cursor, reservations, totalCapacity, onEdit }: {
     const cap = dayCapacity(cursor, reservations, totalCapacity);
     return (
         <div>
-            <div className={cn('mb-4 flex items-center justify-between rounded-xl border p-4', LEVEL_CLASS[cap.level])}>
+            <div
+                className={cn(
+                    'mb-4 flex items-center justify-between rounded-xl border p-4',
+                    LEVEL_CLASS[cap.level]
+                )}
+            >
                 <div>
                     <span className="text-2xl font-bold">{cap.guests}</span>{' '}
                     <span className="opacity-60">/ {totalCapacity || '∞'} Plätze belegt</span>
                 </div>
                 <div className="font-bold">
-                    {cap.level === 'full' ? '⚠ Ausgebucht' : cap.level === 'warn' ? '⚠ Fast voll' : 'Verfügbar'}
+                    {cap.level === 'full'
+                        ? '⚠ Ausgebucht'
+                        : cap.level === 'warn'
+                          ? '⚠ Fast voll'
+                          : 'Verfügbar'}
                 </div>
             </div>
             {items.length === 0 ? (

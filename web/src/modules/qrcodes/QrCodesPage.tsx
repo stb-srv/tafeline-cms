@@ -68,7 +68,11 @@ export function QrCodesPage() {
                         {items.length > 0 && (
                             <Button
                                 variant="outline"
-                                onClick={() => items.forEach((it, i) => setTimeout(() => download(it), i * 150))}
+                                onClick={() =>
+                                    items.forEach((it, i) =>
+                                        setTimeout(() => download(it), i * 150)
+                                    )
+                                }
                             >
                                 <Download /> Alle laden
                             </Button>
@@ -81,7 +85,11 @@ export function QrCodesPage() {
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4">
                     {items.map((it) => (
                         <Card key={it.table} className="p-4 text-center">
-                            <img src={it.dataUrl} alt={`Tisch ${it.table}`} className="mx-auto w-full" />
+                            <img
+                                src={it.dataUrl}
+                                alt={`Tisch ${it.table}`}
+                                className="mx-auto w-full"
+                            />
                             <div className="my-2 font-bold">Tisch {it.table}</div>
                             <Button size="sm" variant="outline" onClick={() => download(it)}>
                                 <Download /> PNG

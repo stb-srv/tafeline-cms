@@ -90,12 +90,8 @@ export function StatWidget({
         >
             {(title || icon) && (
                 <div className="mb-2 flex items-center justify-between">
-                    {title && (
-                        <h3 className="text-sm font-semibold tracking-tight">{title}</h3>
-                    )}
-                    {icon && (
-                        <i className={cn('fas', icon, 'text-base opacity-50')} aria-hidden />
-                    )}
+                    {title && <h3 className="text-sm font-semibold tracking-tight">{title}</h3>}
+                    {icon && <i className={cn('fas', icon, 'text-base opacity-50')} aria-hidden />}
                 </div>
             )}
             {children}

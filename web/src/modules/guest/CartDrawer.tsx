@@ -63,7 +63,10 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                 ) : (
                     <div className="flex-1 space-y-3 overflow-auto p-4">
                         {items.map((i) => (
-                            <div key={i.id} className="flex items-center gap-3 rounded-lg border p-3">
+                            <div
+                                key={i.id}
+                                className="flex items-center gap-3 rounded-lg border p-3"
+                            >
                                 <div className="flex-1">
                                     <div className="font-medium">{i.name}</div>
                                     <div className="text-sm text-muted-foreground">
@@ -71,15 +74,32 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                    <Button size="icon" variant="outline" className="size-7" onClick={() => setQty(i.id, i.quantity - 1)}>
+                                    <Button
+                                        size="icon"
+                                        variant="outline"
+                                        className="size-7"
+                                        onClick={() => setQty(i.id, i.quantity - 1)}
+                                    >
                                         <Minus className="size-3" />
                                     </Button>
-                                    <span className="w-6 text-center text-sm font-bold">{i.quantity}</span>
-                                    <Button size="icon" variant="outline" className="size-7" onClick={() => setQty(i.id, i.quantity + 1)}>
+                                    <span className="w-6 text-center text-sm font-bold">
+                                        {i.quantity}
+                                    </span>
+                                    <Button
+                                        size="icon"
+                                        variant="outline"
+                                        className="size-7"
+                                        onClick={() => setQty(i.id, i.quantity + 1)}
+                                    >
                                         <Plus className="size-3" />
                                     </Button>
                                 </div>
-                                <Button size="icon" variant="ghost" className="text-destructive" onClick={() => remove(i.id)}>
+                                <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="text-destructive"
+                                    onClick={() => remove(i.id)}
+                                >
                                     <Trash2 className="size-4" />
                                 </Button>
                             </div>
@@ -98,7 +118,11 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                                 <Button variant="outline" onClick={clear}>
                                     Leeren
                                 </Button>
-                                <Button className="flex-1" onClick={() => setCheckout(true)} disabled={modes.length === 0}>
+                                <Button
+                                    className="flex-1"
+                                    onClick={() => setCheckout(true)}
+                                    disabled={modes.length === 0}
+                                >
                                     Zur Kasse
                                 </Button>
                             </div>
@@ -121,7 +145,15 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
 function Checkout({ modes, onDone }: { modes: { id: Mode; label: string }[]; onDone: () => void }) {
     const { items, total, clear } = useCart();
     const [mode, setMode] = React.useState<Mode>(modes[0]?.id || 'dine_in');
-    const [f, setF] = React.useState({ name: '', phone: '', email: '', table: '', time: '', address: '', note: '' });
+    const [f, setF] = React.useState({
+        name: '',
+        phone: '',
+        email: '',
+        table: '',
+        time: '',
+        address: '',
+        note: '',
+    });
     const [busy, setBusy] = React.useState(false);
     const [error, setError] = React.useState('');
     const set = (k: keyof typeof f, v: string) => setF((s) => ({ ...s, [k]: v }));
@@ -129,11 +161,17 @@ function Checkout({ modes, onDone }: { modes: { id: Mode; label: string }[]; onD
     async function submit() {
         setError('');
         if (mode === 'dine_in' && !f.table) return setError('Bitte Tischnummer angeben.');
-        if (mode !== 'dine_in' && (!f.name || !f.phone)) return setError('Name und Telefon erforderlich.');
+        if (mode !== 'dine_in' && (!f.name || !f.phone))
+            return setError('Name und Telefon erforderlich.');
         setBusy(true);
         const payload: OrderPayload = {
             type: mode,
-            items: items.map((i) => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity })),
+            items: items.map((i) => ({
+                id: i.id,
+                name: i.name,
+                price: i.price,
+                quantity: i.quantity,
+            })),
             total: total(),
             ...(mode === 'dine_in'
                 ? { table: f.table }
@@ -185,7 +223,11 @@ function Checkout({ modes, onDone }: { modes: { id: Mode; label: string }[]; onD
                             <Input value={f.phone} onChange={(e) => set('phone', e.target.value)} />
                         </Field>
                         <Field label="Uhrzeit">
-                            <Input value={f.time} onChange={(e) => set('time', e.target.value)} placeholder="z.B. 18:30" />
+                            <Input
+                                value={f.time}
+                                onChange={(e) => set('time', e.target.value)}
+                                placeholder="z.B. 18:30"
+                            />
                         </Field>
                     </div>
                     <Field label="E-Mail">
@@ -193,11 +235,18 @@ function Checkout({ modes, onDone }: { modes: { id: Mode; label: string }[]; onD
                     </Field>
                     {mode === 'delivery' && (
                         <Field label="Lieferadresse">
-                            <Input value={f.address} onChange={(e) => set('address', e.target.value)} />
+                            <Input
+                                value={f.address}
+                                onChange={(e) => set('address', e.target.value)}
+                            />
                         </Field>
                     )}
                     <Field label="Anmerkung">
-                        <Textarea className="h-16" value={f.note} onChange={(e) => set('note', e.target.value)} />
+                        <Textarea
+                            className="h-16"
+                            value={f.note}
+                            onChange={(e) => set('note', e.target.value)}
+                        />
                     </Field>
                 </>
             )}

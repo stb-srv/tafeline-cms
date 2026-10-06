@@ -32,13 +32,18 @@ function MenuPage({ tab }: { tab: MenuTab }) {
             const res = await fetch('/api/menu/export', {
                 headers: { 'x-admin-token': sessionStorage.getItem('tafeline_admin_token') || '' },
             });
-            if (!res.ok) { toast.error('Export fehlgeschlagen.'); return; }
+            if (!res.ok) {
+                toast.error('Export fehlgeschlagen.');
+                return;
+            }
             const blob = await res.blob();
             const cd = res.headers.get('content-disposition') || '';
             const name = cd.match(/filename="([^"]+)"/)?.[1] || 'speisekarte-backup.json';
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url; a.download = name; a.click();
+            a.href = url;
+            a.download = name;
+            a.click();
             URL.revokeObjectURL(url);
         } catch {
             toast.error('Export fehlgeschlagen.');
@@ -80,7 +85,12 @@ function MenuPage({ tab }: { tab: MenuTab }) {
         <div className="space-y-4">
             <div className="flex justify-end gap-2">
                 <input ref={importRef} type="file" accept=".json" hidden onChange={handleImport} />
-                <Button variant="outline" size="sm" onClick={() => importRef.current?.click()} disabled={importing}>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => importRef.current?.click()}
+                    disabled={importing}
+                >
                     <Upload /> {importing ? 'Importiere…' : 'JSON importieren'}
                 </Button>
                 <Button variant="outline" size="sm" onClick={handleExport}>

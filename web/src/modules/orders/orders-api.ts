@@ -10,12 +10,7 @@ export interface OrderItem {
 
 export type OrderType = 'dine_in' | 'pickup' | 'delivery';
 export type OrderStatus =
-    | 'pending'
-    | 'confirmed'
-    | 'preparing'
-    | 'ready'
-    | 'completed'
-    | 'cancelled';
+    'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled';
 
 export interface Order {
     id: string;

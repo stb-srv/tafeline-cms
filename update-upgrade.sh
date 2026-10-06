@@ -102,9 +102,9 @@ log_step "Schritt 4/4: Server neu starten"
 RESTARTED=false
 
 # PM2
-if command -v pm2 &>/dev/null && pm2 list 2>/dev/null | grep -q 'opa-cms'; then
-    pm2 restart opa-cms
-    log_ok "PM2: opa-cms neu gestartet"
+if command -v pm2 &>/dev/null && pm2 list 2>/dev/null | grep -q 'tafeline-cms'; then
+    pm2 restart tafeline-cms
+    log_ok "PM2: tafeline-cms neu gestartet"
     RESTARTED=true
 # systemd
 elif systemctl is-active --quiet tafeline-cms 2>/dev/null; then
@@ -116,8 +116,8 @@ elif systemctl is-active --quiet tafeline-cms 2>/dev/null; then
     log_ok "systemd: tafeline-cms neu gestartet"
     RESTARTED=true
 elif command -v pm2 &>/dev/null; then
-    log_warn "PM2 verfügbar, aber kein 'opa-cms' Prozess aktiv."
-    log_warn "Starte neu mit: pm2 start ${INSTALL_DIR}/server.js --name opa-cms"
+    log_warn "PM2 verfügbar, aber kein 'tafeline-cms' Prozess aktiv."
+    log_warn "Starte neu mit: pm2 start ${INSTALL_DIR}/server.js --name tafeline-cms"
 else
     log_warn "Kein laufender Server erkannt (weder PM2 noch systemd)."
     log_warn "Für lokale Entwicklung: ./start-mac-linux.sh"

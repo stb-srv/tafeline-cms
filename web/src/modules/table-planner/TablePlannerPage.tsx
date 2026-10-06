@@ -50,7 +50,10 @@ export function TablePlannerPage() {
     const [view, setView] = React.useState<string>('all');
     const [snap, setSnap] = React.useState(true);
     const [dirty, setDirty] = React.useState(false);
-    const [editTable, setEditTable] = React.useState<{ areaId: string; table: PlannerTable } | null>(null);
+    const [editTable, setEditTable] = React.useState<{
+        areaId: string;
+        table: PlannerTable;
+    } | null>(null);
     const [areaModal, setAreaModal] = React.useState<PlannerArea | null>(null);
     const [newAreaOpen, setNewAreaOpen] = React.useState(false);
 
@@ -82,12 +85,19 @@ export function TablePlannerPage() {
     }
 
     // ---- Drag ----
-    const dragRef = React.useRef<{ areaId: string; id: string; offX: number; offY: number } | null>(null);
+    const dragRef = React.useRef<{ areaId: string; id: string; offX: number; offY: number } | null>(
+        null
+    );
     function onTablePointerDown(e: React.PointerEvent, areaId: string, t: PlannerTable) {
         e.stopPropagation();
         const canvas = (e.currentTarget as HTMLElement).parentElement!;
         const rect = canvas.getBoundingClientRect();
-        dragRef.current = { areaId, id: t.id, offX: e.clientX - rect.left - t.x, offY: e.clientY - rect.top - t.y };
+        dragRef.current = {
+            areaId,
+            id: t.id,
+            offX: e.clientX - rect.left - t.x,
+            offY: e.clientY - rect.top - t.y,
+        };
         const move = (ev: PointerEvent) => {
             const d = dragRef.current;
             if (!d) return;
@@ -126,16 +136,24 @@ export function TablePlannerPage() {
 
     function generateQuick() {
         if (!addArea) return toast.error('Bitte Bereich wählen');
-        const COLS = 6, CELL = 80, OFF = 20;
-        const existingNums = new Set(Object.values(tables).flat().map((t) => t.num));
-        let counter = quickStart, pos = 0;
+        const COLS = 6,
+            CELL = 80,
+            OFF = 20;
+        const existingNums = new Set(
+            Object.values(tables)
+                .flat()
+                .map((t) => t.num)
+        );
+        let counter = quickStart,
+            pos = 0;
         const newTables: PlannerTable[] = [];
         for (const { count, seats } of quickRows) {
             for (let i = 0; i < count; i++) {
                 while (existingNums.has(String(counter))) counter++;
                 const col = pos % COLS;
                 const row = Math.floor(pos / COLS);
-                const shape: PlannerTable['shape'] = seats >= 6 ? 'rect-h' : seats === 2 ? 'round' : 'square';
+                const shape: PlannerTable['shape'] =
+                    seats >= 6 ? 'rect-h' : seats === 2 ? 'round' : 'square';
                 const { w, h } = shapeSize(shape);
                 newTables.push({
                     id: 'T' + Date.now() + '_' + pos,
@@ -191,7 +209,9 @@ export function TablePlannerPage() {
 
     // Stats
     const stats = { free: 0, reserved: 0, occupied: 0 };
-    Object.values(tables).flat().forEach((t) => stats[liveStatus(t.id, reservations)]++);
+    Object.values(tables)
+        .flat()
+        .forEach((t) => stats[liveStatus(t.id, reservations)]++);
 
     const shownAreas = areas.filter((a) => view === 'all' || view === a.id);
 
@@ -227,7 +247,11 @@ export function TablePlannerPage() {
                                 <h4 className="text-sm font-bold uppercase text-muted-foreground">
                                     Bereiche
                                 </h4>
-                                <Button size="sm" variant="outline" onClick={() => setNewAreaOpen(true)}>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setNewAreaOpen(true)}
+                                >
                                     <Plus />
                                 </Button>
                             </div>
@@ -237,12 +261,16 @@ export function TablePlannerPage() {
                                     onClick={() => setAreaModal(a)}
                                     className="flex w-full items-center justify-between border-b py-1.5 text-sm last:border-0"
                                 >
-                                    <span>{a.icon || '🏠'} {a.name}</span>
+                                    <span>
+                                        {a.icon || '🏠'} {a.name}
+                                    </span>
                                     <i className="fas fa-edit opacity-50" />
                                 </button>
                             ))}
                             {areas.length === 0 && (
-                                <p className="text-sm text-muted-foreground">Noch keine Bereiche.</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Noch keine Bereiche.
+                                </p>
                             )}
                         </CardContent>
                     </Card>
@@ -264,7 +292,11 @@ export function TablePlannerPage() {
                                 ))}
                             </select>
                             <div className="grid grid-cols-2 gap-2">
-                                <Input placeholder="Nr." value={addNum} onChange={(e) => setAddNum(e.target.value)} />
+                                <Input
+                                    placeholder="Nr."
+                                    value={addNum}
+                                    onChange={(e) => setAddNum(e.target.value)}
+                                />
                                 <Input
                                     type="number"
                                     value={addSeats}
@@ -274,7 +306,9 @@ export function TablePlannerPage() {
                             <select
                                 className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
                                 value={addShape}
-                                onChange={(e) => setAddShape(e.target.value as PlannerTable['shape'])}
+                                onChange={(e) =>
+                                    setAddShape(e.target.value as PlannerTable['shape'])
+                                }
                             >
                                 {SHAPES.map((s) => (
                                     <option key={s.v} value={s.v}>
@@ -301,7 +335,9 @@ export function TablePlannerPage() {
                                         onChange={(e) =>
                                             setQuickRows((rows) =>
                                                 rows.map((x, xi) =>
-                                                    xi === i ? { ...x, count: Number(e.target.value) } : x
+                                                    xi === i
+                                                        ? { ...x, count: Number(e.target.value) }
+                                                        : x
                                                 )
                                             )
                                         }
@@ -312,7 +348,9 @@ export function TablePlannerPage() {
                                         onChange={(e) =>
                                             setQuickRows((rows) =>
                                                 rows.map((x, xi) =>
-                                                    xi === i ? { ...x, seats: Number(e.target.value) } : x
+                                                    xi === i
+                                                        ? { ...x, seats: Number(e.target.value) }
+                                                        : x
                                                 )
                                             )
                                         }
@@ -320,7 +358,9 @@ export function TablePlannerPage() {
                                     <Button
                                         size="icon"
                                         variant="outline"
-                                        onClick={() => setQuickRows((rows) => rows.filter((_, xi) => xi !== i))}
+                                        onClick={() =>
+                                            setQuickRows((rows) => rows.filter((_, xi) => xi !== i))
+                                        }
                                     >
                                         <Trash2 />
                                     </Button>
@@ -346,7 +386,11 @@ export function TablePlannerPage() {
                                 <Zap /> Generieren
                             </Button>
                             <label className="flex items-center gap-2 text-sm">
-                                <input type="checkbox" checked={snap} onChange={(e) => setSnap(e.target.checked)} />
+                                <input
+                                    type="checkbox"
+                                    checked={snap}
+                                    onChange={(e) => setSnap(e.target.checked)}
+                                />
                                 Am Raster einrasten ({SNAP}px)
                             </label>
                         </CardContent>
@@ -358,39 +402,53 @@ export function TablePlannerPage() {
                     {shownAreas.map((a) => (
                         <div key={a.id}>
                             <div className="mb-2 flex items-center justify-between text-sm font-semibold">
-                                <span>{a.icon} {a.name}</span>
-                                <span className="text-xs text-muted-foreground">{a.w} × {a.h}</span>
+                                <span>
+                                    {a.icon} {a.name}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                    {a.w} × {a.h}
+                                </span>
                             </div>
                             <div
                                 className="relative rounded-xl border bg-muted/30"
                                 style={{ width: a.w, height: a.h, maxWidth: '100%' }}
                             >
-                                {(tables[a.id] || []).filter((t) => !t.hidden).map((t) => {
-                                    const status = liveStatus(t.id, reservations);
-                                    return (
-                                        <div
-                                            key={t.id}
-                                            onPointerDown={(e) => onTablePointerDown(e, a.id, t)}
-                                            onDoubleClick={() => setEditTable({ areaId: a.id, table: t })}
-                                            className={cn(
-                                                'absolute flex cursor-move flex-col items-center justify-center border-2 text-xs font-bold text-white shadow',
-                                                t.shape === 'round' ? 'rounded-full' : 'rounded-md'
-                                            )}
-                                            style={{
-                                                left: t.x,
-                                                top: t.y,
-                                                width: t.w,
-                                                height: t.h,
-                                                background: STATUS_COLOR[status],
-                                                borderColor: STATUS_COLOR[status],
-                                            }}
-                                            title="Ziehen zum Verschieben · Doppelklick zum Bearbeiten"
-                                        >
-                                            <span>{t.num}</span>
-                                            <span className="text-[0.6rem] opacity-90">{t.seats} Pl.</span>
-                                        </div>
-                                    );
-                                })}
+                                {(tables[a.id] || [])
+                                    .filter((t) => !t.hidden)
+                                    .map((t) => {
+                                        const status = liveStatus(t.id, reservations);
+                                        return (
+                                            <div
+                                                key={t.id}
+                                                onPointerDown={(e) =>
+                                                    onTablePointerDown(e, a.id, t)
+                                                }
+                                                onDoubleClick={() =>
+                                                    setEditTable({ areaId: a.id, table: t })
+                                                }
+                                                className={cn(
+                                                    'absolute flex cursor-move flex-col items-center justify-center border-2 text-xs font-bold text-white shadow',
+                                                    t.shape === 'round'
+                                                        ? 'rounded-full'
+                                                        : 'rounded-md'
+                                                )}
+                                                style={{
+                                                    left: t.x,
+                                                    top: t.y,
+                                                    width: t.w,
+                                                    height: t.h,
+                                                    background: STATUS_COLOR[status],
+                                                    borderColor: STATUS_COLOR[status],
+                                                }}
+                                                title="Ziehen zum Verschieben · Doppelklick zum Bearbeiten"
+                                            >
+                                                <span>{t.num}</span>
+                                                <span className="text-[0.6rem] opacity-90">
+                                                    {t.seats} Pl.
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
                             </div>
                         </div>
                     ))}
@@ -415,7 +473,9 @@ export function TablePlannerPage() {
                     onDelete={() => {
                         setTables((s) => ({
                             ...s,
-                            [editTable.areaId]: s[editTable.areaId].filter((x) => x.id !== editTable.table.id),
+                            [editTable.areaId]: s[editTable.areaId].filter(
+                                (x) => x.id !== editTable.table.id
+                            ),
                         }));
                         setDirty(true);
                         setEditTable(null);
@@ -439,7 +499,9 @@ export function TablePlannerPage() {
                     onDelete={
                         areaModal
                             ? () => {
-                                  if (window.confirm('Bereich löschen? Alle Tische gehen verloren.')) {
+                                  if (
+                                      window.confirm('Bereich löschen? Alle Tische gehen verloren.')
+                                  ) {
                                       deleteArea(areaModal.id);
                                       setAreaModal(null);
                                   }
@@ -452,7 +514,15 @@ export function TablePlannerPage() {
     );
 }
 
-function TabBtn({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function TabBtn({
+    active,
+    onClick,
+    children,
+}: {
+    active: boolean;
+    onClick: () => void;
+    children: React.ReactNode;
+}) {
     return (
         <button
             onClick={onClick}
@@ -493,7 +563,11 @@ function TableEditDialog({
                     </div>
                     <div className="space-y-1">
                         <Label>Sitzplätze</Label>
-                        <Input type="number" value={seats} onChange={(e) => setSeats(Number(e.target.value))} />
+                        <Input
+                            type="number"
+                            value={seats}
+                            onChange={(e) => setSeats(Number(e.target.value))}
+                        />
                     </div>
                     <div className="space-y-1">
                         <Label>Form</Label>
@@ -550,20 +624,34 @@ function AreaDialog({
                 <div className="space-y-3">
                     <div className="space-y-1">
                         <Label>Name</Label>
-                        <Input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
+                        <Input
+                            value={f.name}
+                            onChange={(e) => setF({ ...f, name: e.target.value })}
+                        />
                     </div>
                     <div className="space-y-1">
                         <Label>Icon (Emoji)</Label>
-                        <Input value={f.icon} onChange={(e) => setF({ ...f, icon: e.target.value })} />
+                        <Input
+                            value={f.icon}
+                            onChange={(e) => setF({ ...f, icon: e.target.value })}
+                        />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <div className="space-y-1">
                             <Label>Breite (px)</Label>
-                            <Input type="number" value={f.w} onChange={(e) => setF({ ...f, w: Number(e.target.value) })} />
+                            <Input
+                                type="number"
+                                value={f.w}
+                                onChange={(e) => setF({ ...f, w: Number(e.target.value) })}
+                            />
                         </div>
                         <div className="space-y-1">
                             <Label>Höhe (px)</Label>
-                            <Input type="number" value={f.h} onChange={(e) => setF({ ...f, h: Number(e.target.value) })} />
+                            <Input
+                                type="number"
+                                value={f.h}
+                                onChange={(e) => setF({ ...f, h: Number(e.target.value) })}
+                            />
                         </div>
                     </div>
                 </div>

@@ -120,7 +120,7 @@ module.exports = (requireAuth) => {
                 })),
             };
 
-            const filename = `opa-backup-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}.json`;
+            const filename = `tafeline-backup-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}.json`;
 
             res.setHeader('Content-Type', 'application/json');
             res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
@@ -323,7 +323,7 @@ module.exports = (requireAuth) => {
             ]);
             res.json({
                 success: true,
-                dbType: process.env.DB_TYPE || 'sqlite',
+                dbType: 'sqlite',
                 counts: {
                     menu: menu.length,
                     categories: categories.length,

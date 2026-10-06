@@ -20,7 +20,9 @@ export function ArchivePage() {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     const monthFirst = new Date(now.getFullYear(), now.getMonth(), 2).toISOString().split('T')[0];
-    const monthLast = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString().split('T')[0];
+    const monthLast = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+        .toISOString()
+        .split('T')[0];
 
     const [search, setSearch] = React.useState('');
     const [from, setFrom] = React.useState(monthFirst);
@@ -67,9 +69,27 @@ export function ArchivePage() {
             toast.warning('Keine Daten zum Exportieren.');
             return;
         }
-        const headers = ['Name', 'E-Mail', 'Telefon', 'Datum', 'Uhrzeit', 'Personen', 'Status', 'Notiz'];
+        const headers = [
+            'Name',
+            'E-Mail',
+            'Telefon',
+            'Datum',
+            'Uhrzeit',
+            'Personen',
+            'Status',
+            'Notiz',
+        ];
         const rows = filtered.map((r) =>
-            [r.name, r.email, r.phone, r.date, r.start_time, r.guests, r.status, (r.note || '').replace(/\n/g, ' ')]
+            [
+                r.name,
+                r.email,
+                r.phone,
+                r.date,
+                r.start_time,
+                r.guests,
+                r.status,
+                (r.note || '').replace(/\n/g, ' '),
+            ]
                 .map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`)
                 .join(';')
         );
@@ -108,9 +128,19 @@ export function ArchivePage() {
                         />
                     </div>
                     <span className="text-xs font-bold uppercase opacity-50">Zeitraum</span>
-                    <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-40" />
+                    <Input
+                        type="date"
+                        value={from}
+                        onChange={(e) => setFrom(e.target.value)}
+                        className="w-40"
+                    />
                     <span className="opacity-40">bis</span>
-                    <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-40" />
+                    <Input
+                        type="date"
+                        value={to}
+                        onChange={(e) => setTo(e.target.value)}
+                        className="w-40"
+                    />
                     <Button
                         variant="outline"
                         size="icon"
@@ -151,12 +181,20 @@ export function ArchivePage() {
                                             ({items.length} Reservierungen)
                                         </span>
                                     </h4>
-                                    <ChevronDown className={cn('size-4 transition-transform', open && 'rotate-180')} />
+                                    <ChevronDown
+                                        className={cn(
+                                            'size-4 transition-transform',
+                                            open && 'rotate-180'
+                                        )}
+                                    />
                                 </button>
                                 {open && (
                                     <div className="divide-y">
                                         {items.map((r) => (
-                                            <div key={r.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
+                                            <div
+                                                key={r.id}
+                                                className="flex items-center justify-between px-4 py-2.5 text-sm"
+                                            >
                                                 <div>
                                                     <strong>{r.name || '—'}</strong>{' '}
                                                     <span className="text-muted-foreground">
@@ -166,7 +204,8 @@ export function ArchivePage() {
                                                 <span
                                                     className={cn(
                                                         'font-bold',
-                                                        r.status === 'Cancelled' && 'text-destructive'
+                                                        r.status === 'Cancelled' &&
+                                                            'text-destructive'
                                                     )}
                                                 >
                                                     {r.status || 'Pending'}

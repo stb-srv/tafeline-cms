@@ -638,7 +638,7 @@ module.exports = (requireAuth, requireLicense) => {
                         if (b64) {
                             const filename = path.basename(urlPath);
                             // Nur erlaubte Dateinamen (alphanumeric, -, _, .)
-                            if (/^[\w.\-]+$/.test(filename)) {
+                            if (/^[\w.-]+$/.test(filename)) {
                                 fs.writeFileSync(
                                     path.join(UPLOADS_DIR, filename),
                                     Buffer.from(b64, 'base64')
