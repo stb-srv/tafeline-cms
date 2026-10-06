@@ -34,12 +34,12 @@ INSTALL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [[ -n "${SUDO_USER:-}" && "${SUDO_USER}" != "root" ]]; then
     SCRIPT_USER="${SUDO_USER}"
 else
-    SCRIPT_USER="opa"
-    if ! id -u opa &>/dev/null; then
-        useradd --system --create-home --shell /bin/bash --comment "Tafeline CMS Service" opa
-        log_ok "System-User 'opa' angelegt"
+    SCRIPT_USER="tafeline"
+    if ! id -u tafeline &>/dev/null; then
+        useradd --system --create-home --shell /bin/bash --comment "Tafeline CMS Service" tafeline
+        log_ok "System-User 'tafeline' angelegt"
     else
-        log_warn "System-User 'opa' bereits vorhanden"
+        log_warn "System-User 'tafeline' bereits vorhanden"
     fi
 fi
 
@@ -90,7 +90,7 @@ else
         log_warn "Du hast eine Domain angegeben aber kein SSL gewählt."
         log_warn "Falls du später manuell SSL einrichtest, musst du in /opt/tafeline-cms/.env"
         log_warn "die Zeile \"CORS_ORIGINS=http://\" auf \"CORS_ORIGINS=https://\" ändern"
-        log_warn "und danach \"pm2 restart opa-cms\" ausführen."
+        log_warn "und danach \"pm2 restart tafeline-cms\" ausführen."
         echo
     fi
 fi
@@ -183,10 +183,10 @@ log_ok "Berechtigungen gesetzt (${SCRIPT_USER} ist Eigentümer)"
 
 log_step "Schritt 7/7: PM2 Services starten"
 
-"${PM2_BIN}" delete opa-cms 2>/dev/null || true
+"${PM2_BIN}" delete tafeline-cms 2>/dev/null || true
 
 "${PM2_BIN}" start "${INSTALL_DIR}/server.js" \
-    --name "opa-cms" \
+    --name "tafeline-cms" \
     --env production
 
 "${PM2_BIN}" save
@@ -247,7 +247,7 @@ EOF
                 log_warn "Certbot fehlgeschlagen – bitte manuell ausführen: certbot --nginx -d ${SERVER_DOMAIN}"
             # Sicherheitshalber nochmal CORS auf https sicherstellen & neu starten
             sed -i "s|^CORS_ORIGINS=http://|CORS_ORIGINS=https://|" "${INSTALL_DIR}/.env"
-            "${PM2_BIN}" restart opa-cms
+            "${PM2_BIN}" restart tafeline-cms
             log_ok "HTTPS aktiviert, CORS_ORIGINS = https://${SERVER_DOMAIN}"
         else
             log_warn "Keine E-Mail angegeben – SSL übersprungen."
@@ -271,8 +271,8 @@ echo
 echo "  ┌─────────────────────────────────────────────────────┐"
 echo "  │  Nützliche Befehle:                                  │"
 echo "  │    pm2 status          - Prozesse anzeigen           │"
-echo "  │    pm2 logs opa-cms    - CMS Logs                    │"
-echo "  │    pm2 restart opa-cms - CMS neustarten              │"
+echo "  │    pm2 logs tafeline-cms    - CMS Logs                    │"
+echo "  │    pm2 restart tafeline-cms - CMS neustarten              │"
 echo "  │    pm2 monit           - Live Monitoring             │"
 echo "  │    ./update-upgrade.sh - Update auf neueste Version  │"
 echo "  └─────────────────────────────────────────────────────┘"
@@ -282,15 +282,15 @@ if [[ "${WILL_USE_SSL,,}" != "j" && "${WILL_USE_SSL,,}" != "y" ]] && \
     echo -e "  ${YELLOW}⚠️  Kein SSL aktiv. CORS_ORIGINS = http://${SERVER_DOMAIN}${NC}"
     echo -e "  ${YELLOW}   Falls du später HTTPS einrichtest, bitte in .env anpassen:${NC}"
     echo -e "  ${YELLOW}   CORS_ORIGINS=https://${SERVER_DOMAIN}${NC}"
-    echo -e "  ${YELLOW}   Danach: pm2 restart opa-cms${NC}"
+    echo -e "  ${YELLOW}   Danach: pm2 restart tafeline-cms${NC}"
     echo
 fi
 echo -e "  ${GREEN}✅ Setup-Wizard öffnen:${NC}  ${FINAL_URL}/admin"
 echo -e "  ${GREEN}   Dort Admin-Zugangsdaten, SMTP & Lizenz einrichten –${NC}"
 echo -e "  ${GREEN}   alles im Browser, kein Konsolenzugriff mehr nötig.${NC}"
 echo
-if [[ "${SCRIPT_USER}" == "opa" ]]; then
-    echo -e "  ${YELLOW}ℹ️  Service läuft als System-User 'opa'.${NC}"
-    echo -e "  ${YELLOW}   PM2-Logs: sudo -u opa pm2 logs opa-cms${NC}"
+if [[ "${SCRIPT_USER}" == "tafeline" ]]; then
+    echo -e "  ${YELLOW}ℹ️  Service läuft als System-User 'tafeline'.${NC}"
+    echo -e "  ${YELLOW}   PM2-Logs: sudo -u tafeline pm2 logs tafeline-cms${NC}"
     echo
 fi

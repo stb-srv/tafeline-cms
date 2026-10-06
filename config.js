@@ -26,7 +26,6 @@ const DEFAULT_CONFIG = {
     PORT: parseInt(process.env.PORT) || 5000,
     ADMIN_SECRET: process.env.ADMIN_SECRET || INSECURE_SECRET_DEFAULT,
     DEV_MODE: process.env.DEV_MODE === 'true',
-    DB_TYPE: process.env.DB_TYPE || 'sqlite',
     BACKUP_DIR: process.env.BACKUP_DIR || path.join(__dirname, 'backups'),
     BACKUP_MAX_AGE_DAYS: parseInt(process.env.BACKUP_MAX_AGE_DAYS) || 30,
     BACKUP_MIN_COUNT: parseInt(process.env.BACKUP_MIN_COUNT) || 7,

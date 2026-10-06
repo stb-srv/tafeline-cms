@@ -74,9 +74,7 @@ function toFormState(dish: Dish | null, categories: Category[]): DishFormState {
         is_daily_special: !!dish.is_daily_special,
         allergens: dish.allergens || [],
         additives: dish.additives || [],
-        available_days: Array.isArray(dish.available_days)
-            ? dish.available_days.map(Number)
-            : [],
+        available_days: Array.isArray(dish.available_days) ? dish.available_days.map(Number) : [],
         translations: parseTranslations(dish.translations),
     };
 }
@@ -140,7 +138,10 @@ export function DishFormDialog({
     function setTrans(lang: string, field: 'name' | 'description', value: string) {
         setF((s) => ({
             ...s,
-            translations: { ...s.translations, [lang]: { ...s.translations[lang], [field]: value } },
+            translations: {
+                ...s.translations,
+                [lang]: { ...s.translations[lang], [field]: value },
+            },
         }));
     }
 
@@ -188,7 +189,8 @@ export function DishFormDialog({
     }
 
     const hasImg = f.image && (f.image.startsWith('http') || f.image.startsWith('/'));
-    const sectionLabel = 'mb-2.5 text-xs font-extrabold uppercase tracking-widest text-muted-foreground/70';
+    const sectionLabel =
+        'mb-2.5 text-xs font-extrabold uppercase tracking-widest text-muted-foreground/70';
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

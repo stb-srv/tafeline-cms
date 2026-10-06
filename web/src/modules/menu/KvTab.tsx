@@ -17,13 +17,7 @@ import {
 import { MENU_QUERY_KEY, type KvMap } from './menu-api';
 
 /** Editor für allergens / additives (Port von renderKVTab). */
-export function KvTab({
-    kind,
-    data,
-}: {
-    kind: 'allergens' | 'additives';
-    data: KvMap;
-}) {
+export function KvTab({ kind, data }: { kind: 'allergens' | 'additives'; data: KvMap }) {
     const qc = useQueryClient();
     const refresh = () => qc.invalidateQueries({ queryKey: MENU_QUERY_KEY });
     const [code, setCode] = React.useState('');
@@ -34,8 +28,7 @@ export function KvTab({
         kind === 'allergens'
             ? 'Pflichtangabe gemäß EU-Lebensmittelinformationsverordnung (LMIV). Vergib ein kurzes Kürzel (z.B. gluten) und einen lesbaren Namen (z.B. Gluten).'
             : 'Kennzeichnungspflichtige Zusatzstoffe (z.B. E-Nummern). Vergib ein Kürzel (z.B. e120) und die Bezeichnung.';
-    const placeholder =
-        kind === 'allergens' ? 'Name des Allergens…' : 'Name des Zusatzstoffes…';
+    const placeholder = kind === 'allergens' ? 'Name des Allergens…' : 'Name des Zusatzstoffes…';
 
     const entries = Object.entries(data);
 

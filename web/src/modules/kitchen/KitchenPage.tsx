@@ -42,7 +42,9 @@ export function KitchenPage() {
         const onD = () => setConnected(false);
         const onNew = (o: Order) => qc.setQueryData<Order[]>(KEY, (p = []) => [o, ...p]);
         const onUpd = (u: Partial<Order> & { id: string }) =>
-            qc.setQueryData<Order[]>(KEY, (p = []) => p.map((o) => (o.id === u.id ? { ...o, ...u } : o)));
+            qc.setQueryData<Order[]>(KEY, (p = []) =>
+                p.map((o) => (o.id === u.id ? { ...o, ...u } : o))
+            );
         socket.on('connect', onC);
         socket.on('disconnect', onD);
         socket.on('new_order', onNew);
@@ -59,7 +61,9 @@ export function KitchenPage() {
         const next = NEXT[o.status];
         if (!next) return;
         await apiPut(`orders/${o.id}/status`, { status: next });
-        qc.setQueryData<Order[]>(KEY, (p = []) => p.map((x) => (x.id === o.id ? { ...x, status: next } : x)));
+        qc.setQueryData<Order[]>(KEY, (p = []) =>
+            p.map((x) => (x.id === o.id ? { ...x, status: next } : x))
+        );
     }
 
     const open = orders.filter((o) => ACTIVE.includes(o.status));
@@ -71,8 +75,15 @@ export function KitchenPage() {
                 <h1 className="text-xl font-extrabold">🍳 Küchen-Display</h1>
                 <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
-                        <span className={cn('inline-block size-3 rounded-full', connected ? 'bg-green-500' : 'bg-red-500')} />
-                        <span className="text-sm font-bold uppercase">{connected ? 'Live' : 'Getrennt'}</span>
+                        <span
+                            className={cn(
+                                'inline-block size-3 rounded-full',
+                                connected ? 'bg-green-500' : 'bg-red-500'
+                            )}
+                        />
+                        <span className="text-sm font-bold uppercase">
+                            {connected ? 'Live' : 'Getrennt'}
+                        </span>
                     </div>
                     <div className="font-mono text-2xl tabular-nums">{clock}</div>
                 </div>
@@ -91,7 +102,10 @@ export function KitchenPage() {
                             const si = STATUS_INFO[o.status];
                             const { timeStr } = orderAge(o);
                             return (
-                                <div key={o.id} className="flex flex-col rounded-xl bg-slate-800 shadow-lg">
+                                <div
+                                    key={o.id}
+                                    className="flex flex-col rounded-xl bg-slate-800 shadow-lg"
+                                >
                                     <div
                                         className="flex items-center justify-between rounded-t-xl px-4 py-2.5 font-bold"
                                         style={{ background: ti.color }}
@@ -102,10 +116,16 @@ export function KitchenPage() {
                                     <ul className="flex-1 space-y-1.5 p-4 text-sm">
                                         {o.items.map((i, idx) => (
                                             <li key={idx} className="flex gap-2">
-                                                <span className="font-bold text-amber-400">×{i.quantity}</span>
+                                                <span className="font-bold text-amber-400">
+                                                    ×{i.quantity}
+                                                </span>
                                                 <span>
                                                     {i.name}
-                                                    {i.note && <em className="block text-xs text-amber-300">📝 {i.note}</em>}
+                                                    {i.note && (
+                                                        <em className="block text-xs text-amber-300">
+                                                            📝 {i.note}
+                                                        </em>
+                                                    )}
                                                 </span>
                                             </li>
                                         ))}

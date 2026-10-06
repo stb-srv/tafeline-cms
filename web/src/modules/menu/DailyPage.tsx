@@ -42,9 +42,8 @@ export function DailyPage() {
         const matchQ =
             !q ||
             d.name.toLowerCase().includes(q.toLowerCase()) ||
-            (d.description || '').toLowerCase().includes(q.toLowerCase());
-        const matchCat =
-            !cat || catMatchesFilter(typeof d.cat === 'object' ? d.cat?.id : d.cat, cat, data.categories);
+            (d.desc || '').toLowerCase().includes(q.toLowerCase());
+        const matchCat = !cat || catMatchesFilter(d.cat, cat, data.categories);
         return matchQ && matchCat;
     });
 
@@ -107,7 +106,9 @@ export function DailyPage() {
                                 </TableCell>
                                 <TableCell className="font-bold text-primary">{d.name}</TableCell>
                                 <TableCell>{getCatLabel(d.cat)}</TableCell>
-                                <TableCell className="font-mono">{(d.price ?? 0).toFixed(2)}€</TableCell>
+                                <TableCell className="font-mono">
+                                    {(d.price ?? 0).toFixed(2)}€
+                                </TableCell>
                                 <TableCell className="text-right">
                                     <div className="flex justify-end">
                                         <Switch
@@ -120,7 +121,10 @@ export function DailyPage() {
                         ))}
                         {filtered.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                                <TableCell
+                                    colSpan={6}
+                                    className="py-8 text-center text-muted-foreground"
+                                >
                                     Keine Gerichte gefunden.
                                 </TableCell>
                             </TableRow>

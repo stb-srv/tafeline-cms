@@ -5,7 +5,6 @@ const path = require('path');
 const fs = require('fs');
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tafeline-test-'));
-process.env.DB_TYPE = 'sqlite';
 process.env.SQLITE_PATH = path.join(dir, 'test.sqlite');
 
 const DB = require('../server/db');
@@ -14,7 +13,11 @@ const { normalizeCatId, dishMatchesCategory } = require('../server/routes/menu.j
 test.after(() => fs.rmSync(dir, { recursive: true, force: true }));
 
 test('updateCategory: translations werden nicht mehrfach JSON-kodiert', () => {
-    DB.addCategory({ id: 'aus_dem_topf', label: 'Aus dem Topf', translations: { en: 'From the pot' } });
+    DB.addCategory({
+        id: 'aus_dem_topf',
+        label: 'Aus dem Topf',
+        translations: { en: 'From the pot' },
+    });
     for (let i = 0; i < 3; i++) DB.updateCategory('aus_dem_topf', { label: `Aus dem Topf ${i}` });
     const cat = DB.getCategories().find((c) => c.id === 'aus_dem_topf');
     assert.deepEqual(cat.translations, { en: 'From the pot' });

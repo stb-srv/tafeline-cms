@@ -7,8 +7,20 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 export const SUPPORTED_LANGS = [
-    'de', 'en', 'el', 'fr', 'it', 'es', 'pt', 'nl',
-    'pl', 'ru', 'uk', 'tr', 'ar', 'da',
+    'de',
+    'en',
+    'el',
+    'fr',
+    'it',
+    'es',
+    'pt',
+    'nl',
+    'pl',
+    'ru',
+    'uk',
+    'tr',
+    'ar',
+    'da',
 ] as const;
 
 export type Lang = (typeof SUPPORTED_LANGS)[number];

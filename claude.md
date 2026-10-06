@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Projektübersicht
 
-Tafeline CMS ist ein modulares Restaurant-CMS. Backend: Node.js/Express (CommonJS), dient als **reine JSON-API**. Frontend: **React + Vite + TypeScript** mit **Tailwind CSS v4** und **shadcn/ui** (im Ordner `web/`). Datenbank: SQLite (Standard) oder MySQL/MariaDB (via `DB_TYPE=mysql`).
+Tafeline CMS ist ein modulares Restaurant-CMS. Backend: Node.js/Express (CommonJS), dient als **reine JSON-API**. Frontend: **React + Vite + TypeScript** mit **Tailwind CSS v4** und **shadcn/ui** (im Ordner `web/`). Datenbank: SQLite (`better-sqlite3`).
 
 > **Migration abgeschlossen** (siehe `.claude/plans/`): Das alte Vanilla-JS-Frontend (`cms/`, `menu-app/`) wurde durch die React-SPA in `web/` ersetzt (Big-Bang-Rewrite) und gelöscht. Sämtliche Frontend-Arbeit findet ausschließlich in `web/` statt.
 
@@ -27,7 +27,7 @@ npm run update       # git pull + npm install (root + web)
 node test-integration.js  # Datenvertrag-Test CMS↔Lizenzserver
 ```
 
-Das Frontend nutzt Vite als Build-System. Es gibt weiterhin keine automatisierten Unit-Tests.
+Das Frontend nutzt Vite als Build-System. Tests: `npm test` (node:test, `tests/*.test.js`), Lint: `npm run lint`.
 
 ## Setup-Flow (Erstkonfiguration)
 
@@ -43,7 +43,7 @@ Beim ersten Start ohne `server/config.json` wird jeder Nicht-API-Aufruf auf `/se
 Der Setup-Wizard (`POST /api/setup`) validiert den Token (statt IP-Check) und erstellt:
 
 1. Den ersten Admin-User in der DB (Recovery-Codes werden generiert, nur einmalig im Browser angezeigt)
-2. `server/config.json` mit `ADMIN_SECRET` (auto-generiert), `DB_TYPE`, `SMTP`, `LICENSE_SERVER_URL`, `SETUP_COMPLETE: true`
+2. `server/config.json` mit `ADMIN_SECRET` (auto-generiert), `SMTP`, `LICENSE_SERVER_URL`, `SETUP_COMPLETE: true`
 3. Branding-KV mit Restaurantname, Telefon, Adresse, Sprache, Zeitzone
 4. Trial-Lizenz oder validierter Lizenz-Key in `settings.license`
 
@@ -64,16 +64,11 @@ Nach dem Setup wird `server/config.json` beim Serverstart geladen und `CONFIG.SE
 Priorität: `.env/PORT` & `.env/ADMIN_SECRET` > `server/config.json` (Setup-Wizard) > `.env` > Defaults.
 **Nie `server/config.json` committen** – enthält den ADMIN_SECRET. Config-Pfad kann auch `config.json` im Root sein (Legacy-Fallback).
 
-### Datenbank-Adapter
+### Datenbank
 
-`server/db/index.js` wählt automatisch: `DB_TYPE=mysql` → `server/db/mysql.js`, sonst `server/db/sqlite.js` (via `better-sqlite3`). Beide Adapter exportieren **exakt dasselbe Interface**, alle Methoden sind async-kompatibel (SQLite sync, MySQL async – `await` funktioniert mit beiden).
+`server/db/index.js` exportiert den SQLite-Adapter `server/db/sqlite.js` (`better-sqlite3`, synchron; `await` im Aufrufer ist trotzdem erlaubt). Es gibt keinen MySQL-Adapter mehr.
 
-**Neue DB-Funktionen immer in BEIDEN Adaptern implementieren.**
-
-**Neue Spalten** als Migration eintragen:
-
-- SQLite: `migrations`-Array in `server/db/sqlite.js`
-- MySQL: `initSchema()`-try-Block mit `SHOW COLUMNS`-Check in `server/db/mysql.js`
+**Neue Spalten** als Eintrag im `migrations`-Array in `server/db/sqlite.js` hinzufügen.
 
 ### KV-Store
 
@@ -144,29 +139,28 @@ Plugins liegen in `plugins/<id>/` mit:
 
 ## Wichtigste Dateien
 
-| Datei                                         | Zweck                                                                               |
-| --------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `server.js`                                   | Entry Point, Plugin-Loader, HTTP-Server, Graceful Shutdown                          |
-| `config.js`                                   | Konfiguration (Prio: config.json > .env)                                            |
-| `server/app.js`                               | Express-App-Factory, alle Route-Mounts, Helmet/CORS                                 |
-| `server/db/index.js`                          | DB-Adapter-Selector                                                                 |
-| `server/db/sqlite.js`                         | SQLite-Adapter                                                                      |
-| `server/db/mysql.js`                          | MySQL/MariaDB-Adapter                                                               |
-| `server/core/middleware.js`                   | `requireAuth`, `requireRole`, `requireLicense`, `requireMenuLimit`, Rate-Limiter    |
-| `server/core/logger.js`                       | Pino-Logger (strukturiertes JSON-Logging)                                           |
-| `server/services/license.js`                  | `getCurrentLicense`, `verifyLicenseToken`, `getPlan`                                |
-| `server/services/license-checker.js`          | Periodischer Token-Refresh vom Lizenzserver                                         |
-| `server/services/mailer.js`                   | E-Mail via Nodemailer                                                               |
-| `server/cron.js`                              | Background-Jobs (Trial, Reminders, Backup-Cleanup)                                  |
-| `server/socket.js`                            | Socket.IO-Setup                                                                     |
-| `server/validation/schemas.js`                | Zod-Schemas für alle Routen                                                         |
+| Datei                                             | Zweck                                                                               |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `server.js`                                       | Entry Point, Plugin-Loader, HTTP-Server, Graceful Shutdown                          |
+| `config.js`                                       | Konfiguration (Prio: config.json > .env)                                            |
+| `server/app.js`                                   | Express-App-Factory, alle Route-Mounts, Helmet/CORS                                 |
+| `server/db/index.js`                              | DB-Adapter-Selector                                                                 |
+| `server/db/sqlite.js`                             | SQLite-Adapter                                                                      |
+| `server/core/middleware.js`                       | `requireAuth`, `requireRole`, `requireLicense`, `requireMenuLimit`, Rate-Limiter    |
+| `server/core/logger.js`                           | Pino-Logger (strukturiertes JSON-Logging)                                           |
+| `server/services/license.js`                      | `getCurrentLicense`, `verifyLicenseToken`, `getPlan`                                |
+| `server/services/license-checker.js`              | Periodischer Token-Refresh vom Lizenzserver                                         |
+| `server/services/mailer.js`                       | E-Mail via Nodemailer                                                               |
+| `server/cron.js`                                  | Background-Jobs (Trial, Reminders, Backup-Cleanup)                                  |
+| `server/socket.js`                                | Socket.IO-Setup                                                                     |
+| `server/validation/schemas.js`                    | Zod-Schemas für alle Routen                                                         |
 | `@tafeline/plans` (github:stb-srv/tafeline-plans) | **Shared** PLAN_DEFINITIONS (CMS + Lizenzserver) – Upstream-Repo, nicht im CMS-Repo |
-| `test-integration.js`                         | Datenvertrag-Test CMS↔Lizenzserver                                                  |
-| `web/src/lib/api.ts`                          | Admin-Frontend API-Client (`apiGet`, `apiPost`, `apiPut`, `apiDelete`, `apiUpload`) |
-| `web/src/routes/admin-routes.tsx`             | Admin-SPA Routing (HashRouter, PAGES-Registry aus NAV_CONFIG)                        |
-| `web/src/modules/guest/`                      | Gäste-Frontend (HomePage, CartDrawer, CookieBanner, cart-store)                      |
-| `web/src/config/navigation.ts`               | Single-Source Navigation (NAV_CONFIG)                                               |
-| `web/public/setup.html`                       | Setup-Wizard (statisch, noch nicht nach React portiert)                              |
+| `test-integration.js`                             | Datenvertrag-Test CMS↔Lizenzserver                                                  |
+| `web/src/lib/api.ts`                              | Admin-Frontend API-Client (`apiGet`, `apiPost`, `apiPut`, `apiDelete`, `apiUpload`) |
+| `web/src/routes/admin-routes.tsx`                 | Admin-SPA Routing (HashRouter, PAGES-Registry aus NAV_CONFIG)                       |
+| `web/src/modules/guest/`                          | Gäste-Frontend (HomePage, CartDrawer, CookieBanner, cart-store)                     |
+| `web/src/config/navigation.ts`                    | Single-Source Navigation (NAV_CONFIG)                                               |
+| `web/public/setup.html`                           | Setup-Wizard (statisch, noch nicht nach React portiert)                             |
 
 ## Routen-Übersicht
 
@@ -224,15 +218,6 @@ CORS_ORIGINS=https://meinrestaurant.de  # Komma-getrennt; Default: localhost
 LICENSE_SERVER_URL=https://licens.stb-srv.de
 LICENSE_PUBLIC_KEY=             # RSA Public Key Override (optional)
 
-# Datenbank (Standard: SQLite)
-DB_TYPE=sqlite
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=tafeline_user
-DB_PASS=passwort
-DB_NAME=tafeline_cms
-DB_SSL=false
-
 # Backup
 BACKUP_DIR=./backups
 BACKUP_MAX_AGE_DAYS=30
@@ -245,12 +230,9 @@ UNSPLASH_ACCESS_KEY=
 
 ## Häufige Fehlerquellen
 
-- **`DB_TYPE` nicht gesetzt** → App startet mit SQLite statt MySQL, alle MySQL-Daten unsichtbar
-- **Neue Spalte nur in einem Adapter** → Funktioniert lokal (SQLite) aber nicht auf Prod (MySQL) oder umgekehrt
 - **`server/config.json` fehlt** → Setup-Wizard startet neu, alle Einstellungen weg
 - **`CORS_ORIGINS` nicht gesetzt** → API-Calls vom Frontend werden in Produktion blockiert
 - **`ADMIN_SECRET` = Default-Wert** → Server verweigert Start nach abgeschlossenem Setup
 - **Modul-Name falsch in `requireLicense()`** → Feature immer gesperrt; gültige Namen oben nachschlagen
 - **PLAN_DEFINITIONS direkt im CMS/Lizenzserver geändert** → Änderung wirkt nicht, da `@tafeline/plans` die Quelle ist
-- **`JSON_VALID()` in MySQL** → Zum Prüfen invalider JSON-Felder: `SELECT id FROM menu WHERE JSON_VALID(translations) = 0`
 - **License domain mismatch** → `HOST` env var setzen; auf localhost wird der Check übersprungen

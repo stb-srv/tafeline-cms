@@ -25,7 +25,11 @@ interface Review {
 
 function Stars({ n }: { n: number }) {
     const r = Math.max(0, Math.min(5, Math.round(n) || 0));
-    return <span className="whitespace-nowrap text-yellow-400">{'★'.repeat(r) + '☆'.repeat(5 - r)}</span>;
+    return (
+        <span className="whitespace-nowrap text-yellow-400">
+            {'★'.repeat(r) + '☆'.repeat(5 - r)}
+        </span>
+    );
 }
 
 export function FeedbackPage() {

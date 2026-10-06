@@ -3,12 +3,7 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { apiPost } from '@/lib/api';
 import { FeatureToggleCard } from '@/components/shared/FeatureToggleCard';
-import {
-    MODULE_GROUPS,
-    MODULE_LABELS,
-    SETTINGS_KEY,
-    type SettingsData,
-} from './settings-api';
+import { MODULE_GROUPS, MODULE_LABELS, SETTINGS_KEY, type SettingsData } from './settings-api';
 import type { LicenseInfo } from '@/hooks/useLicense';
 
 export function PlanModulesTab({
@@ -48,8 +43,7 @@ export function PlanModulesTab({
                 <h4 className="font-semibold">Plan-Module verwalten</h4>
                 <p className="text-sm text-muted-foreground">
                     Zentrale Verwaltung aller CMS-Module. Aktivieren oder deaktivieren Sie
-                    verfügbare Features Ihres Plans. Gesperrte Module erfordern einen
-                    höheren Plan.
+                    verfügbare Features Ihres Plans. Gesperrte Module erfordern einen höheren Plan.
                 </p>
             </div>
 
@@ -68,7 +62,8 @@ export function PlanModulesTab({
                             {keys.map((key) => {
                                 const m = MODULE_LABELS[key];
                                 const licKey = m.licenseKey ?? key;
-                                const licensed = m.alwaysAvailable || activeModules[licKey] === true;
+                                const licensed =
+                                    m.alwaysAvailable || activeModules[licKey] === true;
                                 const on = licensed && enabled[key] !== false;
                                 return (
                                     <FeatureToggleCard

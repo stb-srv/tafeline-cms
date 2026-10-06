@@ -29,21 +29,47 @@ const ACTION_META: Record<string, { icon: string; color: string; label: string }
     'menu.bulk.disable': { icon: 'fa-eye-slash', color: '#6b7280', label: 'Gerichte deaktiviert' },
     'menu.bulk.delete': { icon: 'fa-trash', color: '#ef4444', label: 'Gerichte gelöscht' },
     'menu.bulk.set_category': { icon: 'fa-tags', color: '#c8a96e', label: 'Kategorie zugewiesen' },
-    'reservation.update': { icon: 'fa-calendar-check', color: 'hsl(var(--primary))', label: 'Reservierung geändert' },
-    'reservation.delete': { icon: 'fa-calendar-xmark', color: '#ef4444', label: 'Reservierung gelöscht' },
-    'settings.update': { icon: 'fa-sliders-h', color: 'hsl(var(--primary))', label: 'Einstellungen geändert' },
+    'reservation.update': {
+        icon: 'fa-calendar-check',
+        color: 'hsl(var(--primary))',
+        label: 'Reservierung geändert',
+    },
+    'reservation.delete': {
+        icon: 'fa-calendar-xmark',
+        color: '#ef4444',
+        label: 'Reservierung gelöscht',
+    },
+    'settings.update': {
+        icon: 'fa-sliders-h',
+        color: 'hsl(var(--primary))',
+        label: 'Einstellungen geändert',
+    },
     'settings.modules': { icon: 'fa-toggle-on', color: '#c8a96e', label: 'Module geändert' },
-    'branding.update': { icon: 'fa-palette', color: 'hsl(var(--primary))', label: 'Branding geändert' },
+    'branding.update': {
+        icon: 'fa-palette',
+        color: 'hsl(var(--primary))',
+        label: 'Branding geändert',
+    },
     'license.activate': { icon: 'fa-key', color: '#22c55e', label: 'Lizenz aktiviert' },
     'user.create': { icon: 'fa-user-plus', color: '#22c55e', label: 'Benutzer angelegt' },
-    'user.update': { icon: 'fa-user-pen', color: 'hsl(var(--primary))', label: 'Benutzer geändert' },
+    'user.update': {
+        icon: 'fa-user-pen',
+        color: 'hsl(var(--primary))',
+        label: 'Benutzer geändert',
+    },
     'user.delete': { icon: 'fa-user-minus', color: '#ef4444', label: 'Benutzer gelöscht' },
     'user.reset_password': { icon: 'fa-lock', color: '#c8a96e', label: 'Passwort zurückgesetzt' },
     'feedback.delete': { icon: 'fa-star', color: '#ef4444', label: 'Bewertung gelöscht' },
 };
 
 function metaFor(action: string) {
-    return ACTION_META[action] || { icon: 'fa-clipboard-list', color: 'hsl(var(--muted-foreground))', label: action };
+    return (
+        ACTION_META[action] || {
+            icon: 'fa-clipboard-list',
+            color: 'hsl(var(--muted-foreground))',
+            label: action,
+        }
+    );
 }
 
 function relTime(iso?: string) {
@@ -109,7 +135,10 @@ export function AuditLogPage() {
                         <TableBody>
                             {filtered.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
+                                    <TableCell
+                                        colSpan={5}
+                                        className="py-8 text-center text-muted-foreground"
+                                    >
                                         Kein Treffer.
                                     </TableCell>
                                 </TableRow>
@@ -129,19 +158,32 @@ export function AuditLogPage() {
                                         <TableRow key={i}>
                                             <TableCell>
                                                 <span className="inline-flex items-center gap-2">
-                                                    <i className={`fas ${m.icon}`} style={{ color: m.color }} />
+                                                    <i
+                                                        className={`fas ${m.icon}`}
+                                                        style={{ color: m.color }}
+                                                    />
                                                     {m.label}
                                                 </span>
                                             </TableCell>
-                                            <TableCell>{e.actor || <em className="opacity-40">System</em>}</TableCell>
+                                            <TableCell>
+                                                {e.actor || <em className="opacity-40">System</em>}
+                                            </TableCell>
                                             <TableCell className="text-xs opacity-70">
                                                 {e.entity || ''}{' '}
-                                                {e.entity_id ? '#' + String(e.entity_id).slice(0, 24) : ''}
+                                                {e.entity_id
+                                                    ? '#' + String(e.entity_id).slice(0, 24)
+                                                    : ''}
                                             </TableCell>
-                                            <TableCell className="text-xs opacity-60">{detail}</TableCell>
+                                            <TableCell className="text-xs opacity-60">
+                                                {detail}
+                                            </TableCell>
                                             <TableCell
                                                 className="text-xs"
-                                                title={e.ts ? new Date(e.ts).toLocaleString('de-DE') : ''}
+                                                title={
+                                                    e.ts
+                                                        ? new Date(e.ts).toLocaleString('de-DE')
+                                                        : ''
+                                                }
                                             >
                                                 {relTime(e.ts)}
                                             </TableCell>

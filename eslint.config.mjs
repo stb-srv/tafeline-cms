@@ -3,7 +3,14 @@ import globals from 'globals';
 
 export default [
     {
-        ignores: ['node_modules/**', 'uploads/**', 'backups/**', 'data/**', '**/*.min.js'],
+        ignores: [
+            'node_modules/**',
+            'web/**',
+            'uploads/**',
+            'backups/**',
+            'data/**',
+            '**/*.min.js',
+        ],
     },
     js.configs.recommended,
     // Node.js / CommonJS backend
@@ -21,6 +28,18 @@ export default [
             'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
             'no-empty': ['error', { allowEmptyCatch: true }],
             'no-console': 'warn',
+        },
+    },
+    // Node:test Tests (CommonJS)
+    {
+        files: ['tests/**/*.js'],
+        languageOptions: {
+            ecmaVersion: 2023,
+            sourceType: 'commonjs',
+            globals: { ...globals.node },
+        },
+        rules: {
+            'no-console': 'off',
         },
     },
     // Browser ES modules frontend (Admin-Panel + Gäste-Frontend)

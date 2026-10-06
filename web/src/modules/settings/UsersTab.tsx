@@ -128,12 +128,7 @@ export function UsersTab({ users }: { users: User[] }) {
                 Login ändern.
             </p>
 
-            <UserFormDialog
-                open={open}
-                onOpenChange={setOpen}
-                user={editing}
-                onSaved={refresh}
-            />
+            <UserFormDialog open={open} onOpenChange={setOpen} user={editing} onSaved={refresh} />
         </div>
     );
 }
@@ -156,8 +151,7 @@ function UserFormDialog({
     const [saving, setSaving] = React.useState(false);
 
     React.useEffect(() => {
-        if (open)
-            setF(user ?? { user: '', name: '', last_name: '', email: '', role: 'admin' });
+        if (open) setF(user ?? { user: '', name: '', last_name: '', email: '', role: 'admin' });
     }, [open, user]);
 
     const set = <K extends keyof User>(k: K, v: User[K]) => setF((s) => ({ ...s, [k]: v }));

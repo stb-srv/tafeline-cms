@@ -226,7 +226,9 @@ export function computeDashboardData(input: RawInputs): DashboardData {
     // KPI-Zeitreihen: letzte 7 Tage vs. die 7 davor
     const days7 = [...Array(7)].map((_, i) => new Date(todayDate.getTime() - (6 - i) * DAY_MS));
     const inLast7 = (dt?: Date | null) =>
-        !!dt && todayDate.getTime() - dt.getTime() >= 0 && todayDate.getTime() - dt.getTime() < 7 * DAY_MS;
+        !!dt &&
+        todayDate.getTime() - dt.getTime() >= 0 &&
+        todayDate.getTime() - dt.getTime() < 7 * DAY_MS;
     const inPrev7 = (dt?: Date | null) =>
         !!dt &&
         todayDate.getTime() - dt.getTime() >= 7 * DAY_MS &&
@@ -237,8 +239,12 @@ export function computeDashboardData(input: RawInputs): DashboardData {
     const revSeries = days7.map((d) =>
         orders.filter((o) => sameDay(orderDate(o), d)).reduce((s, o) => s + num(o.total), 0)
     );
-    const revThis = orders.filter((o) => inLast7(orderDate(o))).reduce((s, o) => s + num(o.total), 0);
-    const revLast = orders.filter((o) => inPrev7(orderDate(o))).reduce((s, o) => s + num(o.total), 0);
+    const revThis = orders
+        .filter((o) => inLast7(orderDate(o)))
+        .reduce((s, o) => s + num(o.total), 0);
+    const revLast = orders
+        .filter((o) => inPrev7(orderDate(o)))
+        .reduce((s, o) => s + num(o.total), 0);
 
     const resSeries = days7.map(
         (d) => reservations.filter((r) => sameDay(parseFlexibleDate(r.date), d)).length

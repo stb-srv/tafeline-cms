@@ -29,12 +29,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import {
-    RES_STATUS,
-    parseResDate,
-    type Reservation,
-    type ResTable,
-} from './reservations-api';
+import { RES_STATUS, parseResDate, type Reservation, type ResTable } from './reservations-api';
 import { ReservationCalendar } from './ReservationCalendar';
 import {
     AssignTableDialog,
@@ -100,11 +95,14 @@ export function ReservationsPage() {
             const [y, m, d] = dateFilter.split('-').map(Number);
             res = res.filter((r) => {
                 const rd = parseResDate(r.date);
-                return rd && rd.getFullYear() === y && rd.getMonth() + 1 === m && rd.getDate() === d;
+                return (
+                    rd && rd.getFullYear() === y && rd.getMonth() + 1 === m && rd.getDate() === d
+                );
             });
         }
         return res.sort(
-            (a, b) => (parseResDate(b.date)?.getTime() || 0) - (parseResDate(a.date)?.getTime() || 0)
+            (a, b) =>
+                (parseResDate(b.date)?.getTime() || 0) - (parseResDate(a.date)?.getTime() || 0)
         );
     }, [reservations, text, status, dateFilter]);
 
@@ -114,7 +112,10 @@ export function ReservationsPage() {
 
     // ---- Aktionen ----
     async function setStatusOf(id: Reservation['id'], st: string, note?: string) {
-        const res = await apiPut(`reservations/${id}`, note ? { status: st, note } : { status: st });
+        const res = await apiPut(
+            `reservations/${id}`,
+            note ? { status: st, note } : { status: st }
+        );
         if (res.success !== false) {
             toast.success(`Status: ${st}`);
             refresh();
@@ -248,7 +249,10 @@ export function ReservationsPage() {
                             <TableBody>
                                 {paged.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="py-12 text-center text-muted-foreground">
+                                        <TableCell
+                                            colSpan={6}
+                                            className="py-12 text-center text-muted-foreground"
+                                        >
                                             Keine passenden Reservierungen
                                         </TableCell>
                                     </TableRow>
@@ -256,7 +260,9 @@ export function ReservationsPage() {
                                     paged.map((r) => (
                                         <TableRow key={r.id}>
                                             <TableCell>
-                                                <div className="font-bold">{r.name || 'Unbekannt'}</div>
+                                                <div className="font-bold">
+                                                    {r.name || 'Unbekannt'}
+                                                </div>
                                                 <div className="text-xs text-muted-foreground">
                                                     {r.email}
                                                 </div>
@@ -283,7 +289,9 @@ export function ReservationsPage() {
                                             <TableCell className="text-xs">
                                                 {(r.assigned_tables || [])
                                                     .map((t) =>
-                                                        t.startsWith('C') ? 'Combo ' + t.slice(1) : t
+                                                        t.startsWith('C')
+                                                            ? 'Combo ' + t.slice(1)
+                                                            : t
                                                     )
                                                     .join(', ') || (
                                                     <span className="opacity-50">Keine</span>
@@ -291,35 +299,52 @@ export function ReservationsPage() {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">
-                                                    <IconBtn title="Tisch zuweisen" onClick={() => setAssignRes(r)}>
+                                                    <IconBtn
+                                                        title="Tisch zuweisen"
+                                                        onClick={() => setAssignRes(r)}
+                                                    >
                                                         <Armchair />
                                                     </IconBtn>
-                                                    <IconBtn title="Bearbeiten" onClick={() => setEditRes(r)}>
+                                                    <IconBtn
+                                                        title="Bearbeiten"
+                                                        onClick={() => setEditRes(r)}
+                                                    >
                                                         <Pencil />
                                                     </IconBtn>
                                                     {r.status !== 'Confirmed' ? (
                                                         <IconBtn
                                                             title="Akzeptieren"
                                                             className="text-[hsl(var(--success))]"
-                                                            onClick={() => setStatusOf(r.id, 'Confirmed')}
+                                                            onClick={() =>
+                                                                setStatusOf(r.id, 'Confirmed')
+                                                            }
                                                         >
                                                             <Check />
                                                         </IconBtn>
                                                     ) : (
-                                                        <IconBtn title="No-Show" onClick={() => noShow(r.id)}>
+                                                        <IconBtn
+                                                            title="No-Show"
+                                                            onClick={() => noShow(r.id)}
+                                                        >
                                                             <UserX />
                                                         </IconBtn>
                                                     )}
-                                                    {r.status !== 'Confirmed' && r.status !== 'Waitlist' && (
-                                                        <IconBtn
-                                                            title="Warteliste"
-                                                            onClick={() => setStatusOf(r.id, 'Waitlist')}
-                                                        >
-                                                            <Hourglass />
-                                                        </IconBtn>
-                                                    )}
+                                                    {r.status !== 'Confirmed' &&
+                                                        r.status !== 'Waitlist' && (
+                                                            <IconBtn
+                                                                title="Warteliste"
+                                                                onClick={() =>
+                                                                    setStatusOf(r.id, 'Waitlist')
+                                                                }
+                                                            >
+                                                                <Hourglass />
+                                                            </IconBtn>
+                                                        )}
                                                     {r.status !== 'Cancelled' && (
-                                                        <IconBtn title="Stornieren" onClick={() => cancel(r)}>
+                                                        <IconBtn
+                                                            title="Stornieren"
+                                                            onClick={() => cancel(r)}
+                                                        >
                                                             <RotateCcw />
                                                         </IconBtn>
                                                     )}
@@ -345,10 +370,20 @@ export function ReservationsPage() {
                                 Seite {safePage} / {totalPages} · {filtered.length} Einträge
                             </span>
                             <div className="flex gap-1.5">
-                                <Button variant="outline" size="sm" disabled={safePage <= 1} onClick={() => setPage(safePage - 1)}>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={safePage <= 1}
+                                    onClick={() => setPage(safePage - 1)}
+                                >
                                     Zurück
                                 </Button>
-                                <Button variant="outline" size="sm" disabled={safePage >= totalPages} onClick={() => setPage(safePage + 1)}>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={safePage >= totalPages}
+                                    onClick={() => setPage(safePage + 1)}
+                                >
                                     Weiter
                                 </Button>
                             </div>
@@ -374,9 +409,21 @@ export function ReservationsPage() {
                 </Card>
             )}
 
-            <EditReservationDialog reservation={editRes} onClose={() => setEditRes(null)} onSaved={refresh} />
-            <AssignTableDialog reservation={assignRes} onClose={() => setAssignRes(null)} onSaved={refresh} />
-            <ManualReservationDialog open={manualOpen} onClose={() => setManualOpen(false)} onSaved={refresh} />
+            <EditReservationDialog
+                reservation={editRes}
+                onClose={() => setEditRes(null)}
+                onSaved={refresh}
+            />
+            <AssignTableDialog
+                reservation={assignRes}
+                onClose={() => setAssignRes(null)}
+                onSaved={refresh}
+            />
+            <ManualReservationDialog
+                open={manualOpen}
+                onClose={() => setManualOpen(false)}
+                onSaved={refresh}
+            />
         </div>
     );
 }

@@ -13,7 +13,6 @@
 
 - [Voraussetzungen](#voraussetzungen)
 - [Linux Server Setup (Empfohlen)](#-linux-server-setup-empfohlen)
-- [MySQL/MariaDB Setup](#-mysqlmariadb-setup)
 - [Warenkorb & Online-Bestellung](#-warenkorb--online-bestellung)
 - [Erster Start: Setup-Wizard](#-erster-start-setup-wizard)
 - [.env Variablen-Referenz](#-env-variablen-referenz)
@@ -57,27 +56,6 @@ cd /opt/tafeline-cms
 chmod +x install-ubuntu.sh
 sudo ./install-ubuntu.sh
 ```
-
----
-
-## 🗄️ MySQL/MariaDB Setup
-
-Standardmäßig nutzt Tafeline CMS **SQLite** (kein Setup nötig). Für größere Installationen oder Shared-Hosting (Netcup, Hetzner etc.) wird **MySQL/MariaDB** empfohlen.
-
-1. Erstelle eine neue Datenbank und einen Benutzer.
-2. Trage in der `.env` Datei folgende Werte ein:
-
-```env
-DB_TYPE=mysql
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=dein_benutzer
-DB_PASS=dein_passwort
-DB_NAME=deine_db_name
-DB_SSL=false
-```
-
-3. Starte den Server neu. Das Schema wird automatisch inkl. aller Migrationen erstellt.
 
 ---
 
@@ -128,13 +106,6 @@ Der Wizard schreibt automatisch `server/config.json` inkl. eines zufälligen `AD
 | `PORT`                | Port des Express-Servers                                    | `5000`      |
 | `ADMIN_SECRET`        | JWT Signing Key – wird automatisch vom Setup-Wizard gesetzt | –           |
 | `CORS_ORIGINS`        | Erlaubte Frontend-Domains, kommagetrennt                    | `localhost` |
-| `DB_TYPE`             | `sqlite` oder `mysql`                                       | `sqlite`    |
-| `DB_HOST`             | Hostname der MySQL DB                                       | `localhost` |
-| `DB_PORT`             | Port der MySQL DB                                           | `3306`      |
-| `DB_USER`             | Benutzername MySQL                                          | –           |
-| `DB_PASS`             | Passwort MySQL                                              | –           |
-| `DB_NAME`             | Datenbankname                                               | –           |
-| `DB_SSL`              | SSL für DB-Verbindung (`true`/`false`)                      | `false`     |
 | `SMTP_HOST`           | SMTP Server                                                 | –           |
 | `SMTP_PORT`           | SMTP Port                                                   | `465`       |
 | `SMTP_USER`           | SMTP Benutzername                                           | –           |
@@ -167,7 +138,7 @@ Das System bietet verschiedene Pläne. Die Aktivierung erfolgt im CMS unter **Ei
 ## 🛠️ Tech Stack
 
 - **Backend**: Node.js, Express, Pino (Logging), Helmet (Security-Header), Zod (Validierung)
-- **Datenbank**: SQLite (`better-sqlite3`) ODER MySQL/MariaDB (`mysql2`)
+- **Datenbank**: SQLite (`better-sqlite3`)
 - **Auth**: JWT (RS256 für Lizenz, HS256 für Admin-Sessions), bcryptjs
 - **Frontend**: Vanilla JS (ES Modules), CSS Custom Properties (Glassmorphism)
 - **Realtime**: Socket.io (Bestelleingänge → Kitchen-Display)
@@ -185,8 +156,6 @@ Das System bietet verschiedene Pläne. Die Aktivierung erfolgt im CMS unter **Ei
 ├── server/
 │   ├── app.js             # Express-App, alle Route-Mounts, CORS/Helmet
 │   ├── database.js        # SQLite-Adapter (better-sqlite3)
-│   ├── database-mysql.js  # MySQL/MariaDB-Adapter
-│   ├── db.js              # Adapter-Selector (DB_TYPE)
 │   ├── middleware.js      # requireAuth, requireRole, requireLicense
 │   ├── license.js         # PLAN_DEFINITIONS, getCurrentLicense
 │   ├── cron.js            # Background-Jobs (Trial, Reminder, Backup-Cleanup)

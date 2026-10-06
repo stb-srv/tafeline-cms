@@ -216,8 +216,8 @@ const Mailer = {
 
         const data = { name, date, start_time, restaurantName };
 
-        let defaultSubject = '',
-            defaultBody = '';
+        let defaultSubject;
+        let defaultBody;
 
         if (isConfirmed) {
             defaultSubject = 'BESTÄTIGT: Ihr Tisch am {{date}}';

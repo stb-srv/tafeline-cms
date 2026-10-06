@@ -79,7 +79,12 @@ export function VisibilityDialog({
                                     <i className={cn('fas', meta.icon, 'w-5 opacity-55')} />
                                     {meta.label}
                                 </span>
-                                <Switch checked={on} onCheckedChange={(val) => setState((s) => ({ ...s, [id]: val }))} />
+                                <Switch
+                                    checked={on}
+                                    onCheckedChange={(val) =>
+                                        setState((s) => ({ ...s, [id]: val }))
+                                    }
+                                />
                             </div>
                         );
                     })}

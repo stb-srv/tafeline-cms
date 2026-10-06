@@ -68,8 +68,13 @@ export function ShiftsPage() {
     }
 
     async function editShift(empId: string | number, date: string) {
-        const existing = shifts.find((s) => String(s.employee_id) === String(empId) && s.date === date);
-        const start = window.prompt('Schicht-Beginn (z.B. 09:00):', existing?.start_time || '09:00');
+        const existing = shifts.find(
+            (s) => String(s.employee_id) === String(empId) && s.date === date
+        );
+        const start = window.prompt(
+            'Schicht-Beginn (z.B. 09:00):',
+            existing?.start_time || '09:00'
+        );
         if (!start) return;
         const end = window.prompt('Schicht-Ende (z.B. 17:00):', existing?.end_time || '17:00');
         if (!end) return;
@@ -131,7 +136,10 @@ export function ShiftsPage() {
                     <tbody>
                         {employees.length === 0 ? (
                             <tr>
-                                <td colSpan={8} className="p-10 text-center text-sm text-muted-foreground">
+                                <td
+                                    colSpan={8}
+                                    className="p-10 text-center text-sm text-muted-foreground"
+                                >
                                     Noch keine Mitarbeiter. Klicken Sie auf „+ Mitarbeiter".
                                 </td>
                             </tr>
@@ -170,7 +178,10 @@ export function ShiftsPage() {
                                                         className="flex min-h-12 cursor-pointer items-center justify-center rounded-lg p-1 text-xs font-bold transition-colors"
                                                         style={
                                                             shift
-                                                                ? { background: color + '22', color }
+                                                                ? {
+                                                                      background: color + '22',
+                                                                      color,
+                                                                  }
                                                                 : {
                                                                       border: '1.5px dashed hsl(var(--border))',
                                                                       color: 'hsl(var(--muted-foreground))',

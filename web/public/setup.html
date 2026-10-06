@@ -645,7 +645,7 @@
                             <label
                                 >Restaurantname <span style="color: var(--danger)">*</span></label
                             >
-                            <input type="text" id="restName" placeholder="Santorini Taverna" />
+                            <input type="text" id="restName" placeholder="Taverna Beispiel" />
                         </div>
                         <div class="form-group">
                             <label>Telefon</label>
@@ -752,60 +752,12 @@
 
                     <hr class="divider" />
 
-                    <div class="form-group">
-                        <label>Datenbank-Typ</label>
-                        <select id="dbType" onchange="onDbTypeChange()">
-                            <option value="sqlite">SQLite – Lokal (Empfohlen)</option>
-                            <option value="mysql">MySQL / MariaDB</option>
-                        </select>
-                    </div>
-                    <div id="sqlite-info" class="info-box blue">
+                    <div class="info-box blue">
                         <i class="fas fa-circle-info"></i>
                         SQLite speichert alle Daten in einer einzelnen Datei
                         (<code>server/database.sqlite</code>). Keine weitere Konfiguration nötig –
                         ideal für Einsteiger und kleine Installationen.
                     </div>
-                    <div id="mysql-fields" style="display: none">
-                        <div class="info-box warn">
-                            <i class="fas fa-triangle-exclamation"></i>
-                            <strong>Hinweis:</strong> Datenbank und Benutzer müssen in MySQL bereits
-                            existieren. Nach dem Setup ist ein
-                            <strong>Server-Neustart</strong> erforderlich, damit MySQL aktiv wird.
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Host</label
-                                ><input type="text" id="dbHost" value="127.0.0.1" />
-                            </div>
-                            <div class="form-group" style="flex: 0 0 110px">
-                                <label>Port</label><input type="number" id="dbPort" value="3306" />
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Datenbank</label
-                                ><input type="text" id="dbName" placeholder="tafeline_cms" />
-                            </div>
-                            <div class="form-group">
-                                <label>Benutzer</label
-                                ><input type="text" id="dbUser" placeholder="tafeline_user" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Passwort</label>
-                            <div class="input-wrap">
-                                <input type="password" id="dbPass" placeholder="••••••••" />
-                                <button
-                                    class="toggle-pw"
-                                    type="button"
-                                    onclick="togglePw('dbPass', this)"
-                                >
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="btn-row">
                         <button class="btn btn-ghost" onclick="goStep(2)">
                             <i class="fas fa-arrow-left"></i> Zurück
@@ -872,7 +824,7 @@
                     </div>
                     <div class="form-group">
                         <label>Absendername</label>
-                        <input type="text" id="smtpFrom" placeholder="Santorini Taverna" />
+                        <input type="text" id="smtpFrom" placeholder="Taverna Beispiel" />
                         <div class="hint">Wird als Absender in E-Mails angezeigt</div>
                     </div>
 
@@ -917,26 +869,6 @@
                             kann nur einmal verwendet werden.
                         </p>
                         <div id="recovery-codes-list"></div>
-                    </div>
-
-                    <div
-                        id="restart-note"
-                        class="info-box warn"
-                        style="display: none; text-align: left; margin-top: 4px"
-                    >
-                        <i class="fas fa-rotate-right"></i>
-                        <strong>Server-Neustart erforderlich</strong> – Du hast MySQL konfiguriert.
-                        Starte den Server neu damit MySQL aktiv wird:
-                        <code
-                            style="
-                                background: rgba(0, 0, 0, 0.3);
-                                padding: 2px 6px;
-                                border-radius: 4px;
-                                display: inline-block;
-                                margin-top: 4px;
-                            "
-                            >npm start</code
-                        >
                     </div>
 
                     <div class="btn-row" style="margin-top: 24px; justify-content: center">
@@ -1073,14 +1005,6 @@
                 goStep(3);
             }
 
-            function onDbTypeChange() {
-                const t = document.getElementById('dbType').value;
-                document.getElementById('sqlite-info').style.display =
-                    t === 'sqlite' ? 'block' : 'none';
-                document.getElementById('mysql-fields').style.display =
-                    t === 'mysql' ? 'block' : 'none';
-            }
-
             function copyCode(code, btn) {
                 navigator.clipboard
                     .writeText(code)
@@ -1099,18 +1023,6 @@
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-circle-notch spin"></i> Wird gespeichert...';
 
-                const dbType = document.getElementById('dbType').value;
-                const dbDetails =
-                    dbType === 'mysql'
-                        ? {
-                              host: document.getElementById('dbHost').value,
-                              port: parseInt(document.getElementById('dbPort').value) || 3306,
-                              database: document.getElementById('dbName').value,
-                              user: document.getElementById('dbUser').value,
-                              password: document.getElementById('dbPass').value,
-                          }
-                        : {};
-
                 const restName = document.getElementById('restName').value.trim();
                 const smtpUser = document.getElementById('smtpUser').value.trim();
                 const smtpFrom = document.getElementById('smtpFrom').value.trim();
@@ -1119,8 +1031,6 @@
                     setupToken: verifiedToken,
                     licenseServer: cleanUrl(document.getElementById('licenseUrl').value),
                     licenseKey: document.getElementById('licenseKey').value.trim(),
-                    dbType,
-                    dbDetails,
                     smtp: {
                         host: document.getElementById('smtpHost').value.trim(),
                         port: parseInt(document.getElementById('smtpPort').value) || 465,
@@ -1168,10 +1078,6 @@
                     </div>`
                                 )
                                 .join('');
-                        }
-
-                        if (result.needsRestart) {
-                            document.getElementById('restart-note').style.display = 'block';
                         }
 
                         for (let i = 1; i <= TOTAL; i++) {

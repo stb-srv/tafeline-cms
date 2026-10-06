@@ -48,7 +48,10 @@ export function CategoriesTab({ data }: { data: MenuData }) {
         const cat: Category = {
             id: editing
                 ? editing.id
-                : label.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_'),
+                : label
+                      .toLowerCase()
+                      .replace(/[^a-z0-9]/g, '_')
+                      .replace(/_+/g, '_'),
             label: label.trim(),
             sort_order: sort,
             icon: editing?.icon || 'utensils',

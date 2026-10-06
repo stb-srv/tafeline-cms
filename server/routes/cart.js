@@ -38,7 +38,7 @@ function getLeadMinutes(cfg) {
 
 /**
  * Prüft ob das Restaurant zum aktuellen Zeitpunkt bestellt werden kann.
- * async – unterstützt sowohl SQLite (sync) als auch MySQL (async) Adapter.
+ * async-kompatibel (der SQLite-Adapter ist synchron, `await` funktioniert trotzdem).
  * Rückgabe: { open, reason?, openMin?, closeMin?, openStr?, closeStr?, cutoff, lead }
  */
 async function checkOpeningHours() {

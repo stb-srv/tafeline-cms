@@ -22,11 +22,7 @@ export function useAuth() {
     const claims = React.useMemo(() => decodeToken(), []);
     const user = getCurrentUser();
     const name =
-        (claims?.name as string) ||
-        (claims?.user as string) ||
-        user?.name ||
-        user?.user ||
-        'Admin';
+        (claims?.name as string) || (claims?.user as string) || user?.name || user?.user || 'Admin';
 
     return {
         isAuthenticated: isAuthenticated(),

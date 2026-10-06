@@ -13,23 +13,27 @@ export function CustomPageView() {
         );
     }
 
-    const page = (home?.pages as Array<{
-        id: string;
-        title: string;
-        slug?: string;
-        enabled?: boolean;
-        image?: string;
-        headline?: string;
-        content?: string;
-    }> | undefined)?.find(
-        (p) => (p.slug || p.id) === slug && p.enabled !== false
-    );
+    const page = (
+        home?.pages as
+            | Array<{
+                  id: string;
+                  title: string;
+                  slug?: string;
+                  enabled?: boolean;
+                  image?: string;
+                  headline?: string;
+                  content?: string;
+              }>
+            | undefined
+    )?.find((p) => (p.slug || p.id) === slug && p.enabled !== false);
 
     if (!page) {
         return (
             <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
                 <p className="text-6xl font-bold text-muted-foreground/30">404</p>
-                <p className="text-muted-foreground">Diese Seite existiert nicht oder ist nicht verfügbar.</p>
+                <p className="text-muted-foreground">
+                    Diese Seite existiert nicht oder ist nicht verfügbar.
+                </p>
                 <Link to="/" className="text-sm underline hover:text-primary">
                     Zurück zur Startseite
                 </Link>

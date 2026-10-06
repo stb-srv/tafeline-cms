@@ -268,8 +268,6 @@ module.exports = function (CONFIG, io) {
             restaurantName,
             licenseKey,
             licenseServer,
-            dbType,
-            dbDetails,
             smtp,
             adminUser,
             adminPass,
@@ -314,21 +312,12 @@ module.exports = function (CONFIG, io) {
                 isTrial: true,
             };
 
-            const selectedDbType = (dbType || 'sqlite').toLowerCase();
             const newConfig = {
                 LICENSE_SERVER_URL: licenseServerUrl,
                 ADMIN_SECRET: crypto.randomBytes(32).toString('hex'),
                 SMTP: smtp || {},
-                DB_TYPE: selectedDbType,
                 SETUP_COMPLETE: true,
             };
-            if (selectedDbType === 'mysql' && dbDetails) {
-                newConfig.DB_HOST = dbDetails.host || 'localhost';
-                newConfig.DB_PORT = dbDetails.port || 3306;
-                newConfig.DB_NAME = dbDetails.database || '';
-                newConfig.DB_USER = dbDetails.user || '';
-                newConfig.DB_PASS = dbDetails.password || '';
-            }
 
             const configPath = path.join(__dirname, 'config.json');
             fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 4));
@@ -385,7 +374,6 @@ module.exports = function (CONFIG, io) {
                 message: 'Setup abgeschlossen.',
                 recovery_codes: plainRecoveryCodes,
                 adminUser: finalAdminUser,
-                needsRestart: selectedDbType === 'mysql',
             });
         } catch (e) {
             logger.error({ err: e }, 'Setup error');
@@ -440,9 +428,11 @@ module.exports = function (CONFIG, io) {
             res.sendFile(path.join(__dirname, '..', 'public', 'status.html'))
         );
         // Admin-SPA: alle /admin-Routen liefern admin.html
-        app.get(['/admin', '/admin/*'], (req, res) => res.sendFile(path.join(DIST, 'admin.html')));
+        app.get(['/admin', '/admin/{*splat}'], (req, res) =>
+            res.sendFile(path.join(DIST, 'admin.html'))
+        );
         // Gäste-SPA: Fallback für alle übrigen Nicht-API-Routen
-        app.get('*', (req, res, next) => {
+        app.get('/{*splat}', (req, res, next) => {
             if (
                 req.path.startsWith('/api/') ||
                 req.path.startsWith('/uploads') ||
@@ -457,7 +447,7 @@ module.exports = function (CONFIG, io) {
         // Alt-Frontend mehr als Fallback.
         logger.error('web/dist nicht gefunden – bitte `npm run build:web` ausführen.');
         app.use('/', express.static(path.join(__dirname, '..', 'public')));
-        app.get('*', (req, res, next) => {
+        app.get('/{*splat}', (req, res, next) => {
             if (
                 req.path.startsWith('/api/') ||
                 req.path.startsWith('/uploads') ||
