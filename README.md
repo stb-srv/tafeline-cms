@@ -12,7 +12,7 @@
 ## 📋 Inhaltsverzeichnis
 
 - [Voraussetzungen](#voraussetzungen)
-- [Linux Server Setup (Empfohlen)](#-linux-server-setup-empfohlen)
+- [Linux Server (Produktion)](#-linux-server-produktion)
 - [Warenkorb & Online-Bestellung](#-warenkorb--online-bestellung)
 - [Erster Start: Setup-Wizard](#-erster-start-setup-wizard)
 - [.env Variablen-Referenz](#-env-variablen-referenz)
@@ -27,8 +27,8 @@
 
 **Linux Server (Produktion):**
 
-- Ubuntu 22.04 / 24.04, Debian 12 oder Rocky Linux 9
-- Root-Zugang (einmalig für das Installer-Skript)
+- Ubuntu 22.04 / 24.04 oder Debian 12 (für `setup.sh` und `deploy.sh`)
+- Root-Zugang bzw. `sudo` für `setup.sh` und `deploy.sh`
 - Offene Ports: 80, 443 (nginx), optional 5000
 
 **Lokal (Entwicklung):**
@@ -43,19 +43,76 @@
 
 ---
 
-## 🚀 Linux Server Setup (Empfohlen)
+## 🚀 Linux Server (Produktion)
 
-Dies ist der empfohlene Weg für den Produktivbetrieb mit **PM2** als Prozessmanager.
+Zwei Skripte decken den gesamten Betrieb ab – für Ubuntu 22.04/24.04 und Debian 12, als `root` oder mit `sudo`:
+
+| Skript                   | Wann                                   | Was                                                                           |
+| ------------------------ | -------------------------------------- | ----------------------------------------------------------------------------- |
+| [`setup.sh`](setup.sh)   | Einmalig, auf einem frischen Server    | Installiert alles Nötige und startet das CMS                                  |
+| [`deploy.sh`](deploy.sh) | Bei jedem Update der laufenden Instanz | Holt den neuesten Stand, baut neu, startet neu – mit Backup und Auto-Rollback |
+
+### Erstinstallation: `setup.sh`
 
 ```bash
-# 1. Repository klonen
-git clone https://github.com/stb-srv/tafeline-cms.git /opt/tafeline-cms
-cd /opt/tafeline-cms
-
-# 2. Installer starten
-chmod +x install-ubuntu.sh
-sudo ./install-ubuntu.sh
+sudo apt-get update && sudo apt-get install -y git
+sudo git clone https://github.com/stb-srv/tafeline-cms.git /opt/tafeline-cms
+sudo bash /opt/tafeline-cms/setup.sh
 ```
+
+Das Skript fragt nur Domain, Port und (optional) die E-Mail für Let's Encrypt ab und erledigt dann alles selbst:
+
+1. Systempakete (`git`, `openssl`, Build-Tools für `better-sqlite3`, `nginx`, bei HTTPS `certbot`)
+2. Node.js 22 (NodeSource)
+3. System-User `tafeline-cms` ohne Login-Shell
+4. Code nach `/opt/tafeline-cms`
+5. `.env` mit zufälligem `ADMIN_SECRET`, passendem `CORS_ORIGINS` und `HOST` (nur wenn noch keine existiert)
+6. `npm ci` und Frontend-Build (`web/dist`)
+7. systemd-Service `tafeline-cms` mit Autostart und Härtung
+8. nginx als Reverse Proxy (inkl. WebSocket für Live-Bestellungen), Firewall-Regel (falls `ufw` aktiv ist), optional HTTPS per Let's Encrypt
+9. Funktionstest
+
+Zum Schluss stehen die Setup-URL (`https://<domain>/setup`) und der einmalige **Setup-Token** in der Ausgabe. Den Rest (Admin-Zugang, Restaurantdaten, SMTP, Lizenz) erledigst du im [Setup-Wizard](#-erster-start-setup-wizard).
+
+Ohne Rückfragen (z. B. für Automatisierung):
+
+```bash
+sudo bash setup.sh --yes --domain restaurant.example.de --email admin@example.de
+```
+
+| Option              | Bedeutung                                                         |
+| ------------------- | ----------------------------------------------------------------- |
+| `--domain <host>`   | Domain oder IP (Standard: `localhost`)                            |
+| `--port <port>`     | Port des Node-Servers (Standard: `5000`)                          |
+| `--email <adresse>` | Aktiviert HTTPS per Let's Encrypt (nur mit echter Domain + nginx) |
+| `--no-nginx`        | Kein nginx; das CMS lauscht direkt auf `--port`                   |
+| `--dir <pfad>`      | Installationsverzeichnis (Standard: `/opt/tafeline-cms`)          |
+| `--branch <name>`   | Git-Branch (Standard: `main`)                                     |
+| `-y`, `--yes`       | Keine Rückfragen                                                  |
+
+`setup.sh` ist idempotent: Ein erneuter Lauf aktualisiert Pakete, Service und nginx, lässt aber `.env`, `server/config.json`, Datenbank und Uploads unangetastet.
+
+### Updates: `deploy.sh`
+
+```bash
+sudo bash /opt/tafeline-cms/deploy.sh
+```
+
+Ablauf: neue Version prüfen → Backup (`server/database.sqlite` per SQLite-Online-Backup, `.env`, `server/config.json`) nach `deploy-backups/` (die letzten 10 bleiben) → Service stoppen → `git` auf `origin/main` → `npm ci` + Frontend-Build → Service starten → Funktionstest. Startet die neue Version nicht, rollt das Skript automatisch auf die vorherige zurück und zeigt die letzten Logzeilen. Ist schon alles aktuell, passiert nichts.
+
+| Option            | Bedeutung                                         |
+| ----------------- | ------------------------------------------------- |
+| `--branch <name>` | Anderen Branch deployen (Standard: `main`)        |
+| `--force`         | Auch deployen, wenn schon der neueste Stand läuft |
+| `--no-backup`     | Backup überspringen (nicht empfohlen)             |
+
+Lokale Änderungen an versionierten Dateien werden überschrieben; vorher landet ein Patch im Backup-Ordner. Während des Updates ist das CMS kurz (Dauer des Builds) nicht erreichbar. `uploads/` wird nicht angefasst und nicht gesichert.
+
+### Komplette Neuinstallation mit bestehenden Daten
+
+Auf dem neuen Server zuerst `setup.sh` ausführen, dann `.env`, `server/config.json`, `server/database.sqlite` und `uploads/` aus dem Backup nach `/opt/tafeline-cms/` kopieren, Besitzer auf `tafeline-cms` setzen und `sudo systemctl restart tafeline-cms` ausführen. Das Setup muss dann nicht erneut durchlaufen werden.
+
+> Bei kleinen Servern (unter 2 GB RAM) kann der Frontend-Build knapp werden – dann vorübergehend Swap anlegen.
 
 ---
 
