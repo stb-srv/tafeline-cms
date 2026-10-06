@@ -33,9 +33,7 @@ export function HomePage() {
             <section
                 className="relative flex h-[70vh] items-center justify-center bg-cover bg-center text-center text-white"
                 style={{
-                    backgroundImage: home?.bgImage
-                        ? `linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)), url('${home.bgImage}')`
-                        : 'linear-gradient(135deg, #1f2937, #0f172a)',
+                    backgroundImage: `linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)), url('${home?.bgImage || '/assets/santorini_bg.png'}')`,
                 }}
             >
                 <div className="px-6">
