@@ -1,213 +1,200 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+# =============================================================================
+#  Tafeline CMS – deploy.sh (Update der laufenden Installation)
+#
+#  Holt den neuesten Stand aus GitHub, sichert vorher Datenbank, .env und Setup-Konfiguration,
+#  installiert Abhängigkeiten, baut das Frontend und startet den Service neu.
+#  Schlägt der Start fehl, wird automatisch auf die vorherige Version
+#  zurückgerollt. Ist nichts Neues da, passiert nichts (außer mit --force).
+#
+#  Aufruf (als root oder mit sudo), aus dem Installationsverzeichnis:
+#    sudo bash deploy.sh
+#
+#  Optionen:
+#    --branch <name>   Branch deployen (Standard: main)
+#    --force           Auch deployen, wenn schon der neueste Stand läuft
+#    --no-backup       Kein Backup vor dem Update (nicht empfohlen)
+#    -h, --help        Diese Hilfe
+# =============================================================================
 
-# ============================================================
-#  Tafeline CMS - Deploy Script
-#  Ubuntu 22.04+ / Debian 12+ | Ausführen als root oder sudo
-#  Verwendung: bash deploy.sh
-# ============================================================
+# Alles steckt in main(): Bash liest Skripte beim Ausführen nach – würde das
+# Update dieses Skript selbst ersetzen, könnte sonst mitten im Lauf Unsinn passieren.
+main() {
+set -Eeuo pipefail
 
-GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'
-BLUE='\033[0;34m'; BOLD='\033[1m'; NC='\033[0m'
+# ── Projektspezifische Werte ─────────────────────────────────────────────────
+APP_TITLE="Tafeline CMS"
+SERVICE="tafeline-cms"
+DEFAULT_PORT="5000"
+HEALTH_PATH="/api/setup/status"   # /api/health liefert vor der Ersteinrichtung 403
+DB_DEFAULT="server/database.sqlite"
+DB_ENV_KEY="SQLITE_PATH"
+EXTRA_BACKUP_FILES=("server/config.json" "config.json")   # relativ zum App-Verzeichnis
 
-log_info()  { echo -e "${BLUE}[INFO]${NC}  $1"; }
-log_ok()    { echo -e "${GREEN}[ OK ]${NC}  $1"; }
-log_warn()  { echo -e "${YELLOW}[WARN]${NC}  $1"; }
-log_step()  { echo -e "\n${BOLD}${GREEN}▶ $1${NC}"; }
+# ── Ausgabe-Helfer ───────────────────────────────────────────────────────────
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
+CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
+ok()   { echo -e "${GREEN}✓${NC}  $*"; }
+info() { echo -e "${CYAN}ℹ${NC}  $*"; }
+warn() { echo -e "${YELLOW}⚠${NC}  $*"; }
+err()  { echo -e "${RED}✗${NC}  $*" >&2; }
+step() { echo -e "\n${BOLD}${CYAN}▶ $*${NC}"; }
+trap 'err "Abbruch in Zeile $LINENO (Befehl: $BASH_COMMAND)"' ERR
 
-APP_DIR="/opt/tafeline-cms"
-APP_USER="tafeline-cms"
-REPO="https://github.com/stb-srv/tafeline-cms.git"
-SERVICE_NAME="tafeline-cms"
-PORT=5000
+SCRIPT="${BASH_SOURCE[0]}"
+usage() { awk 'NR>1 && /^#/ { sub(/^# ?/, ""); print; next } NR>1 { exit }' "$SCRIPT"; }
 
-clear
-echo -e "${BOLD}"
-echo "  ╔══════════════════════════════════════════════════════╗"
-echo "  ║         Tafeline CMS - Server Deploy Script v3.0         ║"
-echo "  ╚══════════════════════════════════════════════════════╝"
-echo -e "${NC}"
+# ── Argumente ────────────────────────────────────────────────────────────────
+BRANCH="main"; FORCE="no"; DO_BACKUP="yes"; ORIG_ARGS=("$@")
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --branch)    BRANCH="${2:?--branch braucht einen Wert}"; shift 2 ;;
+        --force)     FORCE="yes"; shift ;;
+        --no-backup) DO_BACKUP="no"; shift ;;
+        -h|--help)   usage; exit 0 ;;
+        *) err "Unbekannte Option: $1 (siehe --help)"; exit 2 ;;
+    esac
+done
+[[ "$BRANCH" =~ ^[A-Za-z0-9._/-]+$ ]] || { err "Ungültiger Branch: $BRANCH"; exit 1; }
 
-# --- 1. Node.js ---
-log_step "[1/8] Node.js 20 prüfen / installieren"
-apt-get update -qq
-apt-get install -y -qq curl git openssl
-if ! command -v node &>/dev/null || [[ $(node -v | cut -d'.' -f1 | tr -d 'v') -lt 18 ]]; then
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-    apt-get install -y -qq nodejs
+# ── Root ─────────────────────────────────────────────────────────────────────
+if [[ $EUID -ne 0 ]]; then
+    command -v sudo >/dev/null || { err "Bitte als root oder mit sudo ausführen."; exit 1; }
+    info "Starte neu mit sudo …"
+    exec sudo -E bash "$SCRIPT" "${ORIG_ARGS[@]}"
 fi
-log_ok "Node.js $(node -v) bereit"
 
-# --- 2. App-User ---
-log_step "[2/8] App-User '${APP_USER}' erstellen"
-if ! id "$APP_USER" &>/dev/null; then
-    useradd --system --shell /bin/bash --create-home "$APP_USER"
-    log_ok "User erstellt"
-else
-    log_ok "User existiert bereits"
+# ── Installation finden ──────────────────────────────────────────────────────
+APP_DIR="$(cd "$(dirname "$SCRIPT")" && pwd)"
+ENV_FILE="$APP_DIR/.env"
+STATE_FILE="$APP_DIR/.deployed-commit"
+[[ -d "$APP_DIR/.git" ]] || { err "$APP_DIR ist kein Git-Checkout. Erst setup.sh ausführen."; exit 1; }
+[[ -f "$ENV_FILE" ]] || { err "Keine .env in $APP_DIR – erst setup.sh ausführen."; exit 1; }
+APP_USER="$(stat -c %U "$APP_DIR")"
+[[ "$APP_USER" != "root" ]] || { err "$APP_DIR gehört root – wurde setup.sh ausgeführt?"; exit 1; }
+APP_HOME="$(getent passwd "$APP_USER" | cut -d: -f6)"
+as_app() { (cd "$APP_DIR" && runuser -u "$APP_USER" -- env HOME="$APP_HOME" "$@"); }
+
+get_env() { grep -E "^$1=" "$ENV_FILE" | head -n1 | cut -d= -f2- || true; }
+PORT="$(get_env PORT)"; PORT="${PORT:-$DEFAULT_PORT}"
+
+echo -e "\n${BOLD}${CYAN}$APP_TITLE – Deploy${NC}"
+echo "  Verzeichnis: $APP_DIR   Service: $SERVICE   Branch: $BRANCH"
+
+# ── 1. Neue Version prüfen ───────────────────────────────────────────────────
+step "1/6  Neue Version prüfen"
+as_app git fetch --quiet origin "$BRANCH"
+OLD_SHA="$(as_app git rev-parse HEAD)"
+NEW_SHA="$(as_app git rev-parse "origin/$BRANCH")"
+DEPLOYED_SHA="$(cat "$STATE_FILE" 2>/dev/null || true)"
+if [[ "$NEW_SHA" == "$DEPLOYED_SHA" && "$FORCE" == "no" ]]; then
+    ok "Bereits aktuell (${NEW_SHA:0:7}). Mit --force trotzdem neu deployen."
+    exit 0
 fi
+info "${OLD_SHA:0:7} → ${NEW_SHA:0:7}"
 
-# --- 3. Repo klonen / updaten ---
-log_step "[3/8] Repository klonen / updaten"
-git config --global --add safe.directory "$APP_DIR" 2>/dev/null || true
-if [ -d "$APP_DIR/.git" ]; then
-    chown -R "$APP_USER":"$APP_USER" "$APP_DIR"
-    cd "$APP_DIR" && sudo -u "$APP_USER" git pull origin main
-    log_ok "Repository aktualisiert"
-else
-    git clone "$REPO" "$APP_DIR"
-    chown -R "$APP_USER":"$APP_USER" "$APP_DIR"
-    log_ok "Repository geklont nach ${APP_DIR}"
-fi
-
-# --- 4. .env erstellen ---
-log_step "[4/8] .env konfigurieren"
-if [ ! -f "$APP_DIR/.env" ]; then
-    SECRET=$(openssl rand -hex 32)
-    read -rp "  Domain/IP (z.B. meinrestaurant.de oder 1.2.3.4): " APP_DOMAIN
-    APP_DOMAIN=${APP_DOMAIN:-localhost}
-    # SEC: Domain/IP strikt validieren – verhindert Injection in nginx-Config & .env
-    if ! [[ "$APP_DOMAIN" =~ ^[A-Za-z0-9.-]+$ ]]; then
-        log_warn "Ungültige Domain/IP '${APP_DOMAIN}' – Fallback auf localhost"
-        APP_DOMAIN="localhost"
+# ── 2. Backup ────────────────────────────────────────────────────────────────
+step "2/6  Backup"
+BACKUP_ROOT="$APP_DIR/deploy-backups"
+BACKUP_DIR="$BACKUP_ROOT/$(date +%Y%m%d-%H%M%S)"
+if [[ "$DO_BACKUP" == "yes" ]]; then
+    mkdir -p "$BACKUP_DIR"
+    chown "$APP_USER:$APP_USER" "$BACKUP_ROOT" "$BACKUP_DIR"
+    DB_PATH_VALUE="$(get_env "$DB_ENV_KEY")"; DB_PATH_VALUE="${DB_PATH_VALUE:-$DB_DEFAULT}"
+    [[ "$DB_PATH_VALUE" = /* ]] && DB_FILE="$DB_PATH_VALUE" || DB_FILE="$APP_DIR/$DB_PATH_VALUE"
+    if [[ -f "$DB_FILE" ]]; then
+        # SQLite-Online-Backup (konsistent, auch bei laufendem Service)
+        if ! as_app node -e '
+            const Database = require("better-sqlite3");
+            const db = new Database(process.argv[1], { readonly: true });
+            db.backup(process.argv[2]).then(() => db.close()).catch((e) => { console.error(e.message); process.exit(1); });
+        ' "$DB_FILE" "$BACKUP_DIR/$(basename "$DB_FILE")" 2>/dev/null; then
+            cp -a "$DB_FILE" "$BACKUP_DIR/"
+            warn "Online-Backup nicht möglich – Datei kopiert"
+        fi
+        ok "Datenbank gesichert"
+    else
+        info "Noch keine Datenbank ($DB_FILE) – nichts zu sichern"
     fi
-
-    cp "$APP_DIR/.env.example" "$APP_DIR/.env"
-    sed -i "s|^PORT=.*|PORT=${PORT}|" "$APP_DIR/.env"
-    sed -i "s|^ADMIN_SECRET=.*|ADMIN_SECRET=${SECRET}|" "$APP_DIR/.env"
-    sed -i "s|^CORS_ORIGINS=.*|CORS_ORIGINS=http://${APP_DOMAIN}|" "$APP_DIR/.env"
-
-    chown "$APP_USER":"$APP_USER" "$APP_DIR/.env"
-    chmod 600 "$APP_DIR/.env"
-    log_ok ".env erstellt (ADMIN_SECRET auto-generiert, CORS=${APP_DOMAIN})"
+    cp -a "$ENV_FILE" "$BACKUP_DIR/.env"
+    for f in "${EXTRA_BACKUP_FILES[@]}"; do [[ -f "$APP_DIR/$f" ]] && cp -a "$APP_DIR/$f" "$BACKUP_DIR/"; done
+    # Lokale Änderungen an versionierten Dateien würden überschrieben – vorher sichern
+    if [[ -n "$(as_app git status --porcelain --untracked-files=no)" ]]; then
+        as_app git diff HEAD > "$BACKUP_DIR/local-changes.patch" || true
+        warn "Lokale Code-Änderungen werden überschrieben (Sicherung: $BACKUP_DIR/local-changes.patch)"
+    fi
+    chmod -R go-rwx "$BACKUP_DIR"
+    chown -R "$APP_USER:$APP_USER" "$BACKUP_ROOT"
+    # Nur die letzten 10 Backups behalten
+    ls -1dt "$BACKUP_ROOT"/*/ 2>/dev/null | tail -n +11 | xargs -r rm -rf
+    ok "Backup in $BACKUP_DIR"
 else
-    log_warn ".env existiert bereits – wird nicht überschrieben"
-    APP_DOMAIN=$(grep '^CORS_ORIGINS=' "$APP_DIR/.env" | sed 's|.*://||' | sed 's|,.*||')
+    warn "Backup übersprungen (--no-backup)"
 fi
 
-# --- 5. npm install ---
-log_step "[5/8] Dependencies installieren"
-cd "$APP_DIR" && sudo -u "$APP_USER" npm install --omit=dev --silent
-log_ok "Dependencies installiert"
-
-# --- 6. Verzeichnisse ---
-log_step "[6/8] Verzeichnisse & Berechtigungen"
-mkdir -p "${APP_DIR}/uploads" "${APP_DIR}/tmp"
-chmod -R 775 "${APP_DIR}/uploads" "${APP_DIR}/tmp"
-chown -R "$APP_USER":"$APP_USER" "${APP_DIR}"
-log_ok "Berechtigungen gesetzt"
-
-# --- 7. Systemd Service ---
-log_step "[7/8] Systemd Service einrichten"
-cat > /etc/systemd/system/${SERVICE_NAME}.service <<EOF
-[Unit]
-Description=Tafeline Restaurant CMS
-After=network.target
-
-[Service]
-Type=simple
-User=${APP_USER}
-WorkingDirectory=${APP_DIR}
-EnvironmentFile=${APP_DIR}/.env
-ExecStart=/usr/bin/node server.js
-Restart=always
-RestartSec=5
-StandardOutput=journal
-StandardError=journal
-SyslogIdentifier=${SERVICE_NAME}
-
-[Install]
-WantedBy=multi-user.target
-EOF
-systemctl daemon-reload
-systemctl enable "$SERVICE_NAME"
-systemctl restart "$SERVICE_NAME"
-sleep 2
-log_ok "Systemd Service gestartet & Autostart aktiviert"
-
-# --- 8. Nginx ---
-read -rp "  Nginx als Reverse Proxy installieren? [J/n]: " INSTALL_NGINX
-INSTALL_NGINX=${INSTALL_NGINX:-J}
-
-if [[ "${INSTALL_NGINX,,}" == "j" || "${INSTALL_NGINX,,}" == "y" ]]; then
-    log_step "[8/8] Nginx konfigurieren"
-    apt-get install -yq nginx
-    NGINX_CONF="/etc/nginx/sites-available/${SERVICE_NAME}"
-    cat > "${NGINX_CONF}" <<EOF
-server {
-    listen 80;
-    server_name ${APP_DOMAIN};
-    client_max_body_size 20M;
-
-    location / {
-        proxy_pass         http://127.0.0.1:${PORT};
-        proxy_http_version 1.1;
-        proxy_set_header   Upgrade \$http_upgrade;
-        proxy_set_header   Connection 'upgrade';
-        proxy_set_header   Host \$host;
-        proxy_set_header   X-Real-IP \$remote_addr;
-        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_cache_bypass \$http_upgrade;
-    }
+# ── Update-/Rollback-Funktionen ──────────────────────────────────────────────
+# Kein "set -e"-Schutz, wenn per "||" aufgerufen – daher explizit "|| return 1"
+install_and_build() {
+    as_app npm ci --omit=dev --no-audit --no-fund --loglevel=error || return 1
+    as_app npm --prefix web ci --no-audit --no-fund --loglevel=error || return 1
+    as_app npm --prefix web run build --silent || return 1
 }
-EOF
-    ln -sf "${NGINX_CONF}" /etc/nginx/sites-enabled/${SERVICE_NAME}
-    rm -f /etc/nginx/sites-enabled/default
-    nginx -t && systemctl reload nginx
-    log_ok "Nginx konfiguriert für: ${APP_DOMAIN}"
+wait_healthy() {
+    local i
+    for i in $(seq 1 30); do
+        curl -fs -o /dev/null "http://127.0.0.1:$PORT$HEALTH_PATH" && return 0
+        sleep 2
+    done
+    return 1
+}
 
-    if command -v ufw &>/dev/null; then
-        ufw allow 'Nginx Full' --force >>/dev/null 2>&1 || true
-        log_ok "Firewall: Port 80/443 freigegeben"
-    fi
+# ── 3. Update ────────────────────────────────────────────────────────────────
+step "3/6  Service stoppen & Code aktualisieren"
+systemctl stop "$SERVICE" 2>/dev/null || true
+as_app git checkout --quiet --force -B "$BRANCH" "origin/$BRANCH"
+ok "Code auf ${NEW_SHA:0:7}"
 
-    # --- HTTPS via Certbot (optional) ---
-    read -rp "  SSL/HTTPS via Certbot einrichten? (Domain muss auf diesen Server zeigen) [J/n]: " INSTALL_SSL
-    INSTALL_SSL=${INSTALL_SSL:-J}
-    if [[ "${INSTALL_SSL,,}" == "j" || "${INSTALL_SSL,,}" == "y" ]]; then
-        read -rp "  E-Mail für Let's Encrypt Benachrichtigungen: " LE_EMAIL
-        # SEC: E-Mail validieren, bevor sie an certbot übergeben wird
-        if [ -n "${LE_EMAIL}" ] && ! [[ "${LE_EMAIL}" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
-            log_warn "Ungültige E-Mail-Adresse – Certbot übersprungen"
-            LE_EMAIL=""
-        fi
-        if [ -n "${LE_EMAIL}" ]; then
-            apt-get install -yq certbot python3-certbot-nginx
-            certbot --nginx -d "${APP_DOMAIN}" --non-interactive --agree-tos -m "${LE_EMAIL}" || \
-                log_warn "Certbot fehlgeschlagen – bitte manuell ausführen: certbot --nginx -d ${APP_DOMAIN}"
-            # CORS_ORIGINS auf https aktualisieren
-            sed -i "s|^CORS_ORIGINS=http://|CORS_ORIGINS=https://|" "$APP_DIR/.env"
-            systemctl restart "$SERVICE_NAME"
-            log_ok "HTTPS aktiviert, CORS_ORIGINS auf https aktualisiert"
-        else
-            log_warn "Keine E-Mail angegeben – Certbot übersprungen"
-        fi
-    fi
-else
-    log_step "[8/8] Nginx übersprungen"
+step "4/6  Abhängigkeiten & Frontend (dauert ein paar Minuten)"
+FAILED="no"
+install_and_build || FAILED="yes"
+
+step "5/6  Service starten"
+if [[ "$FAILED" == "no" ]]; then
+    systemctl start "$SERVICE"
+    wait_healthy || FAILED="yes"
 fi
 
-# --- Zusammenfassung ---
-echo
-echo -e "${BOLD}${GREEN}"
-echo "  ╔══════════════════════════════════════════════════════╗"
-echo "  ║            ✓ DEPLOY ABGESCHLOSSEN                    ║"
-echo "  ╚══════════════════════════════════════════════════════╝"
-echo -e "${NC}"
-echo
-echo "  CMS URL:     http://${APP_DOMAIN}"
-echo "  Admin Panel: http://${APP_DOMAIN}/admin"
-echo
-echo "  ┌─────────────────────────────────────────────────────┐"
-echo "  │  Nützliche Befehle:                                  │"
-echo "  │    systemctl status ${SERVICE_NAME}                  │"
-echo "  │    journalctl -fu ${SERVICE_NAME}                    │"
-echo "  │    systemctl restart ${SERVICE_NAME}                 │"
-echo "  │    cd ${APP_DIR} && git pull && systemctl restart ${SERVICE_NAME} │"
-echo "  └─────────────────────────────────────────────────────┘"
-echo
-echo -e "  ${GREEN}✅ Beim ersten Aufruf von http://${APP_DOMAIN}/admin${NC}"
-echo -e "  ${GREEN}   startet automatisch der Setup-Wizard.${NC}"
-echo -e "  ${GREEN}   Dort werden Admin-Zugangsdaten, SMTP und Lizenz eingerichtet –${NC}"
-echo -e "  ${GREEN}   alles im Browser, kein Konsolenzugriff mehr nötig.${NC}"
-echo
+# ── Rollback bei Fehler ──────────────────────────────────────────────────────
+if [[ "$FAILED" == "yes" ]]; then
+    err "Update fehlgeschlagen. Letzte Logzeilen:"
+    journalctl -u "$SERVICE" -n 25 --no-pager || true
+    warn "Rolle auf ${OLD_SHA:0:7} zurück …"
+    systemctl stop "$SERVICE" 2>/dev/null || true
+    as_app git checkout --quiet --force -B "$BRANCH" "$OLD_SHA"
+    install_and_build || true
+    systemctl start "$SERVICE"
+    if wait_healthy; then
+        warn "Alte Version läuft wieder. Fehler beheben und deploy.sh erneut ausführen."
+    else
+        err "Auch die alte Version startet nicht – bitte Logs prüfen: journalctl -u $SERVICE -n 100"
+    fi
+    [[ "$DO_BACKUP" == "yes" ]] && warn "Falls Migrationen gelaufen sind: Datenbank-Backup liegt in $BACKUP_DIR"
+    exit 1
+fi
+
+# ── 6. Abschluss ─────────────────────────────────────────────────────────────
+step "6/6  Abschluss"
+echo "$NEW_SHA" > "$STATE_FILE"
+chown "$APP_USER:$APP_USER" "$STATE_FILE"
+ok "Server läuft und antwortet auf $HEALTH_PATH"
+if [[ "$OLD_SHA" != "$NEW_SHA" ]]; then
+    echo -e "\n${BOLD}Änderungen:${NC}"
+    as_app git log --oneline --no-decorate "$OLD_SHA..$NEW_SHA" 2>/dev/null | head -n 15 | sed 's/^/  /' || true
+fi
+echo -e "\n${BOLD}${GREEN}✅ Update auf ${NEW_SHA:0:7} abgeschlossen.${NC}\n"
+echo "  Logs:    journalctl -fu $SERVICE"
+echo "  Status:  systemctl status $SERVICE"
+echo ""
+}
+
+main "$@"; exit $?
