@@ -397,6 +397,10 @@ module.exports = function (CONFIG, io) {
         }
     });
 
+    app.use(
+        '/setup-assets',
+        express.static(path.join(__dirname, '..', 'web', 'public', 'setup-assets'))
+    );
     app.get('/setup', (req, res) =>
         res.sendFile(path.join(__dirname, '..', 'web', 'public', 'setup.html'))
     );
