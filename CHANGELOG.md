@@ -7,6 +7,10 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Tests für Bestellungen und Reservierungen (Validierung, Lizenz-Gating, Rollenrechte).
+
 ### Changed
 
 - **MySQL/MariaDB-Unterstützung entfernt** – das CMS nutzt ausschließlich SQLite (`better-sqlite3`). `DB_TYPE`, `DB_*`-Variablen, `migrate-to-mysql.sh` und `mysql2` entfallen.
