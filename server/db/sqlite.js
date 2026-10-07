@@ -34,6 +34,12 @@ db.exec(`
             recovery_codes          TEXT DEFAULT '[]'
         );
 
+        CREATE TABLE IF NOT EXISTS user_2fa (
+            user    TEXT PRIMARY KEY,
+            secret  TEXT NOT NULL,
+            enabled INTEGER NOT NULL DEFAULT 0
+        );
+
         CREATE TABLE IF NOT EXISTS menu (
             id        TEXT PRIMARY KEY,
             number    TEXT,
@@ -230,6 +236,10 @@ const stmts = {
         'UPDATE users SET name = ?, last_name = ?, email = ?, role = ? WHERE user = ?'
     ),
     deleteUser: db.prepare('DELETE FROM users WHERE user = ?'),
+    get2fa: db.prepare('SELECT secret, enabled FROM user_2fa WHERE user = ?'),
+    set2fa: db.prepare('INSERT OR REPLACE INTO user_2fa (user, secret, enabled) VALUES (?, ?, 0)'),
+    enable2fa: db.prepare('UPDATE user_2fa SET enabled = 1 WHERE user = ?'),
+    delete2fa: db.prepare('DELETE FROM user_2fa WHERE user = ?'),
     getMenu: db.prepare('SELECT * FROM menu ORDER BY cat, COALESCE(sort_order, 0), name'),
     getMenuById: db.prepare('SELECT * FROM menu WHERE id = ?'),
     addMenu: db.prepare(
@@ -349,7 +359,17 @@ const DB = {
             user
         );
     },
-    deleteUser: (user) => stmts.deleteUser.run(user),
+    deleteUser: (user) => {
+        stmts.delete2fa.run(user);
+        return stmts.deleteUser.run(user);
+    },
+    get2fa: (user) => {
+        const r = stmts.get2fa.get(user);
+        return r ? { secret: r.secret, enabled: Number(r.enabled) === 1 } : null;
+    },
+    set2faSecret: (user, secret) => stmts.set2fa.run(user, secret),
+    enable2fa: (user) => stmts.enable2fa.run(user),
+    delete2fa: (user) => stmts.delete2fa.run(user),
     getMenu: () => {
         const rows = stmts.getMenu.all();
         return rows.map((r) => ({

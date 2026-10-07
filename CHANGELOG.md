@@ -9,6 +9,10 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ### Added
 
+- Zwei-Faktor-Anmeldung (TOTP) für CMS-Nutzer: Einrichtung per QR-Code unter Einstellungen > Nutzer, zweiter Login-Schritt, Deaktivieren mit Passwort und Code, Admin-Reset für andere Konten.
+
+### Added
+
 - Tests für Bestellungen und Reservierungen (Validierung, Lizenz-Gating, Rollenrechte).
 
 ### Changed

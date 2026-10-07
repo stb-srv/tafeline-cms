@@ -82,7 +82,8 @@ export async function apiPost<T extends ApiResult = ApiResult>(
             headers: authHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify(data),
         });
-        if (r.status === 401 && route !== 'admin/login') return handleAuthFailure() as unknown as T;
+        if (r.status === 401 && !route.startsWith('admin/login'))
+            return handleAuthFailure() as unknown as T;
         const res = (await r
             .json()
             .catch(() => ({ success: false, reason: 'Ungültige Server-Antwort.' }))) as T;
