@@ -40,10 +40,12 @@ Beim ersten Start ohne `server/config.json` wird jeder Nicht-API-Aufruf auf `/se
   Token:  <32-Zeichen-Hex-Token>
 ```
 
+Das Token wird zusätzlich in `SETUP-INFO.txt` (Modus 600, gitignored, nach Setup gelöscht) geschrieben; `sudo bash setup.sh --show-token` zeigt es erneut an.
+
 Der Setup-Wizard (`POST /api/setup`) validiert den Token (statt IP-Check) und erstellt:
 
 1. Den ersten Admin-User in der DB (Recovery-Codes werden generiert, nur einmalig im Browser angezeigt)
-2. `server/config.json` mit `ADMIN_SECRET` (auto-generiert), `SMTP`, `LICENSE_SERVER_URL`, `SETUP_COMPLETE: true`
+2. `server/config.json` mit `ADMIN_SECRET` (auto-generiert), `SMTP`, `SETUP_COMPLETE: true` (der Lizenzserver ist fest im Code: `server/core/license-server.js`)
 3. Branding-KV mit Restaurantname, Telefon, Adresse, Sprache, Zeitzone
 4. Trial-Lizenz oder validierter Lizenz-Key in `settings.license`
 
@@ -215,8 +217,7 @@ PORT=5000
 HOST=meinrestaurant.de          # Hostname für License domain check (optional)
 ADMIN_SECRET=langer-zufälliger-string
 CORS_ORIGINS=https://meinrestaurant.de  # Komma-getrennt; Default: localhost
-LICENSE_SERVER_URL=https://licens.stb-srv.de
-LICENSE_PUBLIC_KEY=             # RSA Public Key Override (optional)
+# LICENSE_SERVER_URL / LICENSE_PUBLIC_KEY: nur bei NODE_ENV=development wirksam (Produktion: fest im Code)
 
 # Backup
 BACKUP_DIR=./backups

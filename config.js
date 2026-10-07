@@ -1,6 +1,7 @@
 /**
  * Tafeline CMS GLOBAL CONFIGURATION
  * Priorität: config.json (Setup-Wizard) > .env > Defaults
+ * Ausnahme: LICENSE_SERVER_URL ist fest im Code hinterlegt (server/core/license-server.js).
  *
  * SECURITY:
  *  - SEC-04: Server-Start wird verweigert wenn ADMIN_SECRET nicht gesetzt
@@ -19,10 +20,12 @@ if (!fs.existsSync(CONFIG_PATH) && fs.existsSync(path.join(__dirname, 'config.js
     CONFIG_PATH = path.join(__dirname, 'config.json');
 }
 
+const { getLicenseServerUrl } = require('./server/core/license-server.js');
+
 const INSECURE_SECRET_DEFAULT = 'change-me-before-production';
 
 const DEFAULT_CONFIG = {
-    LICENSE_SERVER_URL: process.env.LICENSE_SERVER_URL || 'https://licens.stb-srv.de',
+    LICENSE_SERVER_URL: getLicenseServerUrl(),
     PORT: parseInt(process.env.PORT) || 5000,
     ADMIN_SECRET: process.env.ADMIN_SECRET || INSECURE_SECRET_DEFAULT,
     DEV_MODE: process.env.DEV_MODE === 'true',
@@ -64,10 +67,8 @@ if (fs.existsSync(CONFIG_PATH)) {
             SETUP_COMPLETE: true,
         };
 
-        if (!loadedConfig.LICENSE_SERVER_URL) {
-            CONFIG.LICENSE_SERVER_URL =
-                process.env.LICENSE_SERVER_URL || 'https://licens.stb-srv.de';
-        }
+        // Lizenzserver ist fest hinterlegt – Werte aus config.json (auch Altinstallationen) ignorieren
+        CONFIG.LICENSE_SERVER_URL = getLicenseServerUrl();
         // PORT & ADMIN_SECRET aus .env haben Vorrang (Security: nie in config.json überschreiben)
         if (process.env.PORT) CONFIG.PORT = parseInt(process.env.PORT);
         if (process.env.ADMIN_SECRET && process.env.ADMIN_SECRET !== INSECURE_SECRET_DEFAULT) {

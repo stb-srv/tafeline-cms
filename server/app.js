@@ -14,6 +14,8 @@ const {
     requireRole,
     generalLimiter,
 } = require('./core/middleware.js');
+const { getLicenseServerUrl } = require('./core/license-server.js');
+const { clearSetupInfo } = require('./core/setup-token.js');
 const { PLAN_DEFINITIONS } = require('./services/license.js');
 const { version: APP_VERSION } = require('../package.json');
 
@@ -22,10 +24,7 @@ module.exports = function (CONFIG, io) {
     app.set('trust proxy', 1);
 
     const ADMIN_SECRET = CONFIG.ADMIN_SECRET;
-    const LICENSE_SERVER = (CONFIG.LICENSE_SERVER_URL || 'https://licens.stb-srv.de').replace(
-        /\/+$/,
-        ''
-    );
+    const LICENSE_SERVER = getLicenseServerUrl();
     const UPLOADS_DIR = path.join(__dirname, '..', 'uploads');
     const PLUGINS_DIR = path.join(__dirname, '..', 'plugins');
 
@@ -267,7 +266,6 @@ module.exports = function (CONFIG, io) {
             setupToken,
             restaurantName,
             licenseKey,
-            licenseServer,
             smtp,
             adminUser,
             adminPass,
@@ -289,10 +287,6 @@ module.exports = function (CONFIG, io) {
                     reason: 'Admin-Passwort ist erforderlich und muss mindestens 12 Zeichen lang sein.',
                 });
             }
-            const licenseServerUrl = (licenseServer || 'https://licens.stb-srv.de').replace(
-                /\/+$/,
-                ''
-            );
             const trialPlan = PLAN_DEFINITIONS['FREE'];
             const r = restaurant || {};
             const customerName = r.name || restaurantName || 'Trial';
@@ -313,7 +307,6 @@ module.exports = function (CONFIG, io) {
             };
 
             const newConfig = {
-                LICENSE_SERVER_URL: licenseServerUrl,
                 ADMIN_SECRET: crypto.randomBytes(32).toString('hex'),
                 SMTP: smtp || {},
                 SETUP_COMPLETE: true,
@@ -366,6 +359,7 @@ module.exports = function (CONFIG, io) {
             });
 
             global._setupToken = null;
+            clearSetupInfo();
             res.json({
                 success: true,
                 trial: licenseKey

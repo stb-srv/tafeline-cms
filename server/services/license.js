@@ -3,11 +3,13 @@
  *
  * Der RSA Public Key wird beim Start automatisch vom Lizenzserver geladen
  * (GET /api/v1/public-key). Nur wenn das fehlschlägt, wird der eingebettete
- * Fallback-Key verwendet. LICENSE_PUBLIC_KEY in .env überschreibt beides.
+ * Fallback-Key verwendet. LICENSE_PUBLIC_KEY wird nur bei NODE_ENV=development beachtet
+ * (Produktion: fest hinterlegt, damit Kunden keine eigenen Lizenzen signieren können).
  */
 
 const jwt = require('jsonwebtoken');
 const logger = require('../core/logger.js');
+const { getLicenseServerUrl, isDevelopment } = require('../core/license-server.js');
 const { PLAN_DEFINITIONS: SHARED_PLANS } = require('@tafeline/plans');
 
 const TAFELINE_PUBLIC_KEY_FALLBACK = `-----BEGIN PUBLIC KEY-----
@@ -21,7 +23,8 @@ HQIDAQAB
 -----END PUBLIC KEY-----`;
 
 // Aktiver Public Key – wird durch initPublicKey() überschrieben
-let TAFELINE_PUBLIC_KEY = (process.env.LICENSE_PUBLIC_KEY || '').trim() || null;
+const PUBLIC_KEY_OVERRIDE = isDevelopment() ? (process.env.LICENSE_PUBLIC_KEY || '').trim() : '';
+let TAFELINE_PUBLIC_KEY = PUBLIC_KEY_OVERRIDE || null;
 
 if (TAFELINE_PUBLIC_KEY) {
     logger.info('RSA Public Key aus LICENSE_PUBLIC_KEY Env-Variable geladen.');
@@ -37,14 +40,14 @@ if (TAFELINE_PUBLIC_KEY) {
  * Wird einmalig beim Start durch den LicenseChecker aufgerufen.
  * Gibt true zurück wenn erfolgreich, false bei Fehler (Fallback bleibt aktiv).
  */
-const initPublicKey = async (licenseServerUrl) => {
+const initPublicKey = async () => {
     // Wenn manuell via Env gesetzt → nicht überschreiben
-    if ((process.env.LICENSE_PUBLIC_KEY || '').trim()) {
+    if (PUBLIC_KEY_OVERRIDE) {
         logger.info('Public Key aus Env – kein automatischer Abruf nötig.');
         return true;
     }
 
-    const url = `${(licenseServerUrl || 'https://licens.stb-srv.de').replace(/\/+$/, '')}/api/v1/public-key`;
+    const url = `${getLicenseServerUrl()}/api/v1/public-key`;
     try {
         const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -74,8 +77,8 @@ const PLAN_DEFINITIONS = { ...SHARED_PLANS };
  * Wird beim Start durch LicenseChecker aufgerufen (nach initPublicKey).
  * Faellt bei Fehler auf @tafeline/plans-Fallback zurueck.
  */
-const initPlans = async (licenseServerUrl) => {
-    const base = (licenseServerUrl || 'https://licens.stb-srv.de').replace(/\/+$/, '');
+const initPlans = async () => {
+    const base = getLicenseServerUrl();
     const url = `${base}/api/v1/plans`;
     try {
         const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
