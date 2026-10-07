@@ -28,10 +28,7 @@ class LicenseChecker {
     start() {
         this.startupTimer = setTimeout(async () => {
             // 1. Public Key + Plan-Definitionen vom Lizenzserver laden
-            await Promise.all([
-                initPublicKey(),
-                initPlans(),
-            ]);
+            await Promise.all([initPublicKey(), initPlans()]);
             // 2. Token-Prüfung
             await this._checkIfTokenNeedsRefresh();
             // 3. Periodischer Check

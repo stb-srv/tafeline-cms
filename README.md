@@ -152,12 +152,12 @@ Ausgabe in der Konsole:
 
 Öffne die angezeigte URL im Browser und folge den 4 Schritten:
 
-| Schritt            | Inhalt                                                                         |
-| ------------------ | ------------------------------------------------------------------------------ |
+| Schritt            | Inhalt                                                                      |
+| ------------------ | --------------------------------------------------------------------------- |
 | **1 – Zugang**     | Setup-Token (siehe oben) · Admin-Name · E-Mail · Passwort (min. 12 Zeichen) |
-| **2 – Restaurant** | Name · Telefon · Adresse · Sprache · Zeitzone · Website                        |
-| **3 – System**     | Lizenzschlüssel (optional) · Datenbanktyp (SQLite empfohlen)                   |
-| **4 – E-Mail**     | SMTP-Daten für Bestätigungs-Mails (optional, auch später einstellbar)          |
+| **2 – Restaurant** | Name · Telefon · Adresse · Sprache · Zeitzone · Website                     |
+| **3 – System**     | Lizenzschlüssel (optional) · Datenbanktyp (SQLite empfohlen)                |
+| **4 – E-Mail**     | SMTP-Daten für Bestätigungs-Mails (optional, auch später einstellbar)       |
 
 Am Ende werden **Recovery-Codes** angezeigt – **unbedingt sicher aufbewahren**, da sie nur einmalig sichtbar sind.
 

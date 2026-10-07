@@ -12,7 +12,9 @@ const jwt = require('jsonwebtoken');
 async function main() {
     const DB = require(path.join(__dirname, '..', 'server', 'database.js'));
 
-    const LICENSE_SERVER = require(path.join(__dirname, '..', 'server', 'core', 'license-server.js')).getLicenseServerUrl();
+    const LICENSE_SERVER = require(
+        path.join(__dirname, '..', 'server', 'core', 'license-server.js')
+    ).getLicenseServerUrl();
     const cliDomain = process.argv[2]
         ? process.argv[2].replace(/^https?:\/\//, '').split('/')[0]
         : null;

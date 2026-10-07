@@ -2,7 +2,6 @@ let currentStep = 1;
 const TOTAL = 4;
 let verifiedToken = '';
 
-
 function goStep(n) {
     document.getElementById(`step${currentStep}`).classList.remove('active');
     document.getElementById(`ps${currentStep}`).classList.remove('active');
