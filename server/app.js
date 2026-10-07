@@ -124,21 +124,32 @@ module.exports = function (CONFIG, io) {
         'http://127.0.0.1:5000',
         'http://127.0.0.1:5173',
     ];
-    app.use(
-        cors({
-            origin: (origin, callback) => {
-                if (!origin) return callback(null, true); // same-origin / Server-zu-Server
-                if (!CONFIG.SETUP_COMPLETE) {
-                    return PRE_SETUP_ORIGINS.includes(origin)
-                        ? callback(null, true)
-                        : callback(new Error(`CORS: Origin '${origin}' nicht erlaubt.`));
-                }
-                if (allowedOrigins.includes(origin)) return callback(null, true);
-                return callback(new Error(`CORS: Origin '${origin}' nicht erlaubt.`));
-            },
-            credentials: true,
-        })
-    );
+    // Same-Origin-Requests (Origin-Host == Host-Header, ggf. X-Forwarded-Host) sind immer
+    // erlaubt. Browser senden bei POST-Fetches auch same-origin einen Origin-Header; ohne
+    // diese Prüfung scheitert z. B. der Setup-Wizard über eine Domain/IP mit CORS-Fehler.
+    const isSameOrigin = (req, origin) => {
+        try {
+            const originHost = new URL(origin).host;
+            const hosts = [req.get('x-forwarded-host'), req.get('host')]
+                .filter(Boolean)
+                .map((h) => h.split(',')[0].trim());
+            return hosts.includes(originHost);
+        } catch (_) {
+            return false;
+        }
+    };
+    const corsOptions = (req, callback) => {
+        const origin = req.get('origin');
+        let allowed = true;
+        if (origin && !isSameOrigin(req, origin)) {
+            allowed = CONFIG.SETUP_COMPLETE
+                ? allowedOrigins.includes(origin)
+                : PRE_SETUP_ORIGINS.includes(origin);
+        }
+        // Fremde Origins: keine CORS-Header (Browser blockt), aber kein 500er
+        callback(null, { origin: allowed, credentials: true });
+    };
+    app.use(cors(corsOptions));
     app.use(express.json({ limit: '1mb' }));
 
     // General rate limiter — 300 req/min per IP across all API routes
