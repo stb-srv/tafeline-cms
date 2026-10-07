@@ -72,7 +72,7 @@ Das Skript fragt nur Domain, Port und (optional) die E-Mail für Let's Encrypt a
 8. nginx als Reverse Proxy (inkl. WebSocket für Live-Bestellungen), Firewall-Regel (falls `ufw` aktiv ist), optional HTTPS per Let's Encrypt
 9. Funktionstest
 
-Zum Schluss stehen die Setup-URL (`https://<domain>/setup`) und der einmalige **Setup-Token** in der Ausgabe. Den Rest (Admin-Zugang, Restaurantdaten, SMTP, Lizenz) erledigst du im [Setup-Wizard](#-erster-start-setup-wizard).
+Zum Schluss stehen die Setup-URL (`https://<domain>/setup`) und der **Setup-Token** deutlich hervorgehoben in der Ausgabe (erneut anzeigen: `sudo bash setup.sh --show-token`). Den Rest (Admin-Zugang, Restaurantdaten, SMTP, Lizenz) erledigst du im [Setup-Wizard](#-erster-start-setup-wizard).
 
 Ohne Rückfragen (z. B. für Automatisierung):
 
@@ -130,7 +130,16 @@ Tafeline CMS verfügt über ein integriertes Warenkorb-System für Gäste.
 
 ## 🧙 Erster Start: Setup-Wizard
 
-Beim ersten Start erscheint in der Konsole ein **Setup-Token** – den brauchst du im ersten Wizard-Schritt:
+Beim ersten Start wird ein **Setup-Token** erzeugt – den brauchst du im ersten Wizard-Schritt. Er ist leicht wiederzufinden:
+
+- am Ende von `setup.sh` (hervorgehoben ausgegeben)
+- jederzeit erneut: `sudo bash /opt/tafeline-cms/setup.sh --show-token`
+- in der Datei `/opt/tafeline-cms/SETUP-INFO.txt` (Rechte 600, nicht im Repo; wird nach der Ersteinrichtung automatisch gelöscht)
+- in der Konsole bzw. im Journal (`journalctl -u tafeline-cms | grep Token`)
+
+Das Token gilt bis zum nächsten Neustart des Services; danach wird ein neues erzeugt und `SETUP-INFO.txt` aktualisiert.
+
+Ausgabe in der Konsole:
 
 ```
 ════════════════════════════════════════════════════════════
@@ -143,12 +152,12 @@ Beim ersten Start erscheint in der Konsole ein **Setup-Token** – den brauchst 
 
 Öffne die angezeigte URL im Browser und folge den 4 Schritten:
 
-| Schritt            | Inhalt                                                                         |
-| ------------------ | ------------------------------------------------------------------------------ |
-| **1 – Zugang**     | Setup-Token aus der Konsole · Admin-Name · E-Mail · Passwort (min. 12 Zeichen) |
-| **2 – Restaurant** | Name · Telefon · Adresse · Sprache · Zeitzone · Website                        |
-| **3 – System**     | Lizenzschlüssel (optional) · Datenbanktyp (SQLite empfohlen)                   |
-| **4 – E-Mail**     | SMTP-Daten für Bestätigungs-Mails (optional, auch später einstellbar)          |
+| Schritt            | Inhalt                                                                      |
+| ------------------ | --------------------------------------------------------------------------- |
+| **1 – Zugang**     | Setup-Token (siehe oben) · Admin-Name · E-Mail · Passwort (min. 12 Zeichen) |
+| **2 – Restaurant** | Name · Telefon · Adresse · Sprache · Zeitzone · Website                     |
+| **3 – System**     | Lizenzschlüssel (optional) · Datenbanktyp (SQLite empfohlen)                |
+| **4 – E-Mail**     | SMTP-Daten für Bestätigungs-Mails (optional, auch später einstellbar)       |
 
 Am Ende werden **Recovery-Codes** angezeigt – **unbedingt sicher aufbewahren**, da sie nur einmalig sichtbar sind.
 

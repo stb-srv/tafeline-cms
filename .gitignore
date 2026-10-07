@@ -41,3 +41,4 @@ memory/
 # Von deploy.sh/setup.sh erzeugt
 .deployed-commit
 deploy-backups/
+SETUP-INFO.txt

@@ -7,6 +7,7 @@
 
 const { verifyLicenseToken, initPublicKey, initPlans } = require('./license.js');
 const logger = require('../core/logger.js');
+const { getLicenseServerUrl } = require('../core/license-server.js');
 
 const CHECK_INTERVAL_MS = 72 * 60 * 60 * 1000; // 72h
 const STARTUP_DELAY_MS = 5 * 1000; // 5s nach Boot
@@ -14,12 +15,9 @@ const TOKEN_REFRESH_THRESHOLD_H = 60; // Token-Gültigkeit ist 80h → Refresh w
 const MAX_FAILURES = 3;
 
 class LicenseChecker {
-    constructor(DB, licenseServerUrl, host) {
+    constructor(DB, _licenseServerUrl, host) {
         this.DB = DB;
-        this.licenseServerUrl = (licenseServerUrl || 'https://licens.stb-srv.de').replace(
-            /\/+$/,
-            ''
-        );
+        this.licenseServerUrl = getLicenseServerUrl();
         this.host = host || 'localhost';
         this.failCount = 0;
         this.timer = null;
@@ -30,10 +28,7 @@ class LicenseChecker {
     start() {
         this.startupTimer = setTimeout(async () => {
             // 1. Public Key + Plan-Definitionen vom Lizenzserver laden
-            await Promise.all([
-                initPublicKey(this.licenseServerUrl),
-                initPlans(this.licenseServerUrl),
-            ]);
+            await Promise.all([initPublicKey(), initPlans()]);
             // 2. Token-Prüfung
             await this._checkIfTokenNeedsRefresh();
             // 3. Periodischer Check

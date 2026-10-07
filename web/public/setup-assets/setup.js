@@ -2,8 +2,6 @@ let currentStep = 1;
 const TOTAL = 4;
 let verifiedToken = '';
 
-const cleanUrl = (url) => url.trim().replace(/\/+$/, '');
-
 function goStep(n) {
     document.getElementById(`step${currentStep}`).classList.remove('active');
     document.getElementById(`ps${currentStep}`).classList.remove('active');
@@ -136,7 +134,6 @@ async function finishSetup() {
 
     const payload = {
         setupToken: verifiedToken,
-        licenseServer: cleanUrl(document.getElementById('licenseUrl').value),
         licenseKey: document.getElementById('licenseKey').value.trim(),
         smtp: {
             host: document.getElementById('smtpHost').value.trim(),

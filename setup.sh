@@ -15,6 +15,7 @@
 #    --domain <host>   Domain oder IP des Servers (Standard: localhost)
 #    --port <port>     Port des Node-Servers (Standard: 5000)
 #    --email <adresse> Let's-Encrypt-Mail; aktiviert HTTPS (nur bei echter Domain)
+#    --show-token      Setup-Token der Ersteinrichtung erneut anzeigen und beenden
 #    --no-nginx        Kein nginx einrichten (Server lauscht dann direkt auf --port)
 #    --dir <pfad>      Installationsverzeichnis (Standard: /opt/tafeline-cms)
 #    --branch <name>   Git-Branch (Standard: main)
@@ -46,12 +47,13 @@ trap 'err "Abbruch in Zeile $LINENO (Befehl: $BASH_COMMAND)"' ERR
 usage() { awk 'NR>1 && /^#/ { sub(/^# ?/, ""); print; next } NR>1 { exit }' "$0"; }
 
 # ── Argumente ────────────────────────────────────────────────────────────────
-DOMAIN=""; PORT=""; LE_EMAIL=""; WITH_NGINX="yes"; APP_DIR=""; BRANCH="main"; ASSUME_YES="no"
+DOMAIN=""; PORT=""; LE_EMAIL=""; WITH_NGINX="yes"; APP_DIR=""; BRANCH="main"; ASSUME_YES="no"; SHOW_TOKEN="no"
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --domain)   DOMAIN="${2:?--domain braucht einen Wert}"; shift 2 ;;
         --port)     PORT="${2:?--port braucht einen Wert}"; shift 2 ;;
         --email)    LE_EMAIL="${2:?--email braucht einen Wert}"; shift 2 ;;
+        --show-token) SHOW_TOKEN="yes"; shift ;;
         --no-nginx) WITH_NGINX="no"; shift ;;
         --dir)      APP_DIR="${2:?--dir braucht einen Wert}"; shift 2 ;;
         --branch)   BRANCH="${2:?--branch braucht einen Wert}"; shift 2 ;;
@@ -100,6 +102,25 @@ APP_DIR="${APP_DIR:-$DEFAULT_DIR}"
 APP_USER="$SERVICE"
 APP_HOME="/var/lib/$SERVICE"
 ENV_FILE="$APP_DIR/.env"
+INFO_FILE="$APP_DIR/SETUP-INFO.txt"
+
+find_setup_token() { # Token aus SETUP-INFO.txt, sonst aus dem Journal
+    local t=""
+    [[ -f "$INFO_FILE" ]] && t=$(grep -oE 'Setup-Token:[[:space:]]+[0-9a-f]+' "$INFO_FILE" | awk '{print $2}' | tail -n1 || true)
+    [[ -z "$t" ]] && t=$(journalctl -u "$SERVICE" -n 500 --no-pager -o cat 2>/dev/null | grep -oE 'Token:[[:space:]]+[0-9a-f]+' | tail -n1 | awk '{print $2}' || true)
+    echo "$t"
+}
+
+if [[ "$SHOW_TOKEN" == "yes" ]]; then
+    if [[ -f "$APP_DIR/server/config.json" ]]; then
+        ok "Die Ersteinrichtung ist bereits abgeschlossen – es gibt kein Setup-Token mehr."; exit 0
+    fi
+    token=$(find_setup_token)
+    [[ -n "$token" ]] || { err "Kein Setup-Token gefunden. Läuft der Service? (systemctl status $SERVICE)"; exit 1; }
+    echo -e "\n  Setup-Token: ${BOLD}$token${NC}"
+    echo -e "  Datei:       $INFO_FILE\n"
+    exit 0
+fi
 
 existing_domain=""
 if [[ -f "$ENV_FILE" ]]; then
@@ -203,8 +224,7 @@ ADMIN_SECRET=$(openssl rand -hex 32)
 CORS_ORIGINS=$URL_BASE
 LOG_LEVEL=info
 
-# Lizenzserver (Standard: https://licens.stb-srv.de)
-# LICENSE_SERVER_URL=
+# Der Lizenzserver ist fest im Code hinterlegt und nicht konfigurierbar.
 
 # SMTP kann auch im CMS unter Einstellungen > E-Mail gesetzt werden
 # SMTP_HOST=
@@ -350,7 +370,7 @@ FINAL_URL="$SCHEME://$DOMAIN"
 SETUP_TOKEN=""
 if [[ ! -f "$APP_DIR/server/config.json" ]]; then
     for _ in $(seq 1 10); do
-        SETUP_TOKEN=$(journalctl -u "$SERVICE" -n 200 --no-pager -o cat 2>/dev/null | grep -oE 'Token:[[:space:]]+[0-9a-f]+' | tail -n1 | awk '{print $2}' || true)
+        SETUP_TOKEN=$(find_setup_token)
         [[ -n "$SETUP_TOKEN" ]] && break
         sleep 1
     done
@@ -361,12 +381,20 @@ if [[ -f "$APP_DIR/server/config.json" ]]; then
     echo -e "  Die Ersteinrichtung ist bereits abgeschlossen – Admin-Panel: ${BOLD}$FINAL_URL/admin${NC}\n"
 else
     echo -e "  ${BOLD}Nächster Schritt:${NC} Setup-Wizard im Browser abschließen"
-    echo -e "    ${BOLD}$FINAL_URL/setup${NC}"
+    echo ""
+    echo -e "${BOLD}${YELLOW}  ════════════════════════════════════════════════════════${NC}"
+    echo -e "${BOLD}${YELLOW}  SETUP-URL:    $FINAL_URL/setup${NC}"
     if [[ -n "$SETUP_TOKEN" ]]; then
-        echo -e "    Setup-Token: ${BOLD}$SETUP_TOKEN${NC}  (gilt bis zum nächsten Neustart des Services)"
+        echo -e "${BOLD}${YELLOW}  SETUP-TOKEN:  $SETUP_TOKEN${NC}"
     else
-        echo "    Setup-Token:  journalctl -u $SERVICE | grep Token"
+        echo -e "${BOLD}${YELLOW}  SETUP-TOKEN:  sudo bash $APP_DIR/setup.sh --show-token${NC}"
     fi
+    echo -e "${BOLD}${YELLOW}  ════════════════════════════════════════════════════════${NC}"
+    echo ""
+    echo "  Token jederzeit erneut anzeigen:"
+    echo "    sudo bash $APP_DIR/setup.sh --show-token"
+    echo "    sudo cat $INFO_FILE"
+    echo "  (Das Token gilt bis zum nächsten Neustart des Services.)"
     echo ""
 fi
 echo "  Logs:      journalctl -fu $SERVICE"

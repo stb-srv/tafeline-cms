@@ -194,6 +194,7 @@ fi
 echo -e "\n${BOLD}${GREEN}✅ Update auf ${NEW_SHA:0:7} abgeschlossen.${NC}\n"
 echo "  Logs:    journalctl -fu $SERVICE"
 echo "  Status:  systemctl status $SERVICE"
+[[ -f "$APP_DIR/SETUP-INFO.txt" ]] && echo "  Setup:   Ersteinrichtung noch offen – Token: sudo bash $APP_DIR/setup.sh --show-token"
 echo ""
 }
 

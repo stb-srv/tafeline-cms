@@ -10,13 +10,11 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 
 async function main() {
-    const CONFIG = require(path.join(__dirname, '..', 'config.js'));
     const DB = require(path.join(__dirname, '..', 'server', 'database.js'));
 
-    const LICENSE_SERVER = (CONFIG.LICENSE_SERVER_URL || 'https://licens.stb-srv.de').replace(
-        /\/+$/,
-        ''
-    );
+    const LICENSE_SERVER = require(
+        path.join(__dirname, '..', 'server', 'core', 'license-server.js')
+    ).getLicenseServerUrl();
     const cliDomain = process.argv[2]
         ? process.argv[2].replace(/^https?:\/\//, '').split('/')[0]
         : null;
