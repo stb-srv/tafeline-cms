@@ -203,7 +203,6 @@ module.exports = (requireAuth, _requireLicense, _LICENSE_SERVER) => {
     );
 
     router.get('/license/plans', requireAuth, requireRole('admin'), async (req, res) => {
-        const CONFIG = require('../../config.js');
         const base = getLicenseServerUrl();
         try {
             const r = await fetch(`${base}/api/v1/plans`, { signal: AbortSignal.timeout(8000) });

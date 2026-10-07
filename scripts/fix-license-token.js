@@ -10,7 +10,6 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 
 async function main() {
-    const CONFIG = require(path.join(__dirname, '..', 'config.js'));
     const DB = require(path.join(__dirname, '..', 'server', 'database.js'));
 
     const LICENSE_SERVER = require(path.join(__dirname, '..', 'server', 'core', 'license-server.js')).getLicenseServerUrl();
