@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="stage-title">
+  <title id="stage-title">Kleine Bühne in Draufsicht</title>
+  <defs><linearGradient id="tafeline-stage-accent" gradientUnits="userSpaceOnUse" x1="64.0" y1="89.6" x2="192.0" y2="166.4"><stop stop-color="#0a5cff"/><stop offset=".5" stop-color="#00c2d6"/><stop offset="1" stop-color="#6be03a"/></linearGradient></defs>
+  <g fill="none" stroke="#9fb3cc" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+
+    <rect x="44" y="50" width="168" height="136" rx="8"/>
+    <path d="M82 186V229H174V186M82 200H174M82 214H174"/>
+    <path d="M68 72H188"/>
+    <path d="M105 72H151" stroke="url(#tafeline-stage-accent)"/>
+
+  </g>
+</svg>

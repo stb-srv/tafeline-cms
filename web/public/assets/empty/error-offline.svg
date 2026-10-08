@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360" role="img" aria-labelledby="error-offline-title">
+  <title id="error-offline-title">Server nicht erreichbar – Servierglocke mit ausgestecktem Kabel</title>
+  <defs><linearGradient id="tafeline-error-offline-accent" gradientUnits="userSpaceOnUse" x1="120.0" y1="125.99999999999999" x2="360.0" y2="234.0"><stop stop-color="#0a5cff"/><stop offset=".5" stop-color="#00c2d6"/><stop offset="1" stop-color="#6be03a"/></linearGradient></defs>
+  <g fill="none" stroke="#9fb3cc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+
+    <ellipse cx="209" cy="260" rx="112" ry="24" fill="#f7faff"/>
+    <path d="M97 260C107 282 152 296 209 296S311 282 321 260"/>
+    <ellipse cx="209" cy="257" rx="89" ry="13" stroke="#d1e0ef"/>
+    <path d="M124 242A85 85 0 0 1 294 242" fill="#f7faff"/>
+    <path d="M121 243H297"/>
+    <path d="M209 157V145"/>
+    <ellipse cx="209" cy="139" rx="11" ry="5" fill="#f7faff"/>
+    <path d="M144 219C148 201 158 188 170 181" stroke="#d1e0ef"/>
+    <path d="M350 247C350 269 396 255 399 281C402 304 377 311 360 302"/>
+    <g transform="rotate(-18 348 222)">
+      <rect x="333" y="205" width="30" height="40" rx="8" fill="#f7faff"/>
+      <path d="M340 205V190M356 205V190" stroke="url(#tafeline-error-offline-accent)"/>
+      <path d="M342 235H354"/>
+    </g>
+
+  </g>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360" role="img" aria-labelledby="maintenance-title">
+  <title id="maintenance-title">Wartung – Tisch mit Werkzeug und geschlossenem Menü-Schild</title>
+  <defs><linearGradient id="tafeline-maintenance-accent" gradientUnits="userSpaceOnUse" x1="120.0" y1="125.99999999999999" x2="360.0" y2="234.0"><stop stop-color="#0a5cff"/><stop offset=".5" stop-color="#00c2d6"/><stop offset="1" stop-color="#6be03a"/></linearGradient></defs>
+  <g fill="none" stroke="#9fb3cc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+
+    <ellipse cx="226" cy="177" rx="126" ry="26" fill="#f7faff"/>
+    <path d="M100 177V190C100 205 157 217 226 217S352 205 352 190V177"/>
+    <path d="M137 211L122 294M316 211L331 294"/>
+    <path d="M155 215L164 280M298 215L289 280"/>
+    <g transform="rotate(-24 186 147)">
+      <path d="M159 135C154 129 153 119 158 112L165 124L176 124L181 114C187 121 186 131 180 136L210 159C214 163 208 170 203 167L173 144C167 145 162 142 159 135Z" fill="#f7faff"/>
+      <path d="M160 114L166 124L176 124L181 115" stroke="url(#tafeline-maintenance-accent)"/>
+    </g>
+    <path d="M258 188L268 232M322 188L312 232"/>
+    <path d="M251 227H313L326 240V290H251Z" fill="#f7faff"/>
+    <path d="M313 227V240H326M258 232V286" stroke="#d1e0ef"/>
+    <path d="M270 247H305" stroke="url(#tafeline-maintenance-accent)"/>
+
+  </g>
+</svg>
