@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { Github, ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { useGuestBranding } from '@/modules/guest/guest-api';
 import { useCart } from '@/modules/guest/cart-store';
 import { CartDrawer } from '@/modules/guest/CartDrawer';
@@ -72,7 +72,7 @@ export function GuestAppLayout() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 font-medium hover:text-primary"
                     >
-                        <Github className="size-3.5" /> stb-srv
+                        <i className="fa-brands fa-github text-sm" aria-hidden="true" /> stb-srv
                     </a>
                 </p>
             </footer>
