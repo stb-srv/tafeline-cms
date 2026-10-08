@@ -28,7 +28,7 @@ export function HomePage() {
             <section
                 className="relative flex h-[70vh] items-center justify-center bg-cover bg-center text-center text-white"
                 style={{
-                    backgroundImage: `linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)), url('${home?.bgImage || '/assets/santorini_bg.png'}')`,
+                    backgroundImage: `linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)), url('${home?.bgImage || '/assets/hero-default.jpg'}')`,
                 }}
             >
                 <div className="px-6">

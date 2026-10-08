@@ -112,13 +112,11 @@ export function MenuPage() {
                             <div className="grid gap-4 sm:grid-cols-2">
                                 {dishes.map((d) => (
                                     <div key={d.id} className="flex gap-4 rounded-xl border bg-card p-4">
-                                        {d.image && (
-                                            <img
-                                                src={d.image}
-                                                alt={d.name}
-                                                className="size-20 shrink-0 rounded-lg object-cover"
-                                            />
-                                        )}
+                                        <img
+                                            src={d.image || '/assets/placeholder-dish.webp'}
+                                            alt={d.image ? d.name : ''}
+                                            className="size-20 shrink-0 rounded-lg object-cover"
+                                        />
                                         <div className="flex-1">
                                             <div className="flex items-baseline justify-between gap-2">
                                                 <h3 className="font-bold">

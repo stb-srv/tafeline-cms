@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><defs><linearGradient id="accent" gradientUnits="userSpaceOnUse" x1="130" y1="130" x2="340" y2="220"><stop stop-color="#0a5cff"/><stop offset=".5" stop-color="#00c2d6"/><stop offset="1" stop-color="#6be03a"/></linearGradient></defs><g fill="none" stroke="#afc3dc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M227 60H92v244h298V60h-98"/>
+<path d="M227 60v43M227 103a43 43 0 0 0 43-43" stroke="#d2deeb" stroke-width="3"/>
+<circle cx="160" cy="142" r="26" fill="#f7faff"/>
+<rect x="279" y="114" width="50" height="50" rx="7" fill="#f7faff"/>
+<rect x="134" y="235" width="51" height="49" rx="7" fill="#f7faff"/>
+<circle cx="306" cy="248" r="27" fill="#f7faff"/>
+<path d="M148 104h24M148 180h24M122 130v24M198 130v24M292 102h24M292 178h24M266 126v24M342 126v24M147 223h24M121 247v23M198 247v23M294 207h24M294 289h24M265 236v24M347 236v24" stroke="#c4d5e7" stroke-width="4"/>
+<path d="M294 207h24M342 126v24" stroke="url(#accent)"/>
+</g></svg>
