@@ -1,6 +1,6 @@
 # 🏛️ Tafeline CMS – Restaurant Management System
 
-![Node.js Version](https://img.shields.io/badge/node-%E2%89%A518-green)
+![Node.js Version](https://img.shields.io/badge/node-%E2%89%A522-green)
 ![License MIT](https://img.shields.io/badge/license-MIT-blue)
 ![Version](https://img.shields.io/badge/version-3.1.1-blue)
 
@@ -33,7 +33,7 @@
 
 **Lokal (Entwicklung):**
 
-- Node.js ≥ 18
+- Node.js ≥ 22
 - npm ≥ 9
 - **Native Build-Tools** (für `better-sqlite3`):
     - Ubuntu/Debian: `sudo apt install -y build-essential python3`
