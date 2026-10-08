@@ -19,6 +19,7 @@ const PLUGINS_DIR = path.join(__dirname, 'plugins');
 
 if (!CONFIG.SETUP_COMPLETE) {
     global._setupToken = crypto.randomBytes(16).toString('hex');
+    require('./server/core/setup-token.js').writeSetupInfo(global._setupToken, CONFIG.PORT || 5000);
 }
 const requireAuth = makeRequireAuth(CONFIG.ADMIN_SECRET);
 
@@ -98,6 +99,7 @@ async function start() {
             console.log(border);
             console.log(`  Öffne:  http://localhost:${PORT}/setup`);
             console.log(`  Token:  ${global._setupToken}`);
+            console.log(`  (auch in SETUP-INFO.txt im App-Verzeichnis)`);
             console.log(`${border}\n`);
         }
 

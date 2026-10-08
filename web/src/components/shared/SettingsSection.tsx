@@ -17,9 +17,7 @@ export function SettingsSection({ title, description, children }: SettingsSectio
             {(title || description) && (
                 <div>
                     {title && <h4 className="text-sm font-semibold">{title}</h4>}
-                    {description && (
-                        <p className="text-xs text-muted-foreground">{description}</p>
-                    )}
+                    {description && <p className="text-xs text-muted-foreground">{description}</p>}
                 </div>
             )}
             <div className="divide-y divide-border">{children}</div>

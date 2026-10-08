@@ -111,7 +111,10 @@ export function MenuPage() {
                             </h2>
                             <div className="grid gap-4 sm:grid-cols-2">
                                 {dishes.map((d) => (
-                                    <div key={d.id} className="flex gap-4 rounded-xl border bg-card p-4">
+                                    <div
+                                        key={d.id}
+                                        className="flex gap-4 rounded-xl border bg-card p-4"
+                                    >
                                         <img
                                             src={d.image || '/assets/placeholder-dish.webp'}
                                             alt={d.image ? d.name : ''}

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { toast } from 'sonner';
-import { KeyRound, Pencil, Plus, Trash2 } from 'lucide-react';
+import { KeyRound, Pencil, Plus, ShieldOff, Trash2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { apiDelete, apiPost, apiPut } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { USERS_KEY, type User } from './settings-api';
+import { TwoFactorCard } from './TwoFactorCard';
 
 export function UsersTab({ users }: { users: User[] }) {
     const qc = useQueryClient();
@@ -51,8 +52,16 @@ export function UsersTab({ users }: { users: User[] }) {
         else toast.error(res.reason || 'Senden fehlgeschlagen');
     }
 
+    async function reset2fa(u: User) {
+        if (!window.confirm(`Zwei-Faktor-Anmeldung von „${u.user}" zurücksetzen?`)) return;
+        const res = await apiDelete(`admin/2fa/${u.user}`);
+        if (res.success !== false) toast.success('2FA zurückgesetzt');
+        else toast.error(res.reason || 'Fehler');
+    }
+
     return (
         <div className="space-y-4">
+            <TwoFactorCard />
             <div className="flex items-center justify-between">
                 <h4 className="text-lg font-semibold">Nutzerverwaltung</h4>
                 <Button
@@ -109,6 +118,14 @@ export function UsersTab({ users }: { users: User[] }) {
                                         <Button
                                             variant="outline"
                                             size="icon"
+                                            title="2FA zurücksetzen"
+                                            onClick={() => reset2fa(u)}
+                                        >
+                                            <ShieldOff />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
                                             className="text-destructive"
                                             title="Löschen"
                                             onClick={() => remove(u)}
@@ -128,12 +145,7 @@ export function UsersTab({ users }: { users: User[] }) {
                 Login ändern.
             </p>
 
-            <UserFormDialog
-                open={open}
-                onOpenChange={setOpen}
-                user={editing}
-                onSaved={refresh}
-            />
+            <UserFormDialog open={open} onOpenChange={setOpen} user={editing} onSaved={refresh} />
         </div>
     );
 }
@@ -156,8 +168,7 @@ function UserFormDialog({
     const [saving, setSaving] = React.useState(false);
 
     React.useEffect(() => {
-        if (open)
-            setF(user ?? { user: '', name: '', last_name: '', email: '', role: 'admin' });
+        if (open) setF(user ?? { user: '', name: '', last_name: '', email: '', role: 'admin' });
     }, [open, user]);
 
     const set = <K extends keyof User>(k: K, v: User[K]) => setF((s) => ({ ...s, [k]: v }));

@@ -14,6 +14,8 @@ const {
     requireRole,
     generalLimiter,
 } = require('./core/middleware.js');
+const { getLicenseServerUrl } = require('./core/license-server.js');
+const { clearSetupInfo } = require('./core/setup-token.js');
 const { PLAN_DEFINITIONS } = require('./services/license.js');
 const { version: APP_VERSION } = require('../package.json');
 
@@ -22,10 +24,7 @@ module.exports = function (CONFIG, io) {
     app.set('trust proxy', 1);
 
     const ADMIN_SECRET = CONFIG.ADMIN_SECRET;
-    const LICENSE_SERVER = (CONFIG.LICENSE_SERVER_URL || 'https://licens.stb-srv.de').replace(
-        /\/+$/,
-        ''
-    );
+    const LICENSE_SERVER = getLicenseServerUrl();
     const UPLOADS_DIR = path.join(__dirname, '..', 'uploads');
     const PLUGINS_DIR = path.join(__dirname, '..', 'plugins');
 
@@ -125,21 +124,32 @@ module.exports = function (CONFIG, io) {
         'http://127.0.0.1:5000',
         'http://127.0.0.1:5173',
     ];
-    app.use(
-        cors({
-            origin: (origin, callback) => {
-                if (!origin) return callback(null, true); // same-origin / Server-zu-Server
-                if (!CONFIG.SETUP_COMPLETE) {
-                    return PRE_SETUP_ORIGINS.includes(origin)
-                        ? callback(null, true)
-                        : callback(new Error(`CORS: Origin '${origin}' nicht erlaubt.`));
-                }
-                if (allowedOrigins.includes(origin)) return callback(null, true);
-                return callback(new Error(`CORS: Origin '${origin}' nicht erlaubt.`));
-            },
-            credentials: true,
-        })
-    );
+    // Same-Origin-Requests (Origin-Host == Host-Header, ggf. X-Forwarded-Host) sind immer
+    // erlaubt. Browser senden bei POST-Fetches auch same-origin einen Origin-Header; ohne
+    // diese Prüfung scheitert z. B. der Setup-Wizard über eine Domain/IP mit CORS-Fehler.
+    const isSameOrigin = (req, origin) => {
+        try {
+            const originHost = new URL(origin).host;
+            const hosts = [req.get('x-forwarded-host'), req.get('host')]
+                .filter(Boolean)
+                .map((h) => h.split(',')[0].trim());
+            return hosts.includes(originHost);
+        } catch (_) {
+            return false;
+        }
+    };
+    const corsOptions = (req, callback) => {
+        const origin = req.get('origin');
+        let allowed = true;
+        if (origin && !isSameOrigin(req, origin)) {
+            allowed = CONFIG.SETUP_COMPLETE
+                ? allowedOrigins.includes(origin)
+                : PRE_SETUP_ORIGINS.includes(origin);
+        }
+        // Fremde Origins: keine CORS-Header (Browser blockt), aber kein 500er
+        callback(null, { origin: allowed, credentials: true });
+    };
+    app.use(cors(corsOptions));
     app.use(express.json({ limit: '1mb' }));
 
     // General rate limiter — 300 req/min per IP across all API routes
@@ -238,7 +248,7 @@ module.exports = function (CONFIG, io) {
 
     app.post('/api/plugins/toggle', requireAuth, requireRole('admin'), async (req, res) => {
         try {
-            let dbPlugins = await DB.getKV('plugins', []);
+            const dbPlugins = await DB.getKV('plugins', []);
             const { id, enabled } = req.body;
             const idx = dbPlugins.findIndex((p) => p.id === id);
             if (idx > -1) dbPlugins[idx].enabled = enabled;
@@ -267,9 +277,6 @@ module.exports = function (CONFIG, io) {
             setupToken,
             restaurantName,
             licenseKey,
-            licenseServer,
-            dbType,
-            dbDetails,
             smtp,
             adminUser,
             adminPass,
@@ -291,10 +298,6 @@ module.exports = function (CONFIG, io) {
                     reason: 'Admin-Passwort ist erforderlich und muss mindestens 12 Zeichen lang sein.',
                 });
             }
-            const licenseServerUrl = (licenseServer || 'https://licens.stb-srv.de').replace(
-                /\/+$/,
-                ''
-            );
             const trialPlan = PLAN_DEFINITIONS['FREE'];
             const r = restaurant || {};
             const customerName = r.name || restaurantName || 'Trial';
@@ -314,21 +317,11 @@ module.exports = function (CONFIG, io) {
                 isTrial: true,
             };
 
-            const selectedDbType = (dbType || 'sqlite').toLowerCase();
             const newConfig = {
-                LICENSE_SERVER_URL: licenseServerUrl,
                 ADMIN_SECRET: crypto.randomBytes(32).toString('hex'),
                 SMTP: smtp || {},
-                DB_TYPE: selectedDbType,
                 SETUP_COMPLETE: true,
             };
-            if (selectedDbType === 'mysql' && dbDetails) {
-                newConfig.DB_HOST = dbDetails.host || 'localhost';
-                newConfig.DB_PORT = dbDetails.port || 3306;
-                newConfig.DB_NAME = dbDetails.database || '';
-                newConfig.DB_USER = dbDetails.user || '';
-                newConfig.DB_PASS = dbDetails.password || '';
-            }
 
             const configPath = path.join(__dirname, 'config.json');
             fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 4));
@@ -377,6 +370,7 @@ module.exports = function (CONFIG, io) {
             });
 
             global._setupToken = null;
+            clearSetupInfo();
             res.json({
                 success: true,
                 trial: licenseKey
@@ -385,7 +379,6 @@ module.exports = function (CONFIG, io) {
                 message: 'Setup abgeschlossen.',
                 recovery_codes: plainRecoveryCodes,
                 adminUser: finalAdminUser,
-                needsRestart: selectedDbType === 'mysql',
             });
         } catch (e) {
             logger.error({ err: e }, 'Setup error');
@@ -409,6 +402,10 @@ module.exports = function (CONFIG, io) {
         }
     });
 
+    app.use(
+        '/setup-assets',
+        express.static(path.join(__dirname, '..', 'web', 'public', 'setup-assets'))
+    );
     app.get('/setup', (req, res) =>
         res.sendFile(path.join(__dirname, '..', 'web', 'public', 'setup.html'))
     );
@@ -440,9 +437,11 @@ module.exports = function (CONFIG, io) {
             res.sendFile(path.join(__dirname, '..', 'public', 'status.html'))
         );
         // Admin-SPA: alle /admin-Routen liefern admin.html
-        app.get(['/admin', '/admin/*'], (req, res) => res.sendFile(path.join(DIST, 'admin.html')));
+        app.get(['/admin', '/admin/{*splat}'], (req, res) =>
+            res.sendFile(path.join(DIST, 'admin.html'))
+        );
         // Gäste-SPA: Fallback für alle übrigen Nicht-API-Routen
-        app.get('*', (req, res, next) => {
+        app.get('/{*splat}', (req, res, next) => {
             if (
                 req.path.startsWith('/api/') ||
                 req.path.startsWith('/uploads') ||
@@ -457,7 +456,7 @@ module.exports = function (CONFIG, io) {
         // Alt-Frontend mehr als Fallback.
         logger.error('web/dist nicht gefunden – bitte `npm run build:web` ausführen.');
         app.use('/', express.static(path.join(__dirname, '..', 'public')));
-        app.get('*', (req, res, next) => {
+        app.get('/{*splat}', (req, res, next) => {
             if (
                 req.path.startsWith('/api/') ||
                 req.path.startsWith('/uploads') ||
@@ -473,7 +472,7 @@ module.exports = function (CONFIG, io) {
         });
     }
 
-    app.use((err, req, res, next) => {
+    app.use((err, req, res, _next) => {
         logger.error({ err, url: req.originalUrl, method: req.method }, 'Unhandled Server Error');
         res.status(err.status || 500).json({
             success: false,

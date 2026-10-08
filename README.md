@@ -1,6 +1,6 @@
 # 🏛️ Tafeline CMS – Restaurant Management System
 
-![Node.js Version](https://img.shields.io/badge/node-%E2%89%A518-green)
+![Node.js Version](https://img.shields.io/badge/node-%E2%89%A522-green)
 ![License MIT](https://img.shields.io/badge/license-MIT-blue)
 ![Version](https://img.shields.io/badge/version-3.1.1-blue)
 
@@ -12,8 +12,7 @@
 ## 📋 Inhaltsverzeichnis
 
 - [Voraussetzungen](#voraussetzungen)
-- [Linux Server Setup (Empfohlen)](#-linux-server-setup-empfohlen)
-- [MySQL/MariaDB Setup](#-mysqlmariadb-setup)
+- [Linux Server (Produktion)](#-linux-server-produktion)
 - [Warenkorb & Online-Bestellung](#-warenkorb--online-bestellung)
 - [Erster Start: Setup-Wizard](#-erster-start-setup-wizard)
 - [.env Variablen-Referenz](#-env-variablen-referenz)
@@ -28,13 +27,13 @@
 
 **Linux Server (Produktion):**
 
-- Ubuntu 22.04 / 24.04, Debian 12 oder Rocky Linux 9
-- Root-Zugang (einmalig für das Installer-Skript)
+- Ubuntu 22.04 / 24.04 oder Debian 12 (für `setup.sh` und `deploy.sh`)
+- Root-Zugang bzw. `sudo` für `setup.sh` und `deploy.sh`
 - Offene Ports: 80, 443 (nginx), optional 5000
 
 **Lokal (Entwicklung):**
 
-- Node.js ≥ 18
+- Node.js ≥ 22
 - npm ≥ 9
 - **Native Build-Tools** (für `better-sqlite3`):
     - Ubuntu/Debian: `sudo apt install -y build-essential python3`
@@ -44,40 +43,76 @@
 
 ---
 
-## 🚀 Linux Server Setup (Empfohlen)
+## 🚀 Linux Server (Produktion)
 
-Dies ist der empfohlene Weg für den Produktivbetrieb mit **PM2** als Prozessmanager.
+Zwei Skripte decken den gesamten Betrieb ab – für Ubuntu 22.04/24.04 und Debian 12, als `root` oder mit `sudo`:
+
+| Skript                   | Wann                                   | Was                                                                           |
+| ------------------------ | -------------------------------------- | ----------------------------------------------------------------------------- |
+| [`setup.sh`](setup.sh)   | Einmalig, auf einem frischen Server    | Installiert alles Nötige und startet das CMS                                  |
+| [`deploy.sh`](deploy.sh) | Bei jedem Update der laufenden Instanz | Holt den neuesten Stand, baut neu, startet neu – mit Backup und Auto-Rollback |
+
+### Erstinstallation: `setup.sh`
 
 ```bash
-# 1. Repository klonen
-git clone https://github.com/stb-srv/tafeline-cms.git /opt/tafeline-cms
-cd /opt/tafeline-cms
-
-# 2. Installer starten
-chmod +x install-ubuntu.sh
-sudo ./install-ubuntu.sh
+sudo apt-get update && sudo apt-get install -y git
+sudo git clone https://github.com/stb-srv/tafeline-cms.git /opt/tafeline-cms
+sudo bash /opt/tafeline-cms/setup.sh
 ```
 
----
+Das Skript fragt nur Domain, Port und (optional) die E-Mail für Let's Encrypt ab und erledigt dann alles selbst:
 
-## 🗄️ MySQL/MariaDB Setup
+1. Systempakete (`git`, `openssl`, Build-Tools für `better-sqlite3`, `nginx`, bei HTTPS `certbot`)
+2. Node.js 22 (NodeSource)
+3. System-User `tafeline-cms` ohne Login-Shell
+4. Code nach `/opt/tafeline-cms`
+5. `.env` mit zufälligem `ADMIN_SECRET`, passendem `CORS_ORIGINS` und `HOST` (nur wenn noch keine existiert)
+6. `npm ci` und Frontend-Build (`web/dist`)
+7. systemd-Service `tafeline-cms` mit Autostart und Härtung
+8. nginx als Reverse Proxy (inkl. WebSocket für Live-Bestellungen), Firewall-Regel (falls `ufw` aktiv ist), optional HTTPS per Let's Encrypt
+9. Funktionstest
 
-Standardmäßig nutzt Tafeline CMS **SQLite** (kein Setup nötig). Für größere Installationen oder Shared-Hosting (Netcup, Hetzner etc.) wird **MySQL/MariaDB** empfohlen.
+Zum Schluss stehen die Setup-URL (`https://<domain>/setup`) und der **Setup-Token** deutlich hervorgehoben in der Ausgabe (erneut anzeigen: `sudo bash setup.sh --show-token`). Den Rest (Admin-Zugang, Restaurantdaten, SMTP, Lizenz) erledigst du im [Setup-Wizard](#-erster-start-setup-wizard).
 
-1. Erstelle eine neue Datenbank und einen Benutzer.
-2. Trage in der `.env` Datei folgende Werte ein:
+Ohne Rückfragen (z. B. für Automatisierung):
 
-```env
-DB_TYPE=mysql
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=dein_benutzer
-DB_PASS=dein_passwort
-DB_NAME=deine_db_name
-DB_SSL=false
+```bash
+sudo bash setup.sh --yes --domain restaurant.example.de --email admin@example.de
 ```
 
-3. Starte den Server neu. Das Schema wird automatisch inkl. aller Migrationen erstellt.
+| Option              | Bedeutung                                                         |
+| ------------------- | ----------------------------------------------------------------- |
+| `--domain <host>`   | Domain oder IP (Standard: `localhost`)                            |
+| `--port <port>`     | Port des Node-Servers (Standard: `5000`)                          |
+| `--email <adresse>` | Aktiviert HTTPS per Let's Encrypt (nur mit echter Domain + nginx) |
+| `--no-nginx`        | Kein nginx; das CMS lauscht direkt auf `--port`                   |
+| `--dir <pfad>`      | Installationsverzeichnis (Standard: `/opt/tafeline-cms`)          |
+| `--branch <name>`   | Git-Branch (Standard: `main`)                                     |
+| `-y`, `--yes`       | Keine Rückfragen                                                  |
+
+`setup.sh` ist idempotent: Ein erneuter Lauf aktualisiert Pakete, Service und nginx, lässt aber `.env`, `server/config.json`, Datenbank und Uploads unangetastet.
+
+### Updates: `deploy.sh`
+
+```bash
+sudo bash /opt/tafeline-cms/deploy.sh
+```
+
+Ablauf: neue Version prüfen → Backup (`server/database.sqlite` per SQLite-Online-Backup, `.env`, `server/config.json`) nach `deploy-backups/` (die letzten 10 bleiben) → Service stoppen → `git` auf `origin/main` → `npm ci` + Frontend-Build → Service starten → Funktionstest. Startet die neue Version nicht, rollt das Skript automatisch auf die vorherige zurück und zeigt die letzten Logzeilen. Ist schon alles aktuell, passiert nichts.
+
+| Option            | Bedeutung                                         |
+| ----------------- | ------------------------------------------------- |
+| `--branch <name>` | Anderen Branch deployen (Standard: `main`)        |
+| `--force`         | Auch deployen, wenn schon der neueste Stand läuft |
+| `--no-backup`     | Backup überspringen (nicht empfohlen)             |
+
+Lokale Änderungen an versionierten Dateien werden überschrieben; vorher landet ein Patch im Backup-Ordner. Während des Updates ist das CMS kurz (Dauer des Builds) nicht erreichbar. `uploads/` wird nicht angefasst und nicht gesichert.
+
+### Komplette Neuinstallation mit bestehenden Daten
+
+Auf dem neuen Server zuerst `setup.sh` ausführen, dann `.env`, `server/config.json`, `server/database.sqlite` und `uploads/` aus dem Backup nach `/opt/tafeline-cms/` kopieren, Besitzer auf `tafeline-cms` setzen und `sudo systemctl restart tafeline-cms` ausführen. Das Setup muss dann nicht erneut durchlaufen werden.
+
+> Bei kleinen Servern (unter 2 GB RAM) kann der Frontend-Build knapp werden – dann vorübergehend Swap anlegen.
 
 ---
 
@@ -95,7 +130,16 @@ Tafeline CMS verfügt über ein integriertes Warenkorb-System für Gäste.
 
 ## 🧙 Erster Start: Setup-Wizard
 
-Beim ersten Start erscheint in der Konsole ein **Setup-Token** – den brauchst du im ersten Wizard-Schritt:
+Beim ersten Start wird ein **Setup-Token** erzeugt – den brauchst du im ersten Wizard-Schritt. Er ist leicht wiederzufinden:
+
+- am Ende von `setup.sh` (hervorgehoben ausgegeben)
+- jederzeit erneut: `sudo bash /opt/tafeline-cms/setup.sh --show-token`
+- in der Datei `/opt/tafeline-cms/SETUP-INFO.txt` (Rechte 600, nicht im Repo; wird nach der Ersteinrichtung automatisch gelöscht)
+- in der Konsole bzw. im Journal (`journalctl -u tafeline-cms | grep Token`)
+
+Das Token gilt bis zum nächsten Neustart des Services; danach wird ein neues erzeugt und `SETUP-INFO.txt` aktualisiert.
+
+Ausgabe in der Konsole:
 
 ```
 ════════════════════════════════════════════════════════════
@@ -108,12 +152,12 @@ Beim ersten Start erscheint in der Konsole ein **Setup-Token** – den brauchst 
 
 Öffne die angezeigte URL im Browser und folge den 4 Schritten:
 
-| Schritt            | Inhalt                                                                         |
-| ------------------ | ------------------------------------------------------------------------------ |
-| **1 – Zugang**     | Setup-Token aus der Konsole · Admin-Name · E-Mail · Passwort (min. 12 Zeichen) |
-| **2 – Restaurant** | Name · Telefon · Adresse · Sprache · Zeitzone · Website                        |
-| **3 – System**     | Lizenzschlüssel (optional) · Datenbanktyp (SQLite empfohlen)                   |
-| **4 – E-Mail**     | SMTP-Daten für Bestätigungs-Mails (optional, auch später einstellbar)          |
+| Schritt            | Inhalt                                                                      |
+| ------------------ | --------------------------------------------------------------------------- |
+| **1 – Zugang**     | Setup-Token (siehe oben) · Admin-Name · E-Mail · Passwort (min. 12 Zeichen) |
+| **2 – Restaurant** | Name · Telefon · Adresse · Sprache · Zeitzone · Website                     |
+| **3 – System**     | Lizenzschlüssel (optional) · Datenbanktyp (SQLite empfohlen)                |
+| **4 – E-Mail**     | SMTP-Daten für Bestätigungs-Mails (optional, auch später einstellbar)       |
 
 Am Ende werden **Recovery-Codes** angezeigt – **unbedingt sicher aufbewahren**, da sie nur einmalig sichtbar sind.
 
@@ -128,13 +172,6 @@ Der Wizard schreibt automatisch `server/config.json` inkl. eines zufälligen `AD
 | `PORT`                | Port des Express-Servers                                    | `5000`      |
 | `ADMIN_SECRET`        | JWT Signing Key – wird automatisch vom Setup-Wizard gesetzt | –           |
 | `CORS_ORIGINS`        | Erlaubte Frontend-Domains, kommagetrennt                    | `localhost` |
-| `DB_TYPE`             | `sqlite` oder `mysql`                                       | `sqlite`    |
-| `DB_HOST`             | Hostname der MySQL DB                                       | `localhost` |
-| `DB_PORT`             | Port der MySQL DB                                           | `3306`      |
-| `DB_USER`             | Benutzername MySQL                                          | –           |
-| `DB_PASS`             | Passwort MySQL                                              | –           |
-| `DB_NAME`             | Datenbankname                                               | –           |
-| `DB_SSL`              | SSL für DB-Verbindung (`true`/`false`)                      | `false`     |
 | `SMTP_HOST`           | SMTP Server                                                 | –           |
 | `SMTP_PORT`           | SMTP Port                                                   | `465`       |
 | `SMTP_USER`           | SMTP Benutzername                                           | –           |
@@ -167,7 +204,7 @@ Das System bietet verschiedene Pläne. Die Aktivierung erfolgt im CMS unter **Ei
 ## 🛠️ Tech Stack
 
 - **Backend**: Node.js, Express, Pino (Logging), Helmet (Security-Header), Zod (Validierung)
-- **Datenbank**: SQLite (`better-sqlite3`) ODER MySQL/MariaDB (`mysql2`)
+- **Datenbank**: SQLite (`better-sqlite3`)
 - **Auth**: JWT (RS256 für Lizenz, HS256 für Admin-Sessions), bcryptjs
 - **Frontend**: Vanilla JS (ES Modules), CSS Custom Properties (Glassmorphism)
 - **Realtime**: Socket.io (Bestelleingänge → Kitchen-Display)
@@ -185,8 +222,6 @@ Das System bietet verschiedene Pläne. Die Aktivierung erfolgt im CMS unter **Ei
 ├── server/
 │   ├── app.js             # Express-App, alle Route-Mounts, CORS/Helmet
 │   ├── database.js        # SQLite-Adapter (better-sqlite3)
-│   ├── database-mysql.js  # MySQL/MariaDB-Adapter
-│   ├── db.js              # Adapter-Selector (DB_TYPE)
 │   ├── middleware.js      # requireAuth, requireRole, requireLicense
 │   ├── license.js         # PLAN_DEFINITIONS, getCurrentLicense
 │   ├── cron.js            # Background-Jobs (Trial, Reminder, Backup-Cleanup)

@@ -7,13 +7,28 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Zwei-Faktor-Anmeldung (TOTP) für CMS-Nutzer: Einrichtung per QR-Code unter Einstellungen > Nutzer, zweiter Login-Schritt, Deaktivieren mit Passwort und Code, Admin-Reset für andere Konten.
+
+### Added
+
+- Tests für Bestellungen und Reservierungen (Validierung, Lizenz-Gating, Rollenrechte).
+
+### Changed
+
+- **MySQL/MariaDB-Unterstützung entfernt** – das CMS nutzt ausschließlich SQLite (`better-sqlite3`). `DB_TYPE`, `DB_*`-Variablen, `migrate-to-mysql.sh` und `mysql2` entfallen.
+- Abhängigkeiten aktualisiert (Express 5, Nodemailer, multer, pino, ESLint 10 u. a.); `npm audit` meldet 0 Schwachstellen (Backend und Frontend).
+- ESLint-Konfiguration repariert, Code mit Prettier formatiert, TypeScript-Fehler im Frontend behoben (Tagesgerichte-Suche nutzte ein nicht existierendes Feld).
+- CI führt Lint, Format-Check, Tests, Audit, Typecheck und Web-Build aus.
+- Neue API-Tests (Login, Auth-Schutz, Rollen, öffentliche Endpunkte).
+
 ### Geplant
 
 - Docker Compose Support
 - Grace-Period für Token-Ablauf (CMS läuft bei Heartbeat-Fehler noch 24–48h weiter)
 - Trial-Lizenz Reset-Limit
 - OpenAPI/Swagger-Dokumentation
-- GitHub Actions CI (Tests + Lint)
 
 ### Sicherheit (offen)
 

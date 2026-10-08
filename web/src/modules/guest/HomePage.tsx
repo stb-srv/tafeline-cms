@@ -5,8 +5,13 @@ import { useGuestBranding, useGuestHome } from './guest-api';
 
 const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const DAY_LABELS: Record<string, string> = {
-    Mo: 'Montag', Di: 'Dienstag', Mi: 'Mittwoch', Do: 'Donnerstag',
-    Fr: 'Freitag', Sa: 'Samstag', So: 'Sonntag',
+    Mo: 'Montag',
+    Di: 'Dienstag',
+    Mi: 'Mittwoch',
+    Do: 'Donnerstag',
+    Fr: 'Freitag',
+    Sa: 'Samstag',
+    So: 'Sonntag',
 };
 
 export function HomePage() {
@@ -66,7 +71,11 @@ export function HomePage() {
                         </p>
                     </div>
                     {home?.welcomeImage && (
-                        <img src={home.welcomeImage} alt="" className="rounded-2xl object-cover shadow-lg" />
+                        <img
+                            src={home.welcomeImage}
+                            alt=""
+                            className="rounded-2xl object-cover shadow-lg"
+                        />
                     )}
                 </section>
             )}
@@ -101,10 +110,15 @@ export function HomePage() {
                                 {DAYS.map((d) => {
                                     const e = home.openingHours?.[d] || { closed: true };
                                     return (
-                                        <div key={d} className="flex justify-between border-b py-1.5 text-sm">
+                                        <div
+                                            key={d}
+                                            className="flex justify-between border-b py-1.5 text-sm"
+                                        >
                                             <span>{DAY_LABELS[d]}</span>
                                             <span className="text-muted-foreground">
-                                                {e.closed ? 'Geschlossen' : `${e.open} – ${e.close}`}
+                                                {e.closed
+                                                    ? 'Geschlossen'
+                                                    : `${e.open} – ${e.close}`}
                                             </span>
                                         </div>
                                     );

@@ -11,8 +11,9 @@ const {
     mergeModules,
 } = require('../services/license.js');
 const { getLicenseKeyForFeature } = require('../registry/settings-registry.js');
-const { sanitizeText, extractDomain } = require('../helpers.js');
+const { extractDomain } = require('../helpers.js');
 const logger = require('../core/logger.js');
+const { getLicenseServerUrl } = require('../core/license-server.js');
 const validate = require('../validation/validate.js');
 const { anyObjectSchema } = require('../validation/schemas.js');
 const { requireRole } = require('../core/middleware.js');
@@ -48,7 +49,7 @@ function deepMerge(target, source) {
     return result;
 }
 
-module.exports = (requireAuth, requireLicense, LICENSE_SERVER) => {
+module.exports = (requireAuth, _requireLicense, _LICENSE_SERVER) => {
     router.get('/homepage', async (req, res) => {
         try {
             const settings = await DB.getKV('settings', {});
@@ -202,11 +203,7 @@ module.exports = (requireAuth, requireLicense, LICENSE_SERVER) => {
     );
 
     router.get('/license/plans', requireAuth, requireRole('admin'), async (req, res) => {
-        const CONFIG = require('../../config.js');
-        const base = (CONFIG.LICENSE_SERVER_URL || 'https://licens.stb-srv.de').replace(
-            /\/+$/,
-            ''
-        );
+        const base = getLicenseServerUrl();
         try {
             const r = await fetch(`${base}/api/v1/plans`, { signal: AbortSignal.timeout(8000) });
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -258,8 +255,7 @@ module.exports = (requireAuth, requireLicense, LICENSE_SERVER) => {
                 const domain = extractDomain(req);
                 logger.info({ key: req.body.key, domain }, 'Lizenz-Validierung angefordert');
 
-                const ENFORCED_LICENSE_SERVER = 'https://licens.stb-srv.de';
-                // Nutze ab hier ausschließlich ENFORCED_LICENSE_SERVER statt LICENSE_SERVER
+                const ENFORCED_LICENSE_SERVER = getLicenseServerUrl();
 
                 const response = await fetch(`${ENFORCED_LICENSE_SERVER}/api/v1/validate`, {
                     method: 'POST',

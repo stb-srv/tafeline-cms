@@ -75,7 +75,10 @@ export function CookiesTab() {
             const cookies = c.categories[catId].cookies.map((ck, i) =>
                 i === idx ? { ...ck, ...p } : ck
             );
-            return { ...c, categories: { ...c.categories, [catId]: { ...c.categories[catId], cookies } } };
+            return {
+                ...c,
+                categories: { ...c.categories, [catId]: { ...c.categories[catId], cookies } },
+            };
         });
     }
     function addCookie(catId: string) {
@@ -85,14 +88,20 @@ export function CookiesTab() {
                 ...c.categories[catId].cookies,
                 { name: '', purpose: '', duration: '', provider: '' },
             ];
-            return { ...c, categories: { ...c.categories, [catId]: { ...c.categories[catId], cookies } } };
+            return {
+                ...c,
+                categories: { ...c.categories, [catId]: { ...c.categories[catId], cookies } },
+            };
         });
     }
     function removeCookie(catId: string, idx: number) {
         setCfg((c) => {
             if (!c) return c;
             const cookies = c.categories[catId].cookies.filter((_, i) => i !== idx);
-            return { ...c, categories: { ...c.categories, [catId]: { ...c.categories[catId], cookies } } };
+            return {
+                ...c,
+                categories: { ...c.categories, [catId]: { ...c.categories[catId], cookies } },
+            };
         });
     }
 
@@ -160,7 +169,9 @@ export function CookiesTab() {
                                 <Textarea
                                     className="h-16 text-sm"
                                     value={cat.description}
-                                    onChange={(e) => patchCat(cat.id, { description: e.target.value })}
+                                    onChange={(e) =>
+                                        patchCat(cat.id, { description: e.target.value })
+                                    }
                                 />
                             </div>
                             <div className="flex flex-col items-center gap-1">
@@ -177,22 +188,31 @@ export function CookiesTab() {
 
                         <div className="mt-3 space-y-2">
                             {cat.cookies.map((ck, i) => (
-                                <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_auto] sm:items-center">
+                                <div
+                                    key={i}
+                                    className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_auto] sm:items-center"
+                                >
                                     <Input
                                         placeholder="Name"
                                         value={ck.name}
-                                        onChange={(e) => patchCookie(cat.id, i, { name: e.target.value })}
+                                        onChange={(e) =>
+                                            patchCookie(cat.id, i, { name: e.target.value })
+                                        }
                                     />
                                     <Input
                                         placeholder="Zweck"
                                         value={ck.purpose}
-                                        onChange={(e) => patchCookie(cat.id, i, { purpose: e.target.value })}
+                                        onChange={(e) =>
+                                            patchCookie(cat.id, i, { purpose: e.target.value })
+                                        }
                                     />
                                     <div className="flex gap-2">
                                         <Input
                                             placeholder="Dauer"
                                             value={ck.duration}
-                                            onChange={(e) => patchCookie(cat.id, i, { duration: e.target.value })}
+                                            onChange={(e) =>
+                                                patchCookie(cat.id, i, { duration: e.target.value })
+                                            }
                                         />
                                         <Button
                                             size="icon"
@@ -207,7 +227,9 @@ export function CookiesTab() {
                                         className="sm:col-span-3"
                                         placeholder="Anbieter"
                                         value={ck.provider}
-                                        onChange={(e) => patchCookie(cat.id, i, { provider: e.target.value })}
+                                        onChange={(e) =>
+                                            patchCookie(cat.id, i, { provider: e.target.value })
+                                        }
                                     />
                                 </div>
                             ))}
@@ -260,7 +282,12 @@ function ConsentLog() {
             <div className="flex items-center justify-between">
                 <h3 className="font-semibold">Einwilligungs-Nachweis ({total})</h3>
                 {total > 0 && (
-                    <Button variant="outline" size="sm" className="text-destructive" onClick={clear}>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-destructive"
+                        onClick={clear}
+                    >
                         <Trash2 /> Log leeren
                     </Button>
                 )}
@@ -288,7 +315,9 @@ function ConsentLog() {
                                         <TableCell className="whitespace-nowrap">
                                             {new Date(e.timestamp).toLocaleString('de-DE')}
                                         </TableCell>
-                                        <TableCell className="font-mono">{e.config_version}</TableCell>
+                                        <TableCell className="font-mono">
+                                            {e.config_version}
+                                        </TableCell>
                                         <TableCell>{e.source}</TableCell>
                                         <TableCell className="text-xs">
                                             {Object.entries(e.choices)

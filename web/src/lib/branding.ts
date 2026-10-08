@@ -12,7 +12,13 @@ export interface BrandingColors {
 /** Wandelt "#1b3a5c" → "209 54% 23%" (HSL-Tripel ohne hsl()-Wrapper). */
 export function hexToHslParts(hex: string): string | null {
     const m = hex.trim().replace('#', '');
-    const full = m.length === 3 ? m.split('').map((c) => c + c).join('') : m;
+    const full =
+        m.length === 3
+            ? m
+                  .split('')
+                  .map((c) => c + c)
+                  .join('')
+            : m;
     if (full.length !== 6) return null;
     const r = parseInt(full.slice(0, 2), 16) / 255;
     const g = parseInt(full.slice(2, 4), 16) / 255;

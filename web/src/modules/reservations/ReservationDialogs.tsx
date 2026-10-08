@@ -161,10 +161,18 @@ export function ManualReservationDialog({
                         />
                     </Field>
                     <Field label="Uhrzeit">
-                        <Input type="time" value={f.time} onChange={(e) => set('time', e.target.value)} />
+                        <Input
+                            type="time"
+                            value={f.time}
+                            onChange={(e) => set('time', e.target.value)}
+                        />
                     </Field>
                     <Field label="Datum" full>
-                        <Input type="date" value={f.date} onChange={(e) => set('date', e.target.value)} />
+                        <Input
+                            type="date"
+                            value={f.date}
+                            onChange={(e) => set('date', e.target.value)}
+                        />
                     </Field>
                     <Field label="Notiz (intern)" full>
                         <Textarea
@@ -257,7 +265,9 @@ export function AssignTableDialog({
                             >
                                 <div>
                                     <div className="font-bold">{label}</div>
-                                    <div className="text-xs opacity-70">Kapazität: {t.capacity}</div>
+                                    <div className="text-xs opacity-70">
+                                        Kapazität: {t.capacity}
+                                    </div>
                                 </div>
                                 {isAssigned && <i className="fas fa-check-circle text-primary" />}
                             </button>
@@ -275,7 +285,15 @@ export function AssignTableDialog({
     );
 }
 
-function Field({ label, children, full }: { label: string; children: React.ReactNode; full?: boolean }) {
+function Field({
+    label,
+    children,
+    full,
+}: {
+    label: string;
+    children: React.ReactNode;
+    full?: boolean;
+}) {
     return (
         <div className={cn('space-y-1', full && 'col-span-2')}>
             <Label>{label}</Label>

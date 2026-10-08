@@ -106,7 +106,10 @@ export function OrdersPage() {
     async function saveEta(id: string, eta: string) {
         const order = orders.find((o) => o.id === id);
         if (!order) return;
-        const res = await apiPut(`orders/${id}/status`, { status: order.status, estimatedTime: eta });
+        const res = await apiPut(`orders/${id}/status`, {
+            status: order.status,
+            estimatedTime: eta,
+        });
         if (res.success !== false) {
             qc.setQueryData<Order[]>(ORDERS_KEY, (prev = []) =>
                 prev.map((o) => (o.id === id ? { ...o, estimatedTime: eta } : o))
@@ -116,16 +119,11 @@ export function OrdersPage() {
     }
 
     function downloadExport(format: 'csv' | 'pdf') {
-        void apiDownload(
-            `orders/export/${format}?von=${von}&bis=${bis}`,
-            `bestellungen.${format}`
-        );
+        void apiDownload(`orders/export/${format}?von=${von}&bis=${bis}`, `bestellungen.${format}`);
     }
 
     const filtered = filterOrders(orders, filter);
-    const pendingExternal = orders.filter(
-        (o) => o.status === 'pending' && isExternal(o)
-    ).length;
+    const pendingExternal = orders.filter((o) => o.status === 'pending' && isExternal(o)).length;
 
     return (
         <div className="space-y-5">
@@ -201,12 +199,7 @@ export function OrdersPage() {
             ) : (
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {filtered.map((o) => (
-                        <OrderCard
-                            key={o.id}
-                            order={o}
-                            onAction={setStatus}
-                            onSaveEta={saveEta}
-                        />
+                        <OrderCard key={o.id} order={o} onAction={setStatus} onSaveEta={saveEta} />
                     ))}
                 </div>
             )}

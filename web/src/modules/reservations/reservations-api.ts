@@ -22,8 +22,18 @@ export interface ResTable {
 
 export const RES_WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 export const RES_MONTHS = [
-    'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-    'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember',
+    'Januar',
+    'Februar',
+    'März',
+    'April',
+    'Mai',
+    'Juni',
+    'Juli',
+    'August',
+    'September',
+    'Oktober',
+    'November',
+    'Dezember',
 ];
 
 export function parseResDate(str?: string): Date | null {
@@ -42,7 +52,8 @@ export function parseResDate(str?: string): Date | null {
 
 export function resSameDay(a?: Date | null, b?: Date | null): boolean {
     return (
-        !!a && !!b &&
+        !!a &&
+        !!b &&
         a.getFullYear() === b.getFullYear() &&
         a.getMonth() === b.getMonth() &&
         a.getDate() === b.getDate()
@@ -57,7 +68,9 @@ export function resOfDay(dateObj: Date, resRaw: Reservation[]): Reservation[] {
     return resRaw
         .filter((r) => {
             const rd = parseResDate(r.date);
-            return rd && resSameDay(rd, dateObj) && !['Cancelled', 'No-Show'].includes(r.status || '');
+            return (
+                rd && resSameDay(rd, dateObj) && !['Cancelled', 'No-Show'].includes(r.status || '')
+            );
         })
         .sort((a, b) =>
             String(a.start_time || a.time || '').localeCompare(String(b.start_time || b.time || ''))
@@ -92,5 +105,12 @@ export const LEVEL_CLASS: Record<DayCap['level'], string> = {
 };
 
 export const RES_STATUS = [
-    'All', 'Pending', 'Confirmed', 'Waitlist', 'Inquiry', 'Blocked', 'Cancelled', 'No-Show',
+    'All',
+    'Pending',
+    'Confirmed',
+    'Waitlist',
+    'Inquiry',
+    'Blocked',
+    'Cancelled',
+    'No-Show',
 ];

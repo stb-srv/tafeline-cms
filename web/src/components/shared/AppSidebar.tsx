@@ -29,8 +29,7 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
             </>
         );
 
-        const baseCls =
-            'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors';
+        const baseCls = 'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors';
 
         // Externe Seiten (z. B. Küchen-Display) → neuer Tab
         if (item.external) {
@@ -88,7 +87,9 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
                     </div>
                 )}
                 <nav className="flex flex-col gap-0.5">
-                    {group.items?.map((it) => <span key={it.id}>{renderItem(it)}</span>)}
+                    {group.items?.map((it) => (
+                        <span key={it.id}>{renderItem(it)}</span>
+                    ))}
                     {group.sections?.map((sec) => (
                         <div key={sec.label} className="mt-1">
                             {!collapsed && (
@@ -121,9 +122,7 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
                 />
             </div>
 
-            <div className="flex-1 overflow-y-auto py-2">
-                {NAV_CONFIG.map(renderGroup)}
-            </div>
+            <div className="flex-1 overflow-y-auto py-2">{NAV_CONFIG.map(renderGroup)}</div>
 
             <div className="border-t border-sidebar-border p-2">
                 <NavUser collapsed={collapsed} />

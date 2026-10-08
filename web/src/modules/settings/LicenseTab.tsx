@@ -38,19 +38,17 @@ const MOD_SHORT: Record<string, string> = {
     qr_pay: 'QR-Pay',
 };
 
-export function LicenseTab({
-    settings,
-    licInfo,
-}: {
-    settings: SettingsData;
-    licInfo: LicenseInfo;
-}) {
+export function LicenseTab({ settings }: { settings: SettingsData; licInfo?: LicenseInfo }) {
     const qc = useQueryClient();
     const l = settings.license || {};
     const [key, setKey] = React.useState(l.status === 'active' ? (l.key as string) || '' : '');
     const [busy, setBusy] = React.useState(false);
 
-    const { data: plansData, isLoading: plansLoading, refetch: refetchPlans } = useQuery({
+    const {
+        data: plansData,
+        isLoading: plansLoading,
+        refetch: refetchPlans,
+    } = useQuery({
         queryKey: ['license-plans'],
         queryFn: () => apiGet<PlansResponse>('license/plans'),
         staleTime: 5 * 60 * 1000,
@@ -60,9 +58,7 @@ export function LicenseTab({
     const isTrial = l.isTrial || l.status === 'trial';
     const isActive = l.status === 'active';
     const expiresAt = l.expiresAt ? new Date(l.expiresAt as string) : null;
-    const daysLeft = expiresAt
-        ? Math.ceil((expiresAt.getTime() - Date.now()) / 86400000)
-        : null;
+    const daysLeft = expiresAt ? Math.ceil((expiresAt.getTime() - Date.now()) / 86400000) : null;
     const expired = daysLeft !== null && daysLeft <= 0;
 
     let badge: { variant: 'muted' | 'default' | 'destructive'; text: string } = {
@@ -107,11 +103,9 @@ export function LicenseTab({
                         </div>
                         <p className="text-sm text-muted-foreground">
                             Plan:{' '}
-                            <strong>
-                                {(l.label as string) || (l.type as string) || 'FREE'}
-                            </strong>{' '}
-                            &nbsp;•&nbsp; Inhaber:{' '}
-                            <strong>{(l.customer as string) || '–'}</strong> &nbsp;•&nbsp; Key:{' '}
+                            <strong>{(l.label as string) || (l.type as string) || 'FREE'}</strong>{' '}
+                            &nbsp;•&nbsp; Inhaber: <strong>{(l.customer as string) || '–'}</strong>{' '}
+                            &nbsp;•&nbsp; Key:{' '}
                             <code className="text-xs">{(l.key as string) || 'N/A'}</code>
                         </p>
                     </div>
@@ -201,15 +195,21 @@ export function LicenseTab({
                                 <div className="font-bold">{p.label}</div>
                                 {p.price !== undefined && (
                                     <div className="mb-1 text-xs font-medium text-primary">
-                                        {p.price === 0 ? 'Kostenlos' : `${p.price} ${p.currency ?? 'EUR'}/Monat`}
+                                        {p.price === 0
+                                            ? 'Kostenlos'
+                                            : `${p.price} ${p.currency ?? 'EUR'}/Monat`}
                                     </div>
                                 )}
                                 <div className="mb-2.5 text-xs text-muted-foreground">
                                     {p.note || ''}
                                 </div>
                                 <div className="flex flex-col gap-1 text-xs">
-                                    {p.menu_items !== undefined && <span>🍽 {p.menu_items} Speisen</span>}
-                                    {p.max_tables !== undefined && <span>🪑 {p.max_tables} Tische</span>}
+                                    {p.menu_items !== undefined && (
+                                        <span>🍽 {p.menu_items} Speisen</span>
+                                    )}
+                                    {p.max_tables !== undefined && (
+                                        <span>🪑 {p.max_tables} Tische</span>
+                                    )}
                                     {Object.entries(p.modules || {}).map(([mod, on]) => (
                                         <span
                                             key={mod}

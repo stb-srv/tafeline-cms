@@ -148,14 +148,26 @@ export function OrderSettingsPage() {
                     <div className="text-xs text-muted-foreground">{desc}</div>
                 </div>
             </div>
-            <Switch checked={cfg[key] !== undefined ? !!cfg[key] : def} onCheckedChange={(c) => set(key, c)} />
+            <Switch
+                checked={cfg[key] !== undefined ? !!cfg[key] : def}
+                onCheckedChange={(c) => set(key, c)}
+            />
         </div>
     );
 
-    const numRow = (emoji: string, title: string, desc: string, key: keyof OrderConfig, def: number, max: number) => (
+    const numRow = (
+        emoji: string,
+        title: string,
+        desc: string,
+        key: keyof OrderConfig,
+        def: number,
+        max: number
+    ) => (
         <div className="flex flex-wrap items-center justify-between gap-4 border-b py-3 last:border-0">
             <div className="min-w-48 flex-1">
-                <div className="text-sm font-bold">{emoji} {title}</div>
+                <div className="text-sm font-bold">
+                    {emoji} {title}
+                </div>
                 <div className="text-xs text-muted-foreground">{desc}</div>
             </div>
             <div className="flex items-center gap-2">
@@ -180,7 +192,10 @@ export function OrderSettingsPage() {
             {moduleLicensed && !moduleEnabled && (
                 <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm">
                     Online-Bestellungen sind derzeit deaktiviert.{' '}
-                    <Link to="/settings/license" className="font-medium underline underline-offset-2">
+                    <Link
+                        to="/settings/license"
+                        className="font-medium underline underline-offset-2"
+                    >
                         Module aktivieren →
                     </Link>
                 </div>
@@ -190,9 +205,26 @@ export function OrderSettingsPage() {
                     <div className="mb-5 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                         Aktive Bestellmodi
                     </div>
-                    {modeRow('🍽️', 'Am Tisch', 'Gast bestellt per Tischnummer', 'dineInEnabled', true)}
-                    {modeRow('🚗', 'Abholung', 'Gast bestellt vorab und holt selbst ab', 'pickupEnabled', true)}
-                    {modeRow('🚚', 'Lieferung', 'Lieferung an die angegebene Adresse', 'deliveryEnabled')}
+                    {modeRow(
+                        '🍽️',
+                        'Am Tisch',
+                        'Gast bestellt per Tischnummer',
+                        'dineInEnabled',
+                        true
+                    )}
+                    {modeRow(
+                        '🚗',
+                        'Abholung',
+                        'Gast bestellt vorab und holt selbst ab',
+                        'pickupEnabled',
+                        true
+                    )}
+                    {modeRow(
+                        '🚚',
+                        'Lieferung',
+                        'Lieferung an die angegebene Adresse',
+                        'deliveryEnabled'
+                    )}
                 </CardContent>
             </Card>
 
@@ -201,8 +233,22 @@ export function OrderSettingsPage() {
                     <div className="mb-5 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                         Zeitfenster
                     </div>
-                    {numRow('⏱️', 'Bestellstopp vor Ladenschluss', 'Keine neuen Bestellungen X Min. vor Schließzeit.', 'orderCutoffMinutes', 30, 120)}
-                    {numRow('🚗', 'Mindest-Vorlaufzeit Abholung', 'Abholzeit muss X Min. in der Zukunft liegen.', 'pickupLeadMinutes', 5, 60)}
+                    {numRow(
+                        '⏱️',
+                        'Bestellstopp vor Ladenschluss',
+                        'Keine neuen Bestellungen X Min. vor Schließzeit.',
+                        'orderCutoffMinutes',
+                        30,
+                        120
+                    )}
+                    {numRow(
+                        '🚗',
+                        'Mindest-Vorlaufzeit Abholung',
+                        'Abholzeit muss X Min. in der Zukunft liegen.',
+                        'pickupLeadMinutes',
+                        5,
+                        60
+                    )}
                 </CardContent>
             </Card>
 
@@ -221,7 +267,9 @@ export function OrderSettingsPage() {
                         <select
                             className="h-9 w-52 rounded-md border border-input bg-transparent px-3 text-sm"
                             value={cfg.timeSlotMode || 'slots'}
-                            onChange={(e) => set('timeSlotMode', e.target.value as 'slots' | 'free')}
+                            onChange={(e) =>
+                                set('timeSlotMode', e.target.value as 'slots' | 'free')
+                            }
                         >
                             <option value="slots">Zeitslots (empfohlen)</option>
                             <option value="free">Freie Eingabe (alt)</option>
@@ -230,7 +278,14 @@ export function OrderSettingsPage() {
 
                     {slots && (
                         <div className="mt-5 space-y-1 rounded-xl border bg-muted/30 p-5">
-                            {numRow('⏱️', 'Vorlaufzeit (Slots)', 'Erster Slot ab "jetzt + X Min."', 'timeSlotLead', 20, 120)}
+                            {numRow(
+                                '⏱️',
+                                'Vorlaufzeit (Slots)',
+                                'Erster Slot ab "jetzt + X Min."',
+                                'timeSlotLead',
+                                20,
+                                120
+                            )}
                             <div className="flex flex-wrap items-center justify-between gap-4 border-b py-3">
                                 <div>
                                     <div className="text-sm font-bold">📏 Slot-Abstand</div>
@@ -252,7 +307,9 @@ export function OrderSettingsPage() {
                             </div>
                             <div className="flex flex-wrap items-center justify-between gap-4 border-b py-3">
                                 <div>
-                                    <div className="text-sm font-bold">🌅 Öffnet / 🌌 Letzte Bestellung</div>
+                                    <div className="text-sm font-bold">
+                                        🌅 Öffnet / 🌌 Letzte Bestellung
+                                    </div>
                                     <div className="text-xs text-muted-foreground">
                                         Zeitbereich für die Slot-Generierung
                                     </div>
@@ -275,20 +332,26 @@ export function OrderSettingsPage() {
                             </div>
                             <div className="flex flex-wrap items-center justify-between gap-4 border-b py-3">
                                 <div>
-                                    <div className="text-sm font-bold">⚡ "Sofort"-Option aktiv</div>
+                                    <div className="text-sm font-bold">
+                                        ⚡ "Sofort"-Option aktiv
+                                    </div>
                                     <div className="text-xs text-muted-foreground">
                                         Bestellung ohne fixen Zeitslot
                                     </div>
                                 </div>
                                 <Switch
-                                    checked={cfg.sofortEnabled !== undefined ? !!cfg.sofortEnabled : true}
+                                    checked={
+                                        cfg.sofortEnabled !== undefined ? !!cfg.sofortEnabled : true
+                                    }
                                     onCheckedChange={(c) => set('sofortEnabled', c)}
                                 />
                             </div>
                             <div className="pt-3">
                                 <Label>📝 Sofort-Label Text</Label>
                                 <Input
-                                    value={cfg.sofortLabel ?? 'So schnell wie möglich (ca. {min} Min.)'}
+                                    value={
+                                        cfg.sofortLabel ?? 'So schnell wie möglich (ca. {min} Min.)'
+                                    }
                                     onChange={(e) => set('sofortLabel', e.target.value)}
                                     placeholder="Platzhalter {min} möglich"
                                     className="mt-1"

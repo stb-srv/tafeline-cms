@@ -63,7 +63,9 @@ export function DishesTab({ data }: { data: MenuData }) {
                 case 'price':
                     return dir * ((a.price || 0) - (b.price || 0));
                 case 'nr':
-                    return dir * ((parseInt(a.number || '0') || 0) - (parseInt(b.number || '0') || 0));
+                    return (
+                        dir * ((parseInt(a.number || '0') || 0) - (parseInt(b.number || '0') || 0))
+                    );
                 case 'cat':
                     return dir * getCatLabel(a.cat).localeCompare(getCatLabel(b.cat));
                 default:
@@ -75,9 +77,7 @@ export function DishesTab({ data }: { data: MenuData }) {
 
     const grouped = catFilter === 'All' && !search;
     const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-    const paged = grouped
-        ? filtered
-        : filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    const paged = grouped ? filtered : filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
     function toggleSort(key: SortKey) {
         if (sort === key) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
@@ -175,7 +175,11 @@ export function DishesTab({ data }: { data: MenuData }) {
         const days = Array.isArray(d.available_days) ? d.available_days : [];
         const dayLabel =
             days.length > 0 && days.length < 7
-                ? days.slice().sort((a, b) => a - b).map((i) => WEEKDAYS[i]).join(' ')
+                ? days
+                      .slice()
+                      .sort((a, b) => a - b)
+                      .map((i) => WEEKDAYS[i])
+                      .join(' ')
                 : '';
         return (
             <TableRow className={cn(!isAvail && 'opacity-50')}>
@@ -241,15 +245,16 @@ export function DishesTab({ data }: { data: MenuData }) {
     };
 
     const Th = ({ label, k }: { label: string; k: SortKey }) => (
-        <TableHead
-            className="cursor-pointer select-none"
-            onClick={() => toggleSort(k)}
-        >
+        <TableHead className="cursor-pointer select-none" onClick={() => toggleSort(k)}>
             {label}{' '}
             <i
                 className={cn(
                     'fas',
-                    sort !== k ? 'fa-sort opacity-30' : sortDir === 'desc' ? 'fa-sort-down' : 'fa-sort-up'
+                    sort !== k
+                        ? 'fa-sort opacity-30'
+                        : sortDir === 'desc'
+                          ? 'fa-sort-down'
+                          : 'fa-sort-up'
                 )}
             />
         </TableHead>

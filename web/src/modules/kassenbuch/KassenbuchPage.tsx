@@ -155,7 +155,9 @@ export function KassenbuchPage() {
             {/* KPIs */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <Card className="border-0 bg-primary p-5 text-primary-foreground">
-                    <h3 className="text-sm font-semibold">Umsatz {mode === 'day' ? 'Tag' : 'Monat'}</h3>
+                    <h3 className="text-sm font-semibold">
+                        Umsatz {mode === 'day' ? 'Tag' : 'Monat'}
+                    </h3>
                     <div className="text-3xl font-bold">{fmt(revenue)}</div>
                     <p className="text-sm opacity-90">{periodLabel}</p>
                 </Card>

@@ -100,7 +100,10 @@ export interface CookieConfig {
 }
 
 export const useCookieConfig = () =>
-    useQuery({ queryKey: ['g-cookie-config'], queryFn: () => publicGet<CookieConfig>('cookie-config') });
+    useQuery({
+        queryKey: ['g-cookie-config'],
+        queryFn: () => publicGet<CookieConfig>('cookie-config'),
+    });
 
 export async function submitConsent(payload: {
     choices: Record<string, boolean>;

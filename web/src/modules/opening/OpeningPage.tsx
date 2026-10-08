@@ -41,7 +41,11 @@ export function OpeningPage() {
         if (home) {
             const base: OpeningHours = {};
             for (const d of DAYS)
-                base[d] = home.openingHours?.[d] || { open: '12:00', close: '22:00', closed: false };
+                base[d] = home.openingHours?.[d] || {
+                    open: '12:00',
+                    close: '22:00',
+                    closed: false,
+                };
             setOh(base);
         }
     }, [home]);

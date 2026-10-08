@@ -86,10 +86,7 @@ export function PluginsPage() {
                                     {p.author && ` · ${p.author}`}
                                 </div>
                             </div>
-                            <Switch
-                                checked={p.enabled}
-                                onCheckedChange={(c) => toggle(p.id, c)}
-                            />
+                            <Switch checked={p.enabled} onCheckedChange={(c) => toggle(p.id, c)} />
                         </Card>
                     ))}
                 </div>

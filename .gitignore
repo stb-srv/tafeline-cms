@@ -37,3 +37,8 @@ npm-debug.log*
 
 # Interne Claude-Memory/Roadmap-Notizen (nicht ins geteilte Repo)
 memory/
+
+# Von deploy.sh/setup.sh erzeugt
+.deployed-commit
+deploy-backups/
+SETUP-INFO.txt

@@ -66,10 +66,7 @@ export function DashboardPage() {
         return (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
                 {Array.from({ length: 8 }).map((_, i) => (
-                    <Card
-                        key={i}
-                        className="h-32 animate-pulse bg-muted/50 md:col-span-3"
-                    />
+                    <Card key={i} className="h-32 animate-pulse bg-muted/50 md:col-span-3" />
                 ))}
             </div>
         );

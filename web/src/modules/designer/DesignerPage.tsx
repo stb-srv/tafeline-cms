@@ -56,7 +56,10 @@ const TABS: { id: Tab; label: string }[] = [
 function DesignerPage({ initialTab }: { initialTab: Tab }) {
     useViewTitle('Website & Inhalte');
     const qc = useQueryClient();
-    const { data } = useQuery({ queryKey: ['homepage'], queryFn: () => apiGet<HomeData>('homepage') });
+    const { data } = useQuery({
+        queryKey: ['homepage'],
+        queryFn: () => apiGet<HomeData>('homepage'),
+    });
     const [home, setHome] = React.useState<HomeData>({});
     const [tab, setTab] = React.useState<Tab>(initialTab);
     const [saving, setSaving] = React.useState(false);
@@ -132,10 +135,16 @@ function DesignerPage({ initialTab }: { initialTab: Tab }) {
                     {tab === 'visuals' && (
                         <>
                             <Field label="Hero Titel">
-                                <Input value={home.heroTitle || ''} onChange={(e) => set({ heroTitle: e.target.value })} />
+                                <Input
+                                    value={home.heroTitle || ''}
+                                    onChange={(e) => set({ heroTitle: e.target.value })}
+                                />
                             </Field>
                             <Field label="Hero Slogan">
-                                <Input value={home.heroSlogan || ''} onChange={(e) => set({ heroSlogan: e.target.value })} />
+                                <Input
+                                    value={home.heroSlogan || ''}
+                                    onChange={(e) => set({ heroSlogan: e.target.value })}
+                                />
                             </Field>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <ImgField
@@ -143,13 +152,25 @@ function DesignerPage({ initialTab }: { initialTab: Tab }) {
                                     src={home.bgImage}
                                     onPick={() => bgRef.current?.click()}
                                 />
-                                <input ref={bgRef} type="file" accept="image/*" hidden onChange={(e) => uploadImg(e.target.files?.[0], 'bgImage')} />
+                                <input
+                                    ref={bgRef}
+                                    type="file"
+                                    accept="image/*"
+                                    hidden
+                                    onChange={(e) => uploadImg(e.target.files?.[0], 'bgImage')}
+                                />
                                 <ImgField
                                     label="Willkommen-Bild"
                                     src={home.welcomeImage}
                                     onPick={() => wRef.current?.click()}
                                 />
-                                <input ref={wRef} type="file" accept="image/*" hidden onChange={(e) => uploadImg(e.target.files?.[0], 'welcomeImage')} />
+                                <input
+                                    ref={wRef}
+                                    type="file"
+                                    accept="image/*"
+                                    hidden
+                                    onChange={(e) => uploadImg(e.target.files?.[0], 'welcomeImage')}
+                                />
                             </div>
                         </>
                     )}
@@ -160,13 +181,17 @@ function DesignerPage({ initialTab }: { initialTab: Tab }) {
                                 <Textarea
                                     className="h-24"
                                     value={home.location?.address || ''}
-                                    onChange={(e) => setNested('location', { address: e.target.value })}
+                                    onChange={(e) =>
+                                        setNested('location', { address: e.target.value })
+                                    }
                                 />
                             </Field>
                             <Field label="Google Maps Embed URL (Iframe-Quelle)">
                                 <Input
                                     value={home.location?.embedUrl || ''}
-                                    onChange={(e) => setNested('location', { embedUrl: e.target.value })}
+                                    onChange={(e) =>
+                                        setNested('location', { embedUrl: e.target.value })
+                                    }
                                 />
                             </Field>
                         </>
@@ -180,7 +205,13 @@ function DesignerPage({ initialTab }: { initialTab: Tab }) {
                                     size="sm"
                                     variant="outline"
                                     onClick={() =>
-                                        setEditPage({ id: 'new-' + Date.now(), title: '', image: '', headline: '', content: '' })
+                                        setEditPage({
+                                            id: 'new-' + Date.now(),
+                                            title: '',
+                                            image: '',
+                                            headline: '',
+                                            content: '',
+                                        })
                                     }
                                 >
                                     <Plus /> Neue Seite
@@ -193,21 +224,42 @@ function DesignerPage({ initialTab }: { initialTab: Tab }) {
                             ) : (
                                 <div className="space-y-3">
                                     {(home.pages || []).map((p) => (
-                                        <div key={p.id} className="flex items-center justify-between rounded-lg border bg-muted/30 p-4">
+                                        <div
+                                            key={p.id}
+                                            className="flex items-center justify-between rounded-lg border bg-muted/30 p-4"
+                                        >
                                             <div className="min-w-0">
                                                 <div className="flex items-center gap-2">
                                                     <strong>{p.title || '(ohne Titel)'}</strong>
-                                                    <span className={cn('rounded-full px-2 py-0.5 text-[0.65rem] font-medium', p.enabled !== false ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-muted text-muted-foreground')}>
+                                                    <span
+                                                        className={cn(
+                                                            'rounded-full px-2 py-0.5 text-[0.65rem] font-medium',
+                                                            p.enabled !== false
+                                                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                                                : 'bg-muted text-muted-foreground'
+                                                        )}
+                                                    >
                                                         {p.enabled !== false ? 'Aktiv' : 'Inaktiv'}
                                                     </span>
                                                 </div>
-                                                <div className="truncate text-xs opacity-60">URL: /p/{p.slug || p.id}</div>
+                                                <div className="truncate text-xs opacity-60">
+                                                    URL: /p/{p.slug || p.id}
+                                                </div>
                                             </div>
                                             <div className="flex gap-1.5">
-                                                <Button size="icon" variant="outline" onClick={() => setEditPage(p)}>
+                                                <Button
+                                                    size="icon"
+                                                    variant="outline"
+                                                    onClick={() => setEditPage(p)}
+                                                >
                                                     <Pencil />
                                                 </Button>
-                                                <Button size="icon" variant="outline" className="text-destructive" onClick={() => deletePage(p.id)}>
+                                                <Button
+                                                    size="icon"
+                                                    variant="outline"
+                                                    className="text-destructive"
+                                                    onClick={() => deletePage(p.id)}
+                                                >
                                                     <Trash2 />
                                                 </Button>
                                             </div>
@@ -250,7 +302,6 @@ function DesignerPage({ initialTab }: { initialTab: Tab }) {
                             onChange={(p) => setNested('holiday', p)}
                         />
                     )}
-
                 </CardContent>
             </Card>
 
@@ -261,7 +312,11 @@ function DesignerPage({ initialTab }: { initialTab: Tab }) {
             </div>
 
             {editPage && (
-                <PageEditDialog page={editPage} onClose={() => setEditPage(null)} onSave={savePage} />
+                <PageEditDialog
+                    page={editPage}
+                    onClose={() => setEditPage(null)}
+                    onSave={savePage}
+                />
             )}
         </div>
     );
@@ -315,16 +370,30 @@ function PeriodForm({
             />
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="Titel">
-                    <Input value={data.title || ''} onChange={(e) => onChange({ title: e.target.value })} />
+                    <Input
+                        value={data.title || ''}
+                        onChange={(e) => onChange({ title: e.target.value })}
+                    />
                 </Field>
                 <Field label="Text">
-                    <Input value={data.text || ''} onChange={(e) => onChange({ text: e.target.value })} />
+                    <Input
+                        value={data.text || ''}
+                        onChange={(e) => onChange({ text: e.target.value })}
+                    />
                 </Field>
                 <Field label="Von (Datum)">
-                    <Input type="date" value={data.start || ''} onChange={(e) => onChange({ start: e.target.value })} />
+                    <Input
+                        type="date"
+                        value={data.start || ''}
+                        onChange={(e) => onChange({ start: e.target.value })}
+                    />
                 </Field>
                 <Field label="Bis (Datum)">
-                    <Input type="date" value={data.end || ''} onChange={(e) => onChange({ end: e.target.value })} />
+                    <Input
+                        type="date"
+                        value={data.end || ''}
+                        onChange={(e) => onChange({ end: e.target.value })}
+                    />
                 </Field>
             </div>
         </>
@@ -334,7 +403,10 @@ function PeriodForm({
 function toSlug(s: string) {
     return s
         .toLowerCase()
-        .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+        .replace(/ä/g, 'ae')
+        .replace(/ö/g, 'oe')
+        .replace(/ü/g, 'ue')
+        .replace(/ß/g, 'ss')
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '');
 }
@@ -382,7 +454,10 @@ function PageEditDialog({
 
     function save() {
         const finalSlug = slug || toSlug(title) || page.id;
-        const content = JSON.stringify({ version: 1, blocks: [{ type: 'text', heading: headline, text }] });
+        const content = JSON.stringify({
+            version: 1,
+            blocks: [{ type: 'text', heading: headline, text }],
+        });
         onSave({ ...page, title, slug: finalSlug, enabled, image, headline, content });
     }
 
@@ -390,28 +465,55 @@ function PageEditDialog({
         <Dialog open onOpenChange={(o) => !o && onClose()}>
             <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>{page.id.startsWith('new-') ? 'Neue Seite' : 'Seite bearbeiten'}</DialogTitle>
+                    <DialogTitle>
+                        {page.id.startsWith('new-') ? 'Neue Seite' : 'Seite bearbeiten'}
+                    </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-3">
-                    <SwitchRow label="Seite aktiv (öffentlich sichtbar)" checked={enabled} onChange={setEnabled} />
+                    <SwitchRow
+                        label="Seite aktiv (öffentlich sichtbar)"
+                        checked={enabled}
+                        onChange={setEnabled}
+                    />
                     <Field label="Menü-Titel (Navigation)">
-                        <Input value={title} onChange={(e) => handleTitleChange(e.target.value)} placeholder="z.B. Über uns" />
+                        <Input
+                            value={title}
+                            onChange={(e) => handleTitleChange(e.target.value)}
+                            placeholder="z.B. Über uns"
+                        />
                     </Field>
                     <Field label="URL-Pfad (Slug)">
                         <div className="flex items-center gap-2">
                             <span className="shrink-0 text-sm text-muted-foreground">/p/</span>
                             <Input
                                 value={slug}
-                                onChange={(e) => { setSlugTouched(true); setSlug(e.target.value); }}
+                                onChange={(e) => {
+                                    setSlugTouched(true);
+                                    setSlug(e.target.value);
+                                }}
                                 placeholder="ueber-uns"
                             />
                         </div>
                     </Field>
                     <Field label="Header-Bild">
                         <div className="flex gap-2">
-                            <Input value={image} onChange={(e) => setImage(e.target.value)} placeholder="/uploads/…" />
-                            <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => upload(e.target.files?.[0])} />
-                            <Button variant="outline" size="icon" onClick={() => fileRef.current?.click()}>
+                            <Input
+                                value={image}
+                                onChange={(e) => setImage(e.target.value)}
+                                placeholder="/uploads/…"
+                            />
+                            <input
+                                ref={fileRef}
+                                type="file"
+                                accept="image/*"
+                                hidden
+                                onChange={(e) => upload(e.target.files?.[0])}
+                            />
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => fileRef.current?.click()}
+                            >
                                 <Upload />
                             </Button>
                         </div>
@@ -420,7 +522,11 @@ function PageEditDialog({
                         <Input value={headline} onChange={(e) => setHeadline(e.target.value)} />
                     </Field>
                     <Field label="Inhalt (Text)">
-                        <Textarea className="h-48" value={text} onChange={(e) => setText(e.target.value)} />
+                        <Textarea
+                            className="h-48"
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+                        />
                     </Field>
                 </div>
                 <DialogFooter>

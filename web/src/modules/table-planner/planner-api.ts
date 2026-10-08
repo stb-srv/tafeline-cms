@@ -36,7 +36,10 @@ export type TableStatus = 'free' | 'reserved' | 'occupied';
 
 export function parseTimeToMins(str?: string): number {
     if (!str) return 0;
-    const [h, m] = str.replace(/[^0-9:]/g, '').split(':').map(Number);
+    const [h, m] = str
+        .replace(/[^0-9:]/g, '')
+        .split(':')
+        .map(Number);
     return h * 60 + (m || 0);
 }
 function todayStr(): string {
