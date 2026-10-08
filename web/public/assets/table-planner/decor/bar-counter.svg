@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="bar-counter-title">
+  <title id="bar-counter-title">Bartheke in Draufsicht</title>
+  <defs><linearGradient id="tafeline-bar-counter-accent" gradientUnits="userSpaceOnUse" x1="64.0" y1="89.6" x2="192.0" y2="166.4"><stop stop-color="#0a5cff"/><stop offset=".5" stop-color="#00c2d6"/><stop offset="1" stop-color="#6be03a"/></linearGradient></defs>
+  <g fill="none" stroke="#9fb3cc" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M42 58H214V108H103V198H42Z"/>
+    <path d="M61 78H194M62 79V178"/>
+    <path d="M121 78H173" stroke="url(#tafeline-bar-counter-accent)"/>
+
+  </g>
+</svg>

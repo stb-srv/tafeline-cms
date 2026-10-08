@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="restroom-sign-title">
+  <title id="restroom-sign-title">Sanitär-Piktogramm</title>
+  <defs><linearGradient id="tafeline-restroom-sign-accent" gradientUnits="userSpaceOnUse" x1="64.0" y1="89.6" x2="192.0" y2="166.4"><stop stop-color="#0a5cff"/><stop offset=".5" stop-color="#00c2d6"/><stop offset="1" stop-color="#6be03a"/></linearGradient></defs>
+  <g fill="none" stroke="#9fb3cc" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+
+    <rect x="45" y="47" width="166" height="162" rx="16"/>
+    <path d="M128 77V179" stroke="url(#tafeline-restroom-sign-accent)"/>
+    <circle cx="85" cy="80" r="10"/>
+    <path d="M75 104H95L103 136M75 104L67 136M75 104V147H95V104M78 147V179M92 147V179"/>
+    <circle cx="171" cy="80" r="10"/>
+    <path d="M163 105H179L190 137M163 105L152 137M163 105L155 150H187L179 105M165 150V179M178 150V179"/>
+
+  </g>
+</svg>
