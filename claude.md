@@ -195,7 +195,7 @@ Plugins liegen in `plugins/<id>/` mit:
 - `/setup` → `web/public/setup.html` (Setup-Wizard noch nicht nach React portiert, aber als statische Seite erhalten)
 - `/status` → `public/status.html` (noch nicht portiert)
 
-**Migrationsstand:** Cutover abgeschlossen – das alte Vanilla-JS-Frontend (`cms/`, `menu-app/`) wurde **gelöscht**. Alle Admin-Module, das Gäste-Frontend und der DSGVO-Cookie-Banner/Consent-Log laufen in `web/` (React). Brand-Assets (`santorini_bg.png` u.a.), Favicons und `setup.html` liegen jetzt unter `web/public/`. Offene Folge-TODOs: Setup-Wizard nach React portieren, Plugins-Manager-UI, Passwort-Wechsel-Seite, 14-Sprachen-i18n (nur DE aktiv), Menü-Drag&Drop/Bulk/Preisverlauf/Import-Export, KI-Bild-Stapelgenerator, Tischplaner-Deko/Kombinieren, erweiterter Seiten-Block-Builder, `window.confirm`→AlertDialog.
+**Migrationsstand:** Cutover abgeschlossen – das alte Vanilla-JS-Frontend (`cms/`, `menu-app/`) wurde **gelöscht**. Alle Admin-Module, das Gäste-Frontend und der DSGVO-Cookie-Banner/Consent-Log laufen in `web/` (React). Brand-Assets (`hero-default.jpg` u.a.), Favicons und `setup.html` liegen jetzt unter `web/public/`. Offene Folge-TODOs: Setup-Wizard nach React portieren, Plugins-Manager-UI, Passwort-Wechsel-Seite, 14-Sprachen-i18n (nur DE aktiv), Menü-Drag&Drop/Bulk/Preisverlauf/Import-Export, KI-Bild-Stapelgenerator, Tischplaner-Deko/Kombinieren, erweiterter Seiten-Block-Builder, `window.confirm`→AlertDialog.
 
 ## Architektur-Regeln (WICHTIG)
 

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><defs><linearGradient id="accent" gradientUnits="userSpaceOnUse" x1="180" y1="250" x2="890" y2="550"><stop stop-color="#0a5cff"/><stop offset=".5" stop-color="#00c2d6"/><stop offset="1" stop-color="#6be03a"/></linearGradient></defs><g fill="none" stroke="#afc3dc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+<rect x="130" y="130" width="454" height="548" rx="34" fill="#f4f8fd" stroke-width="7"/>
+<rect x="160" y="171" width="394" height="459" rx="18" fill="#ffffff" stroke="#c0d2e6"/>
+<circle cx="357" cy="151" r="4" fill="#afc3dc" stroke="none"/>
+<rect x="335" y="651" width="44" height="10" rx="5" stroke="#c2d4e8" stroke-width="3"/>
+<path d="M199 215v139h313" stroke="#d2dfec" stroke-width="4"/>
+<path d="M213 323 279 286 348 299 418 270 487 228" stroke="url(#accent)" stroke-width="6"/>
+<g stroke="url(#accent)" stroke-width="5" fill="#fff"><circle cx="213" cy="323" r="7"/><circle cx="279" cy="286" r="7"/><circle cx="348" cy="299" r="7"/><circle cx="418" cy="270" r="7"/><circle cx="487" cy="228" r="7"/></g>
+<circle cx="259" cy="466" r="47" stroke="#dce7f3" stroke-width="20"/>
+<path d="M259 419a47 47 0 0 1 41 71" stroke="#00c2d6" stroke-width="20"/>
+<path d="M300 490a47 47 0 0 1-79 5" stroke="#6be03a" stroke-width="20"/>
+<rect x="349" y="418" width="158" height="15" rx="7" stroke="none" fill="#d8e4f1"/>
+<rect x="349" y="458" width="128" height="15" rx="7" stroke="none" fill="#e0eaf5"/>
+<rect x="349" y="498" width="145" height="15" rx="7" stroke="none" fill="#e0eaf5"/>
+<rect x="205" y="562" width="302" height="13" rx="6" stroke="none" fill="#e3edf7"/>
+<ellipse cx="853" cy="456" rx="179" ry="36" fill="#f7faff"/>
+<path d="M674 456v18c0 21 80 39 179 39s179-18 179-39v-18"/>
+<path d="M853 513v133" stroke-width="9"/>
+<ellipse cx="853" cy="663" rx="78" ry="18" fill="#f5f9fe"/>
+<path d="m829 275 124 7-24 176-127-8Z" fill="#ffffff"/>
+<path d="m953 282 29 172-53 4" fill="#edf4fc"/>
+<path d="m831 303 89 5" stroke="url(#accent)" stroke-width="5"/>
+</g></svg>
