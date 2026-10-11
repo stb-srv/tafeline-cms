@@ -24,6 +24,9 @@ export interface ImageApiKeys {
     googleAiKey?: string;
     puterToken?: string;
     defaultProvider?: string;
+    /** Stil-Vorgabe für alle KI-Gerichtsbilder (kein Geheimnis). */
+    stylePrompt?: string;
+    imageModel?: string;
 }
 export interface EmailTemplate {
     subject?: string;

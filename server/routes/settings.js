@@ -49,6 +49,27 @@ function deepMerge(target, source) {
     return result;
 }
 
+// Geheime Bild-KI-Keys werden nie an das Frontend ausgeliefert (nur maskiert);
+// beim Speichern bedeutet der Platzhalter „unverändert lassen“.
+const IMAGE_SECRET_FIELDS = ['unsplashKey', 'pexelsKey', 'googleAiKey', 'puterToken'];
+const SECRET_MASK = '********';
+
+function maskImageKeys(settings) {
+    const keys = settings?.imageApiKeys;
+    if (!keys || typeof keys !== 'object') return settings;
+    const masked = { ...keys };
+    for (const f of IMAGE_SECRET_FIELDS) if (masked[f]) masked[f] = SECRET_MASK;
+    return { ...settings, imageApiKeys: masked };
+}
+
+function stripMaskedImageKeys(body) {
+    const keys = body?.imageApiKeys;
+    if (!keys || typeof keys !== 'object') return body;
+    const clean = { ...keys };
+    for (const f of IMAGE_SECRET_FIELDS) if (clean[f] === SECRET_MASK) delete clean[f];
+    return { ...body, imageApiKeys: clean };
+}
+
 module.exports = (requireAuth, _requireLicense, _LICENSE_SERVER) => {
     router.get('/homepage', async (req, res) => {
         try {
@@ -113,7 +134,7 @@ module.exports = (requireAuth, _requireLicense, _LICENSE_SERVER) => {
 
     router.get('/settings', requireAuth, requireRole('admin'), async (req, res) => {
         try {
-            res.json(await DB.getKV('settings', {}));
+            res.json(maskImageKeys(await DB.getKV('settings', {})));
         } catch (e) {
             logger.error({ err: e }, 'Settings route Fehler');
             res.status(500).json({ success: false, reason: 'Interner Serverfehler.' });
@@ -145,7 +166,7 @@ module.exports = (requireAuth, _requireLicense, _LICENSE_SERVER) => {
         async (req, res) => {
             try {
                 const existing = await DB.getKV('settings', {});
-                const merged = deepMerge(existing, req.body);
+                const merged = deepMerge(existing, stripMaskedImageKeys(req.body));
                 await DB.setKV('settings', merged);
                 try {
                     if (DB.addAuditLog)

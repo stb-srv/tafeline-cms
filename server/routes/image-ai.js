@@ -5,6 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 const logger = require('../core/logger.js');
 const { requireRole, requireLicense, imageAiLimiter } = require('../core/middleware.js');
+const Gemini = require('../services/gemini-image.js');
 
 module.exports = (requireAuth, DB) => {
     /**
@@ -22,6 +23,7 @@ module.exports = (requireAuth, DB) => {
                 hasGoogleAi: !!keys.googleAiKey,
                 hasPuter: !!keys.puterToken,
                 defaultProvider: keys.defaultProvider || 'none',
+                model: Gemini.resolveModel(keys.imageModel),
             });
         } catch (err) {
             logger.error({ err }, 'Image-AI Config Fehler');
@@ -257,6 +259,74 @@ module.exports = (requireAuth, DB) => {
                     });
                 }
                 logger.error({ err }, 'Image Generate Fehler');
+                res.status(500).json({ success: false, reason: 'Interner Serverfehler.' });
+            }
+        }
+    );
+
+    /**
+     * POST /api/image-ai/dish
+     * Erzeugt EIN Vorschaubild für ein Gericht (Name + Beschreibung + Stil-Prompt aus den
+     * Einstellungen). Das Bild wird nur als Data-URL zurückgegeben und NICHT gespeichert –
+     * erst beim Übernehmen im Formular läuft es über den normalen Upload.
+     */
+    router.post(
+        '/dish',
+        requireRole('admin'),
+        requireLicense('image_ai'),
+        imageAiLimiter,
+        async (req, res) => {
+            try {
+                const { name, description, category } = req.body || {};
+                if (typeof name !== 'string' || !name.trim())
+                    return res.status(400).json({
+                        success: false,
+                        reason: 'Bitte zuerst einen Gerichtsnamen eingeben.',
+                    });
+
+                const settings = await DB.getKV('settings', {});
+                const keys = settings.imageApiKeys || {};
+                if (!keys.googleAiKey)
+                    return res.status(400).json({
+                        success: false,
+                        reason: 'Google AI Key fehlt. Bitte unter Einstellungen → KI-Bildgenerierung hinterlegen.',
+                    });
+
+                const prompt = Gemini.buildDishPrompt({
+                    stylePrompt: keys.stylePrompt,
+                    name: name.trim(),
+                    description: typeof description === 'string' ? description.trim() : '',
+                    category: typeof category === 'string' ? category.trim() : '',
+                });
+                const img = await Gemini.generateImage({
+                    apiKey: keys.googleAiKey,
+                    model: keys.imageModel,
+                    prompt,
+                });
+                res.json({
+                    success: true,
+                    image: `data:${img.mimeType};base64,${img.data}`,
+                    model: Gemini.resolveModel(keys.imageModel),
+                });
+            } catch (err) {
+                if (err.name === 'TimeoutError')
+                    return res.status(504).json({
+                        success: false,
+                        reason: 'Zeitüberschreitung – Google AI hat nicht rechtzeitig geantwortet.',
+                    });
+                if (err.status) {
+                    const reason =
+                        err.status === 429
+                            ? 'Google AI: Kontingent erschöpft. Bitte später erneut versuchen.'
+                            : err.status === 401 || err.status === 403
+                              ? 'Google AI: Key ungültig oder ohne Zugriff auf das Modell.'
+                              : `Google AI Fehler: ${err.message}`;
+                    logger.warn({ status: err.status, msg: err.message }, 'Dish-Bild Fehler');
+                    return res
+                        .status(err.status === 422 ? 422 : 502)
+                        .json({ success: false, reason });
+                }
+                logger.error({ err }, 'Dish-Bild Fehler');
                 res.status(500).json({ success: false, reason: 'Interner Serverfehler.' });
             }
         }
