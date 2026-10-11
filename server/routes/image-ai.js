@@ -279,12 +279,10 @@ module.exports = (requireAuth, DB) => {
             try {
                 const { name, description, category } = req.body || {};
                 if (typeof name !== 'string' || !name.trim())
-                    return res
-                        .status(400)
-                        .json({
-                            success: false,
-                            reason: 'Bitte zuerst einen Gerichtsnamen eingeben.',
-                        });
+                    return res.status(400).json({
+                        success: false,
+                        reason: 'Bitte zuerst einen Gerichtsnamen eingeben.',
+                    });
 
                 const settings = await DB.getKV('settings', {});
                 const keys = settings.imageApiKeys || {};
