@@ -6,6 +6,7 @@ import { apiGet, apiPost } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { SETTINGS_KEY, type ImageApiKeys, type SettingsData } from './settings-api';
 
@@ -19,6 +20,8 @@ export function ImageAiTab({ settings }: { settings: SettingsData }) {
     const [pexels, setPexels] = React.useState('');
     const [googleAi, setGoogleAi] = React.useState('');
     const [puter, setPuter] = React.useState('');
+    const [stylePrompt, setStylePrompt] = React.useState(keys.stylePrompt || '');
+    const [imageModel, setImageModel] = React.useState(keys.imageModel || '');
     const [saving, setSaving] = React.useState(false);
     const [testing, setTesting] = React.useState(false);
 
@@ -33,6 +36,8 @@ export function ImageAiTab({ settings }: { settings: SettingsData }) {
             googleAiKey: googleAi.trim() || existing.googleAiKey || '',
             puterToken: puter.trim() || existing.puterToken || '',
             defaultProvider: provider,
+            stylePrompt: stylePrompt.trim(),
+            imageModel: imageModel.trim(),
         };
         const res = await apiPost('settings', { imageApiKeys: newKeys });
         setSaving(false);
@@ -124,7 +129,7 @@ export function ImageAiTab({ settings }: { settings: SettingsData }) {
                             <option value="none">Nicht aktiv</option>
                             <option value="unsplash">🔍 Unsplash (Suche)</option>
                             <option value="pexels">🔍 Pexels (Suche)</option>
-                            <option value="gemini">✨ Google Gemini Imagen (KI)</option>
+                            <option value="gemini">✨ Google Gemini / Nano Banana (KI)</option>
                             <option value="puter">🪐 Puter (KI, Browser)</option>
                         </select>
                     </div>
@@ -145,13 +150,37 @@ export function ImageAiTab({ settings }: { settings: SettingsData }) {
                         !!keys.pexelsKey
                     )}
                     {keyField(
-                        'Google AI API Key (Gemini Imagen)',
+                        'Google AI API Key (Gemini / Nano Banana)',
                         'https://aistudio.google.com/app/apikey',
                         'Google AI Studio',
                         googleAi,
                         setGoogleAi,
                         !!keys.googleAiKey
                     )}
+                    <div className="space-y-1">
+                        <Label>Stil-Prompt für Gerichtsbilder (Nano Banana)</Label>
+                        <Textarea
+                            className="h-28"
+                            maxLength={1500}
+                            value={stylePrompt}
+                            onChange={(e) => setStylePrompt(e.target.value)}
+                            placeholder="z.B. Professionelles Food-Foto von oben, weißer Teller auf hellem Holztisch, weiches Tageslicht, kein Text, keine Personen."
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            Wird bei jeder Generierung vor Name und Beschreibung des Gerichts
+                            gestellt, damit alle Bilder einheitlich aussehen. Leer = sinnvoller
+                            Standard.
+                        </p>
+                    </div>
+                    <div className="space-y-1">
+                        <Label>Modell (optional)</Label>
+                        <Input
+                            className="font-mono"
+                            value={imageModel}
+                            onChange={(e) => setImageModel(e.target.value)}
+                            placeholder="gemini-nano-banana-2.1"
+                        />
+                    </div>
                     {keyField(
                         'Puter Token (optional)',
                         'https://puter.com/',

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { toast } from 'sonner';
-import { Camera, ImageIcon, Upload } from 'lucide-react';
-import { apiPost, apiPut, apiUpload } from '@/lib/api';
+import { Camera, ImageIcon, Sparkles, Upload } from 'lucide-react';
+import { apiGet, apiPost, apiPut, apiUpload } from '@/lib/api';
 import {
     Dialog,
     DialogContent,
@@ -99,12 +99,64 @@ export function DishFormDialog({
     const [f, setF] = React.useState<DishFormState>(() => toFormState(dish, categories));
     const [saving, setSaving] = React.useState(false);
     const [uploading, setUploading] = React.useState(false);
+    const [aiReady, setAiReady] = React.useState(false);
+    const [generating, setGenerating] = React.useState(false);
+    const [aiPreview, setAiPreview] = React.useState<string | null>(null);
     const uploadRef = React.useRef<HTMLInputElement>(null);
     const captureRef = React.useRef<HTMLInputElement>(null);
 
     React.useEffect(() => {
-        if (open) setF(toFormState(dish, categories));
+        if (open) {
+            setF(toFormState(dish, categories));
+            setAiPreview(null);
+        }
     }, [open, dish, categories]);
+
+    React.useEffect(() => {
+        if (!open) return;
+        apiGet<{ hasGoogleAi?: boolean }>('image-ai/config').then((c) =>
+            setAiReady(!!c?.hasGoogleAi)
+        );
+    }, [open]);
+
+    async function generateAi() {
+        if (!f.name.trim()) {
+            toast.error('Bitte zuerst einen Namen eingeben.');
+            return;
+        }
+        setGenerating(true);
+        const res = await apiPost<{ success?: boolean; image?: string; reason?: string }>(
+            'image-ai/dish',
+            {
+                name: f.name.trim(),
+                description: f.desc.trim(),
+                category: categories.find((c) => c.id === f.cat)?.label || '',
+            }
+        );
+        setGenerating(false);
+        if (res.success !== false && res.image) setAiPreview(res.image);
+        else toast.error(res.reason || 'Bild konnte nicht erzeugt werden.');
+    }
+
+    async function acceptAi() {
+        if (!aiPreview) return;
+        setUploading(true);
+        try {
+            const blob = await (await fetch(aiPreview)).blob();
+            const ext =
+                blob.type === 'image/jpeg' ? 'jpg' : blob.type === 'image/webp' ? 'webp' : 'png';
+            const res = await apiUpload<{ success?: boolean; url?: string; reason?: string }>(
+                new File([blob], `ki-gericht.${ext}`, { type: blob.type })
+            );
+            if (res.success && res.url) {
+                set('image', res.url);
+                setAiPreview(null);
+                toast.success('KI-Bild übernommen.');
+            } else toast.error(res.reason || 'Upload fehlgeschlagen.');
+        } finally {
+            setUploading(false);
+        }
+    }
 
     const set = <K extends keyof DishFormState>(k: K, v: DishFormState[K]) =>
         setF((s) => ({ ...s, [k]: v }));
@@ -300,6 +352,19 @@ export function DishFormDialog({
                         >
                             <Camera />
                         </Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            disabled={!aiReady || generating}
+                            onClick={generateAi}
+                            title={
+                                aiReady
+                                    ? 'Bild aus Name, Beschreibung und Stil-Prompt erzeugen'
+                                    : 'Zuerst Google AI Key unter Einstellungen → KI-Bildgenerierung hinterlegen'
+                            }
+                        >
+                            <Sparkles /> {generating ? 'Erzeuge…' : 'KI-Bild'}
+                        </Button>
                         <label className="ml-auto flex cursor-pointer items-center gap-2 whitespace-nowrap pt-2 text-sm">
                             <Checkbox
                                 checked={f.is_daily_special}
@@ -315,6 +380,38 @@ export function DishFormDialog({
                             <ImageIcon className="size-8 opacity-20" />
                         )}
                     </div>
+                    {aiPreview && (
+                        <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-primary/40 bg-background p-3">
+                            <img
+                                src={aiPreview}
+                                alt="KI-Vorschau"
+                                className="size-32 rounded-lg object-cover"
+                            />
+                            <div className="flex flex-col gap-2">
+                                <span className="text-sm font-semibold">KI-Vorschau</span>
+                                <div className="flex flex-wrap gap-2">
+                                    <Button type="button" onClick={acceptAi} disabled={uploading}>
+                                        Übernehmen
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={generateAi}
+                                        disabled={generating}
+                                    >
+                                        {generating ? 'Erzeuge…' : 'Neu erzeugen'}
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        onClick={() => setAiPreview(null)}
+                                    >
+                                        Verwerfen
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     <div className="mt-3">
                         <Label className="mb-1.5 flex items-center gap-2">
                             Verfügbarkeit nach Wochentag
